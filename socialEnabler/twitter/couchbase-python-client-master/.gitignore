@@ -1,0 +1,27 @@
+build
+dist
+MANIFEST
+couchbase/libcouchbase*.so
+couchbase/libcouchbase.c
+couchbase/libcouchbase.h
+couchbase/__pycache__
+*.pyc
+*.pdb
+*.swp
+*.out
+*.log
+*.so
+*.dylib
+*.pyd
+*.dll
+*.exe
+tests/tests.ini
+*.out*
+# My personal development stuff
+p3
+p2
+p3_nose
+p2_nose
+build*.sh
+BUILD*
+couchbase/_version.py
