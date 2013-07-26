@@ -1,13 +1,13 @@
 import tweepy
 import json
 import hashlib
-import couchbase
+from couchbase import Couchbase
 from tweepy.utils import import_simplejson
 
 #Define Database connection creds 
 server = "localhost:8091"
-admin_username = "mpetyx"
-admin_password = "galois"
+admin_username = ""
+admin_password = ""
 
 #Twitter auth stuff
 consumer_key = 'tlroHIz4mz32PE9YbqRx2A'
@@ -19,27 +19,27 @@ access_token_secret = "zmnKLusHGkTJzu2lkzVSJQdFBu4EBavjOfUB3x8eEA"
 filterTerms = ['bigdata', 'couchbase', 'nosql', 'DataWeek', 'CouchConf']
 
 json = import_simplejson()
-try:
-	cbsclient = couchbase.Server(server, admin_username, admin_password); 
-except:
-	print "Cannot find Couchbase Server ... Exiting\n"
-	print "----_Stack Trace_-----\n"
-	raise
-
-#Couchbase is found here so now try to create a bucket for twitter
-try:
-	cbsclient.create('twitter', ram_quota_mb=200, replica=1)
-except:
-	pass
-
-#Try to use the twitter bucket or else switch to use default bucket
-try:
-	cbucket = cbsclient['twitter']
-	print "Using twitter bucket"
-except:
-	cbucket = cbsclient['default']
-	print "Using default bucket"
-
+# try:
+# 	cbsclient = Couchbase.connect(server, admin_username, admin_password);
+# except:
+# 	print "Cannot find Couchbase Server ... Exiting\n"
+# 	print "----_Stack Trace_-----\n"
+# 	raise
+#
+# #Couchbase is found here so now try to create a bucket for twitter
+# try:
+# 	cbsclient.create('twitter', ram_quota_mb=200, replica=1)
+# except:
+# 	pass
+#
+# #Try to use the twitter bucket or else switch to use default bucket
+# try:
+# 	cbucket = cbsclient['twitter']
+# 	print "Using twitter bucket"
+# except:
+# 	cbucket = cbsclient['default']
+# 	print "Using default bucket"
+cbucket = Couchbase.connect(bucket='default')
 auth1 = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth1.set_access_token(access_token_key, access_token_secret)
 
@@ -56,9 +56,9 @@ class StreamListener(tweepy.StreamListener):
         if data[0].isdigit():
             pass
         else:
-	    data_md5 = hashlib.md5(json.dumps(data, sort_keys=True)).hexdigest()
-	    cbucket.set(data_md5,0,0,data)
-            print(json.loads(data))
+            data_md5 = hashlib.md5(json.dumps(data, sort_keys=True)).hexdigest()
+            cbucket.set(data_md5,data)
+            # print(json.loads(data))
 
 
 l = StreamListener()
