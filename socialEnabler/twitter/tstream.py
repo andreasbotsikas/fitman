@@ -47,7 +47,9 @@ class StreamListener(tweepy.StreamListener):
     json = import_simplejson()
     
     def on_status(self, tweet):
-        print 'Ran on_status'
+        data_md5 = hashlib.md5(json.dumps(data, sort_keys=True)).hexdigest()
+        cbucket.set(data_md5,data)
+       # print 'Ran on_status'
 
     def on_error(self, status_code):
         return False
@@ -56,8 +58,9 @@ class StreamListener(tweepy.StreamListener):
         if data[0].isdigit():
             pass
         else:
-            data_md5 = hashlib.md5(json.dumps(data, sort_keys=True)).hexdigest()
-            cbucket.set(data_md5,data)
+            print 'Ran on_data'
+            #data_md5 = hashlib.md5(json.dumps(data, sort_keys=True)).hexdigest()
+            #cbucket.set(data_md5,data)
             # print(json.loads(data))
 
 
