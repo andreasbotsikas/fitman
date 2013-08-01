@@ -16,7 +16,7 @@ access_token_key = "95257276-VuvdqXZV4WXyYMqDjkmEOuQS7zB2DavY1zu6D0V9s"
 access_token_secret = "zmnKLusHGkTJzu2lkzVSJQdFBu4EBavjOfUB3x8eEA"
 
 #Define filter terms
-filterTerms = [ "#sofa", "#bed", "white sofa", "#furniture", "#minimaldesign", "#couch", "#chair", "#table", "#desk", "#bookcase", "#fengshui", furniture, zen furniture, feng shui furniture, kitchen table, leather sofa, minimal style]
+filterTerms = [ "#sofa", "#bed", "white sofa", "#furniture", "#minimaldesign", "#couch", "#chair", "#table", "#desk", "#bookcase", "#fengshui", "furniture", "zen furniture", "feng shui furniture", "kitchen table", "leather sofa", "minimal style"]
 
 json = import_simplejson()
 # try:
