@@ -59,7 +59,6 @@ class StreamListener(tweepy.StreamListener):
             pass
         else:
             #print 'Ran on_data'
-            print 'hey'
             #data_md5 = hashlib.md5(json.dumps(data, sort_keys=True)).hexdigest()
             #cbucket.set(data_md5,data)
             # print(json.loads(data))
