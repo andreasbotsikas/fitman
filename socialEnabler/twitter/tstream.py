@@ -63,5 +63,5 @@ class StreamListener(tweepy.StreamListener):
 
 
 l = StreamListener()
-streamer = tweepy.Stream(auth=auth1, listener=l)
+streamer = tweepy.Stream(auth=auth1, listener=l, timeout=3000000000)
 streamer.filter(track = filterTerms)
