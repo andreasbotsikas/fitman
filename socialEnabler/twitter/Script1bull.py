@@ -1,7 +1,7 @@
 import tweepy
 import json
 import hashlib
-from couchbase import Couchbase
+#from couchbase import Couchbase
 from tweepy.utils import import_simplejson
 
 #Define Database connection creds 
@@ -39,7 +39,7 @@ json = import_simplejson()
 # except:
 # 	cbucket = cbsclient['default']
 # 	print "Using default bucket"
-cbucket = Couchbase.connect(bucket='default')
+#cbucket = Couchbase.connect(bucket='default')
 auth1 = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth1.set_access_token(access_token_key, access_token_secret)
 
@@ -47,9 +47,7 @@ class StreamListener(tweepy.StreamListener):
     json = import_simplejson()
     
     def on_status(self, tweet):
-        data_md5 = hashlib.md5(json.dumps(data, sort_keys=True)).hexdigest()
-        cbucket.set(data_md5,data)
-       print 'Ran on_status'
+        print 'Ran on_status'
 
     def on_error(self, status_code):
         return False
@@ -58,10 +56,9 @@ class StreamListener(tweepy.StreamListener):
         if data[0].isdigit():
             pass
         else:
-            #print 'Ran on_data'
-            #data_md5 = hashlib.md5(json.dumps(data, sort_keys=True)).hexdigest()
+            data_md5 = hashlib.md5(json.dumps(data, sort_keys=True)).hexdigest()
             #cbucket.set(data_md5,data)
-            # print(json.loads(data))
+            print(json.loads(data))
 
 
 l = StreamListener()
