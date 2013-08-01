@@ -49,7 +49,7 @@ class StreamListener(tweepy.StreamListener):
     def on_status(self, tweet):
         data_md5 = hashlib.md5(json.dumps(data, sort_keys=True)).hexdigest()
         cbucket.set(data_md5,data)
-       print 'Ran on_status'
+        print 'Ran on_status'
 
     def on_error(self, status_code):
         return False
