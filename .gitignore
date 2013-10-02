@@ -35,3 +35,13 @@ nosetests.xml
 .pydevproject
 
 *.xml
+
+.idea/fitman.iml
+
+.idea/fitman.iml
+
+.idea/misc.xml
+
+.idea/workspace.xml
+
+.idea/workspace.xml
