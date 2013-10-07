@@ -1,7 +1,117 @@
 {% extends "base.html" %}
 
-{% block title %}Welcome to Anlzer{% endblock %}
+{% block title %}New query{% endblock %}
+
+{% block menu %}
+    <!-- no menu -->
+{%  endblock%}
+
+{% block responsive_table %}
+    <!--link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <script>
+        $(function() {
+            $( "#datepicker_from").datepicker();
+            $( "#datepicker_to" ).datepicker();
+        });
+    </script-->
+{% endblock %}
 
 {% block body %}
+
+    <!--******************** Contact Section ********************-->
+    <section id="contact" class="single-page scrollblock" xmlns="http://www.w3.org/1999/html">
+        <div class="container">
+            <h2>New Query</h2>
+            <hr width="100%">
+            <div class="row">
+                <div class="span12">
+                    <div class="cform" id="theme-form">
+                        <form action="#" method="post" class="cform-form">
+                            <!-- keywords-->
+                            <div class="row">
+                                <div class="span1"> <span class="label-important">
+                                    <label>Keywords*: </label>
+                                </span> </div>
+                                <div class="span7"> <span class="text-left">
+                                    <textarea name="keyrwords" class="cform-textarea" cols="40" rows="3" placeholder="e.g. shoes, furniture, smartphones" title="Fill in the keywords" required></textarea>
+                                </span> </div>
+                            </div>
+                            <!-- Brands-->
+                            <div class="row">
+                                <div class="span1"> <span class="label-important">
+                                    <label>Brands: </label>
+                                </span> </div>
+                                <div class="span7"> <span class="text-left">
+                                    <textarea name="brands" class="cform-textarea" cols="40" rows="3" placeholder="e.g. IKEA, Nike" title="Choose the brands to search for"></textarea>
+                                </span> </div>
+                                <div class="span4"> <span class="label-info">
+                                    <label>Choose the brands to be included in the query</label>
+                                </span> </div>
+                            </div>
+                            <!-- End: Brands-->
+                            <!-- Twitter Accounts-->
+                            <div class="row">
+                                <div class="span1"> <span class="label-important">
+                                    <label>Twitter accounts: </label>
+                                </span> </div>
+                                <div class="span7"> <span class="text-left">
+                                    <textarea name="twitter" class="cform-textarea" cols="40" rows="3" placeholder="@username" title="Focus on specific Twitter accounts"></textarea>
+                                </span> </div>
+                                <div class="span4"> <span class="label-info">
+                                    <label>Focus on specific Twitter accounts</label>
+                                </span> </div>
+                            </div>
+                            <!-- End: Twitter Accounts-->
+                            <!-- Datapicker-->
+                            <div class="row">
+                                <div class="span2"> <span class="text-right">
+                                    <label>Search from: </label>
+                                </span> </div>
+                                <div class="span3"> <span class="text-left">
+                                    <input id="datepicker_from" type="date" name="your-email" placeholder="Date from"  >
+                                </span> </div>
+
+                                <div class="span1"> <span class="text-right">
+                                    <label>To: </label>
+                                </span> </div>
+
+                                <div class="span3"> <span class="text-center">
+                                    <input id="datepicker_to" type="date" name="your-email" placeholder="Date to" >
+                                </span> </div>
+
+                            </div>
+                            <!-- End: Datapicker-->
+                            <div class="row"><br></div>
+                            <!-- Radiobuttons-->
+                            <div class="row">
+                                <div class="span2"><span class="text-right">
+                                    <label>Type of the query: </label>
+                                </span></div>
+                                <div class="span1"><span class="text-left">
+                                    <input type="radio" name="Query_type" id="and"> AND
+                                </span></div>
+                                <div class="span1"><span class="text-left">
+                                    <input type="radio" name="Query_type" id="or" checked="checked" > OR
+                                </span></div>
+                            </div>
+                            <!-- End:Radiobuttons-->
+
+                            <div class="row"><br></div>
+
+                            <div>
+                                <input type="submit" value="Run" class="cform-submit pull-right ">
+                            </div>
+                            <div class="cform-response-output"></div>
+                        </form>
+                    </div>
+                </div>
+                <!-- ./span12 -->
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container -->
+    </section>
+
 
 {% endblock %}

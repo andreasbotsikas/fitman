@@ -3,7 +3,7 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block menu %}
-    <li><a title="settings" href="#">settings</a></li>
+    <li xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"><a title="settings" href="#">settings</a></li>
     <li><a title="logout" href="#">logout</a></li>
 {%  endblock%}
 
@@ -57,14 +57,15 @@
             /*
             Label the data
             */
-            td:nth-of-type(1):before { content: "Query"; }
-            td:nth-of-type(2):before { content: "Accounts"; }
-            td:nth-of-type(3):before { content: "Keywords"; }
-            td:nth-of-type(4):before { content: "Materials"; }
-            td:nth-of-type(5):before { content: "Companies"; }
-            td:nth-of-type(6):before { content: "From"; }
-            td:nth-of-type(7):before { content: "To"; }
-            td:nth-of-type(8):before { content: "Created"; }
+            td:nth-of-type(1):before { content: "Name"; }
+            td:nth-of-type(2):before { content: "Query"; }
+            td:nth-of-type(3):before { content: "Accounts"; }
+            td:nth-of-type(4):before { content: "Keywords"; }
+            td:nth-of-type(5):before { content: "Materials"; }
+            td:nth-of-type(6):before { content: "Companies"; }
+            td:nth-of-type(7):before { content: "From"; }
+            td:nth-of-type(8):before { content: "To"; }
+            td:nth-of-type(9):before { content: "Created"; }
         }
 
             /* Smartphones (portrait and landscape) ----------- */
@@ -86,18 +87,71 @@
 
     </style>
     <!--<![endif]-->
+    <!--script type="text/javascript" charset="utf-8">
+        var $rows = $('#table tr');
+        $('#search').keyup(function() {
+            var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+
+            $rows.show().filter(function() {
+                var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+                return !~text.indexOf(val);
+            }).hide();
+        });
+    </script-->
+
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+            $('#table').dataTable( {
+                "bJQueryUI": true,
+                "sPaginationType": "full_numbers",
+                "aaData": [
+                    /* Reduced data set */
+                    ["<a href=\"#\">Spanish Sofas</a>", "Sofas Spain", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
+                    ["Yo Sofas", "Sofas Whatever", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
+                    ["Italian Sofas", "Sofas Italy", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
+                    ["Spanish Sofas", "Sofas Spain", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
+                    ["Yo Sofas", "Sofas Whatever", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
+                    ["Italian Sofas", "Sofas Italy", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
+                    ["Spanish Sofas", "Sofas Spain", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
+                    ["Yo Sofas", "Sofas Whatever", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
+                    ["Italian Sofas", "Sofas Italy", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
+                    ["Spanish Sofas", "Sofas Spain", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
+                    ["Yo Sofas", "Sofas Whatever", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
+                    ["Italian Sofas", "Sofas Italy", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"]
+                ],
+                "aoColumns": [
+                    { "sTitle": "Name"},
+                    { "sTitle": "Query"},
+                    { "sTitle": "Accounts"},
+                    { "sTitle": "Keywords"},
+                    { "sTitle": "Materials"},
+                    { "sTitle": "Companies"},
+                    { "sTitle": "From"},
+                    { "sTitle": "To"},
+                    { "sTitle": "Created"}
+                ]
+            } );
+        } );
+    </script>
+
 {% endblock %}
 
 {% block body %}
-    <!--******************** Services Section ********************-->
-    <section id="services" class="single-page scrollblock">
+    <div class="container">
+        <div class="span11">
+            <a href="/create_query" class="btn pull-right">Create new+</a> </div>
+    </div>
+    </div>
+        <!-- Responsive table -->
         <div class="container">
-            <h1>Saved Queries</h1>
             <!-- Four columns -->
+            <h2 class="brand pull-left">Your Queries</h2>
+            <hr width="100%">
             <div class="row">
-                <table class="sortable" border="1" style="width: 100%">
-                    <thead><tr>
-                        <th class="sorttable_sorted_reverse">Query<span id="sorttable_sortrevind">&nbsp;▴</span></th>
+                <table id="table">
+                    <thead class="nav"><!--tr>
+                        <th class="sorttable_sorted_reverse">Name<span id="sorttable_sortrevind">&nbsp;?</span></th>
+                        <th class="">Query</th>
                         <th class="">Accounts</th>
                         <th class="">Keywords</th>
                         <th class="">Materials</th>
@@ -106,10 +160,12 @@
                         <th class="">To</th>
                         <th class="">Created</th>
 
-                    </tr></thead>
+                    </tr-->
+                    </thead>
                     <tbody>
-                        <tr>
-                            <td sorttable_customkey="1">Sofas Spain</td>
+                        <!--tr>
+                            <td sorttable_customkey="1"><a href="">Spanish Sofas</a></td>
+                            <td>Sofas Spain</td>
                             <td>Aidima</td>
                             <td>leather, red</td>
                             <td>metal, leather</td>
@@ -117,24 +173,17 @@
                             <td>22/3/2012</td>
                             <td>01/01/2013</td>
                             <td>3/3/2013</td>
-                        </tr>
-                        <tr>
-                            <td sorttable_customkey="2">Anna</td>
-                            <td>Aidima AidimaTwitter</td>
-                            <td>black, red</td>
-                            <td>wood</td>
-                            <td>AIDIMA, IKEA</td>
-                            <td>12/3/2012</td>
-                            <td>22/01/2013</td>
-                            <td>1/3/2013</td>
-                        </tr>
+                        </tr-->
                     </tbody>
-                <table>
+                    <tfoot></tfoot>
+                </table>
+
+                <!-- /.table-queries -->
             </div>
+
             <!-- /.row -->
         </div>
         <!-- /.container -->
-    </section>
-    <hr>
+
 
 {% endblock %}
