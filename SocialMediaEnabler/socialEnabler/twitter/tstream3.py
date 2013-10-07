@@ -12,10 +12,10 @@ admin_password = "evidev123456"
 bucket = "twitteroriginal"
 
 #Twitter auth stuff
-consumer_key = 'GqoGkLHXt0HtnRTiI3bQQ'
-consumer_secret = 'IGb9DKUu51icAI1HrRAhB1P7Pjotni9z9utENrwPcU'
-access_token_key = "1108878662-B8dlM4ALUMggmhvzmxXMVf4WGKywna7uosPKNUo"
-access_token_secret = "xYVo8LnUoyqfUcK76MjNettKemW7mHXKvzybUx3q2c"
+consumer_key = ''
+consumer_secret = ''
+access_token_key = ""
+access_token_secret = ""
 
 #Define filter terms
 filterTerms = [ "#sofa", "#bed", "white sofa", "#furniture", "#minimaldesign", "#couch", "#chair", "#table", "#desk", "#bookcase", "#fengshui", "furniture", "zen furniture", "feng shui furniture", "kitchen table", "leather sofa", "minimal style","aidima","ikea","homedeco"]
