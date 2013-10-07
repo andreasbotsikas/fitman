@@ -1,0 +1,22 @@
+{
+    "couchbaseDocument": {
+      "properties": {
+        "doc": {
+          "properties": {
+            "text_no_url": {
+                "type": "string",
+                "index": "analyzed",
+                "analyzer": "en_analyzer"
+            },
+            "lang": {
+              "type": "string"
+            },
+            "created_at": {
+              "type": "date",
+              "format": "EE MMM d HH:mm:ss Z yyyy"
+            }
+          }
+        }
+      }
+    }
+  }
