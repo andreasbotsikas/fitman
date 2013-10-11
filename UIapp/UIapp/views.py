@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404, render
 #from models import Vote
 from django.utils import timezone
 from django.contrib.sessions.backends.db import SessionStore
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.core.context_processors import csrf
 from django.shortcuts import get_object_or_404, render
 
@@ -49,6 +49,12 @@ def home(request):
 def analytics(request):
     return render_to_response("analytics.html")
 
+def results(request, query_id):
+    try:
+        query_id=str(query_id)
+    except ValueError:
+        raise Http404()
+    return render_to_response("results.html", {"query_name":query_id})
 
 def test(request):
     return render_to_response("legend-template.html")
