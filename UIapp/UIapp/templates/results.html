@@ -119,7 +119,66 @@
         } );
     </script>
     <!-- flat-tabs -->
-    <link href="/s/css/flat-tabs.css" rel="stylesheet">
+    <!--link href="/s/css/flat-tabs.css" rel="stylesheet"-->
+    <!-- Google Charts-->
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+        google.load("visualization", "1", {packages:["treemap"]});
+        google.setOnLoadCallback(drawChart);
+        function drawChart() {
+            // Create and populate the data table.
+            var data = google.visualization.arrayToDataTable([
+                ['Keyword', 'Parent', 'Number of appearance (size)', 'Sentiment(color)'],
+                ['All',    null,                 0,                               0],
+                ['Brands',   'All',             0,                               0],
+                ['Materials',    'All',             0,                               0],
+                ['Colors',    'All',             0,                               0],
+                ['Category Y',    'All',             0,                               0],
+                ['leather',      'Materials',             5,                               -5],
+                ['cotton',      'Materials',             15,                               +1],
+                ['IKEA', 'Brands',             100,                               +10],
+                ['AIDIMA',    'Brands',             10,                               +50],
+                ['green',    'Colors',             20,                               -10],
+                ['red',    'Colors',             30,                               +30],
+                ['Keyword 3',    'Category Y',             40,                               0],
+                ['Keyword 4',    'Category Y',             50,                               0]
+            ]);
+
+            // Create and draw the visualization.
+            var tree = new google.visualization.TreeMap(document.getElementById('chart_div'));
+            tree.draw(data, {
+                minColor: '#f00',
+                midColor: '#ddd',
+                maxColor: '#0d0',
+                headerHeight: 15,
+                fontColor: 'black',
+                showScale: true});
+        }
+    </script>
+    <!-- piechart-->
+    <script type="text/javascript">
+        google.load("visualization", "1", {packages:["corechart"]});
+        google.setOnLoadCallback(drawChart);
+        function drawChart() {
+            var data = google.visualization.arrayToDataTable([
+                ['Messages', 'Number'],
+                ['Positive',      2],
+                ['Negative',     11],
+                ['Neutral',  2]
+            ]);
+
+            var options = {
+                colors: [ 'green','red','grey'],
+                title: 'Sentiment analysis of the messages',
+                backgroundColor: 'none'
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+            chart.draw(data, options);
+        }
+    </script>
+
+
 {% endblock %}
 
 {% block body %}
@@ -150,11 +209,13 @@
 
         <!-- row: pie for sentiments and blocks for terms-->
         <div class="row">
-
+            <div id="piechart" style="width: 900px; height: 500px;"></div>
+            <div id="chart_div" style="width: 700px; height: 500px;">Google Charts loading</div>
+            <div>*left-click on a category to see keywords, right-click to navigate back</div>
         </div>
         <!-- /. row-->
 
-        
+
     </div>
     <!-- /.container -->
 
