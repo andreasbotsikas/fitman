@@ -5,7 +5,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+    ('Michael', 'mpetyx@epu.ntua.gr'),
 )
 
 ROOT_PATH = os.path.abspath(os.path.dirname(__file__ + '/../../UIapp/'))
@@ -102,7 +102,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
-    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
 ROOT_URLCONF = 'UIapp.urls'
@@ -125,7 +125,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    'django.contrib.admindocs',
+    'django.contrib.admindocs'
 )
 
 # A sample logging configuration. The only tangible logging
