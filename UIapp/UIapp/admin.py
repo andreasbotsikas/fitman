@@ -18,3 +18,13 @@ class QueryAdmin(admin.ModelAdmin):
     pass
 
 admin.site.register(Query, QueryAdmin)
+
+class ResultsAdmin(admin.ModelAdmin):
+    pass
+
+admin.site.register(Results, ResultsAdmin)
+
+class Query_propertiesAdmin (admin.ModelAdmin):
+    pass
+
+admin.site.register(Query_properties, ResultsAdmin)

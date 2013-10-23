@@ -126,7 +126,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
-    'UIapp',
+    'UIapp'
 )
 
 # A sample logging configuration. The only tangible logging
