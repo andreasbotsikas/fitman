@@ -21,7 +21,7 @@ def welcome(request):
         email=request.session.get('email')
         password=request.session.get('password')
         #Check authenticated
-        return HttpResponseRedirect("/dashboard") # Redirect after POST
+        return HttpResponseRedirect("/welcome_train") # Redirect after POST
     else:
         return render(request,"welcome.html")
 
