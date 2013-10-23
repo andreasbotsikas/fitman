@@ -3,153 +3,182 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block menu %}
-    <li xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"><a title="settings" href="#">settings</a></li>
-    <li><a title="logout" href="#">logout</a></li>
+<li xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"><a
+        title="settings" href="#">settings</a></li>
+<li><a title="logout" href="#">logout</a></li>
 {%  endblock%}
 
 
 {% block extra_header %}
 
-    <style>
+<style>
 
-            /*
-            Max width before this PARTICULAR table gets nasty
-            This query will take effect for any screen smaller than 760px
-            and also iPads specifically.
-            */
-        @media
-        only screen and (max-width: 760px),
-        (min-device-width: 768px) and (max-device-width: 1024px)  {
+        /*
+        Max width before this PARTICULAR table gets nasty
+        This query will take effect for any screen smaller than 760px
+        and also iPads specifically.
+        */
+    @media only screen and (max-width: 760px),
+    (min-device-width: 768px) and (max-device-width: 1024px) {
 
-            /* Force table to not be like tables anymore */
-            table, thead, tbody, th, td, tr {
-                display: block;
-            }
-
-            /* Hide table headers (but not display: none;, for accessibility) */
-            thead tr {
-                position: absolute;
-                top: -9999px;
-                left: -9999px;
-            }
-
-            tr { border: 1px solid #ccc; }
-
-            td {
-                /* Behave  like a "row" */
-                border: none;
-                border-bottom: 1px solid #eee;
-                position: relative;
-                padding-left: 50%;
-            }
-
-            td:before {
-                /* Now like a table header */
-                position: absolute;
-                /* Top/left values mimic padding */
-                top: 6px;
-                left: 6px;
-                width: 45%;
-                padding-right: 10px;
-                white-space: nowrap;
-            }
-
-            /*
-            Label the data
-            */
-            td:nth-of-type(1):before { content: "Name"; }
-            td:nth-of-type(2):before { content: "Query"; }
-            td:nth-of-type(3):before { content: "Accounts"; }
-            td:nth-of-type(4):before { content: "Keywords"; }
-            td:nth-of-type(5):before { content: "Materials"; }
-            td:nth-of-type(6):before { content: "Companies"; }
-            td:nth-of-type(7):before { content: "From"; }
-            td:nth-of-type(8):before { content: "To"; }
-            td:nth-of-type(9):before { content: "Created"; }
+        /* Force table to not be like tables anymore */
+        table, thead, tbody, th, td, tr {
+            display: block;
         }
 
-            /* Smartphones (portrait and landscape) ----------- */
-        @media only screen
-        and (min-device-width : 320px)
-        and (max-device-width : 480px) {
-            body {
-                padding: 0;
-                margin: 0;
-                width: 320px; }
+        /* Hide table headers (but not display: none;, for accessibility) */
+        thead tr {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
         }
 
-            /* iPads (portrait and landscape) ----------- */
-        @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
-            body {
-                width: 495px;
-            }
+        tr {
+            border: 1px solid #ccc;
         }
 
-    </style>
-    <!--<![endif]-->
-    <!--script type="text/javascript" charset="utf-8">
-        var $rows = $('#table tr');
-        $('#search').keyup(function() {
-            var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+        td {
+            /* Behave  like a "row" */
+            border: none;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            padding-left: 50%;
+        }
 
-            $rows.show().filter(function() {
-                var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
-                return !~text.indexOf(val);
-            }).hide();
+        td:before {
+            /* Now like a table header */
+            position: absolute;
+            /* Top/left values mimic padding */
+            top: 6px;
+            left: 6px;
+            width: 45%;
+            padding-right: 10px;
+            white-space: nowrap;
+        }
+
+        /*
+        Label the data
+        */
+        td:nth-of-type(1):before {
+            content: "Name";
+        }
+
+        td:nth-of-type(2):before {
+            content: "Query";
+        }
+
+        td:nth-of-type(3):before {
+            content: "Accounts";
+        }
+
+        td:nth-of-type(4):before {
+            content: "Keywords";
+        }
+
+        td:nth-of-type(5):before {
+            content: "Materials";
+        }
+
+        td:nth-of-type(6):before {
+            content: "Companies";
+        }
+
+        td:nth-of-type(7):before {
+            content: "From";
+        }
+
+        td:nth-of-type(8):before {
+            content: "To";
+        }
+
+        td:nth-of-type(9):before {
+            content: "Created";
+        }
+    }
+
+        /* Smartphones (portrait and landscape) ----------- */
+    @media only screen
+    and (min-device-width : 320px)
+    and (max-device-width : 480px) {
+        body {
+            padding: 0;
+            margin: 0;
+            width: 320px;
+        }
+    }
+
+        /* iPads (portrait and landscape) ----------- */
+    @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+        body {
+            width: 495px;
+        }
+    }
+
+</style>
+<!--<![endif]-->
+<!--script type="text/javascript" charset="utf-8">
+    var $rows = $('#table tr');
+    $('#search').keyup(function() {
+        var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+
+        $rows.show().filter(function() {
+            var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+            return !~text.indexOf(val);
+        }).hide();
+    });
+</script-->
+
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function () {
+        $('#table').dataTable({
+            "bJQueryUI": true,
+            "sPaginationType": "full_numbers",
+            "aaData": [
+                /* Reduced data set */
+                ["<a href=\"queries/12\">Spanish Sofas</a>", "Sofas Spain", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
+                ["Yo Sofas", "Sofas Whatever", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
+                ["Italian Sofas", "Sofas Italy", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
+                ["Spanish Sofas", "Sofas Spain", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
+                ["Yo Sofas", "Sofas Whatever", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
+                ["Italian Sofas", "Sofas Italy", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
+                ["Spanish Sofas", "Sofas Spain", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
+                ["Yo Sofas", "Sofas Whatever", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
+                ["Italian Sofas", "Sofas Italy", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
+                ["Spanish Sofas", "Sofas Spain", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
+                ["Yo Sofas", "Sofas Whatever", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
+                ["Italian Sofas", "Sofas Italy", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"]
+            ],
+            "aoColumns": [
+                { "sTitle": "Name"},
+                { "sTitle": "Query"},
+                { "sTitle": "Accounts"},
+                { "sTitle": "Keywords"},
+                { "sTitle": "Materials"},
+                { "sTitle": "Companies"},
+                { "sTitle": "From"},
+                { "sTitle": "To"},
+                { "sTitle": "Created"}
+            ]
         });
-    </script-->
-
-    <script type="text/javascript" charset="utf-8">
-        $(document).ready(function() {
-            $('#table').dataTable( {
-                "bJQueryUI": true,
-                "sPaginationType": "full_numbers",
-                "aaData": [
-                    /* Reduced data set */
-                    ["<a href=\"queries/12\">Spanish Sofas</a>", "Sofas Spain", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
-                    ["Yo Sofas", "Sofas Whatever", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
-                    ["Italian Sofas", "Sofas Italy", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
-                    ["Spanish Sofas", "Sofas Spain", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
-                    ["Yo Sofas", "Sofas Whatever", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
-                    ["Italian Sofas", "Sofas Italy", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
-                    ["Spanish Sofas", "Sofas Spain", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
-                    ["Yo Sofas", "Sofas Whatever", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
-                    ["Italian Sofas", "Sofas Italy", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
-                    ["Spanish Sofas", "Sofas Spain", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
-                    ["Yo Sofas", "Sofas Whatever", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
-                    ["Italian Sofas", "Sofas Italy", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"]
-                ],
-                "aoColumns": [
-                    { "sTitle": "Name"},
-                    { "sTitle": "Query"},
-                    { "sTitle": "Accounts"},
-                    { "sTitle": "Keywords"},
-                    { "sTitle": "Materials"},
-                    { "sTitle": "Companies"},
-                    { "sTitle": "From"},
-                    { "sTitle": "To"},
-                    { "sTitle": "Created"}
-                ]
-            } );
-        } );
-    </script>
+    });
+</script>
 
 {% endblock %}
 
 {% block body %}
-    <div class="container">
-        <div class="span11">
-            <a href="/create_query" class="btn pull-right">Create new+</a> </div>
-    </div>
-    </div>
-        <!-- Responsive table -->
-        <div class="container">
-            <!-- Four columns -->
-            <h2 class="brand pull-left">Your Queries</h2>
-            <hr width="100%">
-            <div class="row">
-                <table id="table">
-                    <thead class="nav"><!--tr>
+<div class="container">
+    <div class="span11">
+        <a href="/create_query" class="btn pull-right">Create new+</a></div>
+</div>
+</div>
+<!-- Responsive table -->
+<div class="container">
+    <!-- Four columns -->
+    <h2 class="brand pull-left">Your Queries</h2>
+    <hr width="100%">
+    <div class="row">
+        <table id="table">
+            <thead class="nav"><!--tr>
                         <th class="sorttable_sorted_reverse">Name<span id="sorttable_sortrevind">&nbsp;?</span></th>
                         <th class="">Query</th>
                         <th class="">Accounts</th>
@@ -161,29 +190,29 @@
                         <th class="">Created</th>
 
                     </tr-->
-                    </thead>
-                    <tbody>
-                        <!--tr>
-                            <td sorttable_customkey="1"><a href="">Spanish Sofas</a></td>
-                            <td>Sofas Spain</td>
-                            <td>Aidima</td>
-                            <td>leather, red</td>
-                            <td>metal, leather</td>
-                            <td>AIDIMA, IKEA</td>
-                            <td>22/3/2012</td>
-                            <td>01/01/2013</td>
-                            <td>3/3/2013</td>
-                        </tr-->
-                    </tbody>
-                    <tfoot></tfoot>
-                </table>
+            </thead>
+            <tbody>
+            <!--tr>
+                <td sorttable_customkey="1"><a href="">Spanish Sofas</a></td>
+                <td>Sofas Spain</td>
+                <td>Aidima</td>
+                <td>leather, red</td>
+                <td>metal, leather</td>
+                <td>AIDIMA, IKEA</td>
+                <td>22/3/2012</td>
+                <td>01/01/2013</td>
+                <td>3/3/2013</td>
+            </tr-->
+            </tbody>
+            <tfoot></tfoot>
+        </table>
 
-                <!-- /.table-queries -->
-            </div>
+        <!-- /.table-queries -->
+    </div>
 
-            <!-- /.row -->
-        </div>
-        <!-- /.container -->
+    <!-- /.row -->
+</div>
+<!-- /.container -->
 
 
 {% endblock %}

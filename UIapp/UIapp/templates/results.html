@@ -3,306 +3,328 @@
 {% block title %}{{ query_name }}{% endblock %}
 
 {% block menu %}
-    <li xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"><a title="settings" href="#">settings</a></li>
-    <li><a title="logout" href="#">logout</a></li>
+<li xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"><a
+        title="settings" href="#">settings</a></li>
+<li><a title="logout" href="#">logout</a></li>
 {%  endblock%}
 
 {% block extra_header %}
 
-    <style>
+<style>
 
-            /*
-            Max width before this PARTICULAR table gets nasty
-            This query will take effect for any screen smaller than 760px
-            and also iPads specifically.
-            */
-        @media
-        only screen and (max-width: 760px),
-        (min-device-width: 768px) and (max-device-width: 1024px)  {
+        /*
+        Max width before this PARTICULAR table gets nasty
+        This query will take effect for any screen smaller than 760px
+        and also iPads specifically.
+        */
+    @media only screen and (max-width: 760px),
+    (min-device-width: 768px) and (max-device-width: 1024px) {
 
-            /* Force table to not be like tables anymore */
-            table, thead, tbody, th, td, tr {
-                display: block;
-            }
-
-            /* Hide table headers (but not display: none;, for accessibility) */
-            thead tr {
-                position: absolute;
-                top: -9999px;
-                left: -9999px;
-            }
-
-            tr { border: 1px solid #ccc; }
-
-            td {
-                /* Behave  like a "row" */
-                border: none;
-                border-bottom: 1px solid #eee;
-                position: relative;
-                padding-left: 50%;
-            }
-
-            td:before {
-                /* Now like a table header */
-                position: absolute;
-                /* Top/left values mimic padding */
-                top: 6px;
-                left: 6px;
-                width: 45%;
-                padding-right: 10px;
-                white-space: nowrap;
-            }
-
-            /*
-            Label the data
-            */
-            td:nth-of-type(1):before { content: "Sentiment"; }
-            td:nth-of-type(2):before { content: "Text"; }
-            td:nth-of-type(3):before { content: "From"; }
-            td:nth-of-type(4):before { content: "Datetime"; }
-            td:nth-of-type(5):before { content: "Keywords"; }
-            td:nth-of-type(6):before { content: "Retweets"; }
+        /* Force table to not be like tables anymore */
+        table, thead, tbody, th, td, tr {
+            display: block;
         }
 
-            /* Smartphones (portrait and landscape) ----------- */
-        @media only screen
-        and (min-device-width : 320px)
-        and (max-device-width : 480px) {
-            body {
-                padding: 0;
-                margin: 0;
-                width: 320px; }
+        /* Hide table headers (but not display: none;, for accessibility) */
+        thead tr {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
         }
 
-            /* iPads (portrait and landscape) ----------- */
-        @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
-            body {
-                width: 495px;
-            }
+        tr {
+            border: 1px solid #ccc;
         }
 
-    </style>
-    <!--<![endif]-->
-    <!--script type="text/javascript" charset="utf-8">
-        var $rows = $('#table tr');
-        $('#search').keyup(function() {
-            var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+        td {
+            /* Behave  like a "row" */
+            border: none;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            padding-left: 50%;
+        }
 
-            $rows.show().filter(function() {
-                var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
-                return !~text.indexOf(val);
-            }).hide();
+        td:before {
+            /* Now like a table header */
+            position: absolute;
+            /* Top/left values mimic padding */
+            top: 6px;
+            left: 6px;
+            width: 45%;
+            padding-right: 10px;
+            white-space: nowrap;
+        }
+
+        /*
+        Label the data
+        */
+        td:nth-of-type(1):before {
+            content: "Sentiment";
+        }
+
+        td:nth-of-type(2):before {
+            content: "Text";
+        }
+
+        td:nth-of-type(3):before {
+            content: "From";
+        }
+
+        td:nth-of-type(4):before {
+            content: "Datetime";
+        }
+
+        td:nth-of-type(5):before {
+            content: "Keywords";
+        }
+
+        td:nth-of-type(6):before {
+            content: "Retweets";
+        }
+    }
+
+        /* Smartphones (portrait and landscape) ----------- */
+    @media only screen
+    and (min-device-width : 320px)
+    and (max-device-width : 480px) {
+        body {
+            padding: 0;
+            margin: 0;
+            width: 320px;
+        }
+    }
+
+        /* iPads (portrait and landscape) ----------- */
+    @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+        body {
+            width: 495px;
+        }
+    }
+
+</style>
+<!--<![endif]-->
+<!--script type="text/javascript" charset="utf-8">
+    var $rows = $('#table tr');
+    $('#search').keyup(function() {
+        var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+
+        $rows.show().filter(function() {
+            var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+            return !~text.indexOf(val);
+        }).hide();
+    });
+</script-->
+
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function () {
+        $('#table').dataTable({
+            "bJQueryUI": true,
+            "sPaginationType": "full_numbers",
+            "aaData": [
+                /* Reduced data set */
+                ["+", "I love my new sofa", "@mpetyx", "22-8-2013 15:50 UTC+1", "sofa, coolfurniture", "15"],
+                ["+", "I want this chair #ikea", "@pkokk", "20-8-2013 10:10 UTC+1", "ikea", "1"],
+                ["o", "Looking for a sofa #ikea #aidima", "@alvertisjo", "05-08-2013 UTC+1", "aidima, ikea", "N/A"],
+                ["-", "No luck to find a bed #ikea", "@flamp", "10-7-2013 09:11 UTC+1", "ikea", "0"]
+            ],
+            "aoColumns": [
+                { "sTitle": "Sentiment"},
+                { "sTitle": "Text"},
+                { "sTitle": "From"},
+                { "sTitle": "Datetime"},
+                { "sTitle": "Keywords"},
+                { "sTitle": "Retweets"}
+            ]
         });
-    </script-->
+    });
+</script>
+<!-- flat-tabs -->
+<!--link href="/s/css/flat-tabs.css" rel="stylesheet"-->
+<!-- Google Charts-->
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+    google.load("visualization", "1", {packages: ["treemap"]});
+    google.setOnLoadCallback(drawChart);
+    function drawChart() {
+        // Create and populate the data table.
+        var data = google.visualization.arrayToDataTable([
+            ['Keyword', 'Parent', 'Number of appearance (size)', 'Sentiment(color)'],
+            ['All', null, 0, 0],
+            ['Brands', 'All', 0, 0],
+            ['Materials', 'All', 0, 0],
+            ['Colors', 'All', 0, 0],
+            ['Category Y', 'All', 0, 0],
+            ['leather', 'Materials', 5, -5],
+            ['cotton', 'Materials', 15, +1],
+            ['IKEA', 'Brands', 100, +10],
+            ['AIDIMA', 'Brands', 10, +50],
+            ['green', 'Colors', 20, -10],
+            ['red', 'Colors', 30, +30],
+            ['Keyword 3', 'Category Y', 40, 0],
+            ['Keyword 4', 'Category Y', 50, 0]
+        ]);
 
-    <script type="text/javascript" charset="utf-8">
-        $(document).ready(function() {
-            $('#table').dataTable( {
-                "bJQueryUI": true,
-                "sPaginationType": "full_numbers",
-                "aaData": [
-                    /* Reduced data set */
-                    ["+", "I love my new sofa", "@mpetyx", "22-8-2013 15:50 UTC+1", "sofa, coolfurniture", "15"],
-                    ["+", "I want this chair #ikea", "@pkokk", "20-8-2013 10:10 UTC+1", "ikea", "1"],
-                    ["o", "Looking for a sofa #ikea #aidima", "@alvertisjo", "05-08-2013 UTC+1", "aidima, ikea", "N/A"],
-                    ["-", "No luck to find a bed #ikea", "@flamp", "10-7-2013 09:11 UTC+1", "ikea", "0"]
-                ],
-                "aoColumns": [
-                    { "sTitle": "Sentiment"},
-                    { "sTitle": "Text"},
-                    { "sTitle": "From"},
-                    { "sTitle": "Datetime"},
-                    { "sTitle": "Keywords"},
-                    { "sTitle": "Retweets"}
-                ]
-            } );
-        } );
-    </script>
-    <!-- flat-tabs -->
-    <!--link href="/s/css/flat-tabs.css" rel="stylesheet"-->
-    <!-- Google Charts-->
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <script type="text/javascript">
-        google.load("visualization", "1", {packages:["treemap"]});
-        google.setOnLoadCallback(drawChart);
-        function drawChart() {
-            // Create and populate the data table.
-            var data = google.visualization.arrayToDataTable([
-                ['Keyword', 'Parent', 'Number of appearance (size)', 'Sentiment(color)'],
-                ['All',    null,                 0,                               0],
-                ['Brands',   'All',             0,                               0],
-                ['Materials',    'All',             0,                               0],
-                ['Colors',    'All',             0,                               0],
-                ['Category Y',    'All',             0,                               0],
-                ['leather',      'Materials',             5,                               -5],
-                ['cotton',      'Materials',             15,                               +1],
-                ['IKEA', 'Brands',             100,                               +10],
-                ['AIDIMA',    'Brands',             10,                               +50],
-                ['green',    'Colors',             20,                               -10],
-                ['red',    'Colors',             30,                               +30],
-                ['Keyword 3',    'Category Y',             40,                               0],
-                ['Keyword 4',    'Category Y',             50,                               0]
-            ]);
+        // Create and draw the visualization.
+        var tree = new google.visualization.TreeMap(document.getElementById('chart_div'));
+        tree.draw(data, {
+            minColor: '#f00',
+            midColor: '#ddd',
+            maxColor: '#0d0',
+            headerHeight: 15,
+            fontColor: 'black',
+            showScale: true});
+    }
+</script>
+<!-- piechart-->
+<script type="text/javascript">
+    google.load("visualization", "1", {packages: ["corechart"]});
+    google.setOnLoadCallback(drawChart);
+    function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+            ['Messages', 'Number'],
+            ['Positive', 2],
+            ['Negative', 11],
+            ['Neutral', 2]
+        ]);
 
-            // Create and draw the visualization.
-            var tree = new google.visualization.TreeMap(document.getElementById('chart_div'));
-            tree.draw(data, {
-                minColor: '#f00',
-                midColor: '#ddd',
-                maxColor: '#0d0',
-                headerHeight: 15,
-                fontColor: 'black',
-                showScale: true});
-        }
-    </script>
-    <!-- piechart-->
-    <script type="text/javascript">
-        google.load("visualization", "1", {packages:["corechart"]});
-        google.setOnLoadCallback(drawChart);
-        function drawChart() {
-            var data = google.visualization.arrayToDataTable([
-                ['Messages', 'Number'],
-                ['Positive',      2],
-                ['Negative',     11],
-                ['Neutral',  2]
-            ]);
+        var options = {
+            colors: [ '#A5DF00', '#FA8258', '#BDBDBD'],
+            title: 'Sentiment analysis of the messages',
+            backgroundColor: 'none'
+        };
 
-            var options = {
-                colors: [ '#A5DF00','#FA8258','#BDBDBD'],
-                title: 'Sentiment analysis of the messages',
-                backgroundColor: 'none'
-            };
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+        chart.draw(data, options);
+    }
+</script>
 
-            var chart = new google.visualization.PieChart(document.getElementById('piechart'));
-            chart.draw(data, options);
-        }
-    </script>
-
-    <script type="text/javascript" src="/s/js/bootstrap.js"></script>
-    <script type="text/javascript">
-        jQuery(document).ready(function ($) {
-            $('#tabs').tab();
-        });
-    </script>
-    </div> <!-- container -->
+<script type="text/javascript" src="/s/js/bootstrap.js"></script>
+<script type="text/javascript">
+    jQuery(document).ready(function ($) {
+        $('#tabs').tab();
+    });
+</script>
+</div> <!-- container -->
 
 {% endblock %}
 
 {% block body %}
-    <!-- Textual Results -->
-    <div class="container">
-        <!-- Four columns -->
-        <h1 class="brand pull-left">Sentiment Analysis</h1>
-        <hr width="100%">
-        <div class="row">
-            <table id="table">
-                <thead class="nav"></thead>
-                <tbody></tbody>
-                <tfoot></tfoot>
-            </table>
+<!-- Textual Results -->
+<div class="container">
+    <!-- Four columns -->
+    <h1 class="brand pull-left">Sentiment Analysis</h1>
+    <hr width="100%">
+    <div class="row">
+        <table id="table">
+            <thead class="nav"></thead>
+            <tbody></tbody>
+            <tfoot></tfoot>
+        </table>
 
-            <!-- /.table-queries -->
-        </div>
-
-        <!-- /.row -->
+        <!-- /.table-queries -->
     </div>
-    <!-- /.container -->
 
-    <!-- Graphs -->
-    <div class="container">
-        <!-- Four columns -->
-        <h1 class="brand pull-left">Graph Analysis</h1>
-        <hr width="100%">
+    <!-- /.row -->
+</div>
+<!-- /.container -->
 
-        <!-- row: pie for sentiments and blocks for terms-->
-        <div class="row">
-            <div id="piechart" style="width: 900px; height: 500px;"></div>
-        </div>
-        <!-- /. row-->
-        <!-- row: treemap for sentiments and blocks for terms-->
-        <div class="row">
-            <div id="chart_div" style="width: 700px; height: 500px;">Google Charts loading</div>
-            <div>*left-click on a category to see keywords, right-click to navigate back</div>
-        </div>
-        <!-- /. row-->
+<!-- Graphs -->
+<div class="container">
+    <!-- Four columns -->
+    <h1 class="brand pull-left">Graph Analysis</h1>
+    <hr width="100%">
+
+    <!-- row: pie for sentiments and blocks for terms-->
+    <div class="row">
+        <div id="piechart" style="width: 900px; height: 500px;"></div>
     </div>
-    <div class="container">
-        <h1 class="brand pull-left">Visual Analysis per Category</h1>
-        <hr width="100%">
-        <!-- row: Tabs for categories-->
-        <!-- MUST MAKE IT DYNAMIC-->
-        <div class="row">
-            <div id="content">
-                <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
-                    <li class="active"><a href="#brands" data-toggle="tab">Brands</a></li>
-                    <li><a href="#materials" data-toggle="tab">Materials</a></li>
-                    <li><a href="#category3" data-toggle="tab">Category 3</a></li>
-                </ul>
-                <div id="my-tab-content" class="tab-content">
-                    <div class="tab-pane active" id="brands">
+    <!-- /. row-->
+    <!-- row: treemap for sentiments and blocks for terms-->
+    <div class="row">
+        <div id="chart_div" style="width: 700px; height: 500px;">Google Charts loading</div>
+        <div>*left-click on a category to see keywords, right-click to navigate back</div>
+    </div>
+    <!-- /. row-->
+</div>
+<div class="container">
+    <h1 class="brand pull-left">Visual Analysis per Category</h1>
+    <hr width="100%">
+    <!-- row: Tabs for categories-->
+    <!-- MUST MAKE IT DYNAMIC-->
+    <div class="row">
+        <div id="content">
+            <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+                <li class="active"><a href="#brands" data-toggle="tab">Brands</a></li>
+                <li><a href="#materials" data-toggle="tab">Materials</a></li>
+                <li><a href="#category3" data-toggle="tab">Category 3</a></li>
+            </ul>
+            <div id="my-tab-content" class="tab-content">
+                <div class="tab-pane active" id="brands">
 
-                        <div id="pie_brands" style="width: 900px; height: 500px;">Google Pie Chart for Category</div>
-                        <script type="text/javascript">
-                            google.load("visualization", "1", {packages:["corechart"]});
-                            google.setOnLoadCallback(drawChart);
-                            function drawChart() {
-                                var data = google.visualization.arrayToDataTable([
-                                    ['Messages', 'Number'],
-                                    ['IKEA',      2],
-                                    ['AIDIMA',     11],
-                                    ['Neoset',  2]
-                                ]);
+                    <div id="pie_brands" style="width: 900px; height: 500px;">Google Pie Chart for Category</div>
+                    <script type="text/javascript">
+                        google.load("visualization", "1", {packages: ["corechart"]});
+                        google.setOnLoadCallback(drawChart);
+                        function drawChart() {
+                            var data = google.visualization.arrayToDataTable([
+                                ['Messages', 'Number'],
+                                ['IKEA', 2],
+                                ['AIDIMA', 11],
+                                ['Neoset', 2]
+                            ]);
 
-                                var options = {
-                                    backgroundColor: 'none'
-                                };
+                            var options = {
+                                backgroundColor: 'none'
+                            };
 
-                                var chart = new google.visualization.PieChart(document.getElementById('pie_brands'));
-                                chart.draw(data, options);
-                            }
-                        </script>
+                            var chart = new google.visualization.PieChart(document.getElementById('pie_brands'));
+                            chart.draw(data, options);
+                        }
+                    </script>
 
-                        <div id="trend_brands" style="width: 900px; height: 500px;">Google Trend line for Category</div>
-                        <script>
-                            google.load("visualization", "1", {packages:["annotatedtimeline"]});
-                            google.setOnLoadCallback(drawTrendLine);
-                            function drawTrendLine() {
-                                var data = new google.visualization.DataTable();
-                                data.addColumn('date', 'Date');
-                                data.addColumn('number', 'AIDIMA');
-                                data.addColumn('string', 'company');
-                                data.addColumn('number', 'NEOSET');
-                                data.addColumn('string', 'company');
-                                data.addColumn('number', 'IKEA');
-                                data.addColumn('string', 'company');
-                                data.addRows([
-                                    [new Date(2008, 1 ,1), 30000, 'AIDIMA', 40645, 'NEOSET', 2000, 'IKEA'],
-                                    [new Date(2008, 1 ,2), 14045, null, 20374, null, 33233, null],
-                                    [new Date(2008, 1 ,3), 55022, null, 50766, null, 21233, null]
-                                ]);
+                    <div id="trend_brands" style="width: 900px; height: 500px;">Google Trend line for Category</div>
+                    <script>
+                        google.load("visualization", "1", {packages: ["annotatedtimeline"]});
+                        google.setOnLoadCallback(drawTrendLine);
+                        function drawTrendLine() {
+                            var data = new google.visualization.DataTable();
+                            data.addColumn('date', 'Date');
+                            data.addColumn('number', 'AIDIMA');
+                            data.addColumn('string', 'company');
+                            data.addColumn('number', 'NEOSET');
+                            data.addColumn('string', 'company');
+                            data.addColumn('number', 'IKEA');
+                            data.addColumn('string', 'company');
+                            data.addRows([
+                                [new Date(2008, 1, 1), 30000, 'AIDIMA', 40645, 'NEOSET', 2000, 'IKEA'],
+                                [new Date(2008, 1, 2), 14045, null, 20374, null, 33233, null],
+                                [new Date(2008, 1, 3), 55022, null, 50766, null, 21233, null]
+                            ]);
 
-                                var annotatedtimeline = new google.visualization.AnnotatedTimeLine(
-                                        document.getElementById('trend_brands'));
-                                annotatedtimeline.draw(data, {'displayAnnotations': true});
-                            }
-                        </script>
+                            var annotatedtimeline = new google.visualization.AnnotatedTimeLine(
+                                    document.getElementById('trend_brands'));
+                            annotatedtimeline.draw(data, {'displayAnnotations': true});
+                        }
+                    </script>
 
-                    </div>
-                    <div class="tab-pane" id="materials">
-                        <h2>Materials</h2>
-                        <p>Graphs for materials</p>
-                    </div>
-                    <div class="tab-pane" id="category3">
-                        <h2>Category 3</h2>
-                        <p>graphs</p>
-                    </div>
+                </div>
+                <div class="tab-pane" id="materials">
+                    <h2>Materials</h2>
+
+                    <p>Graphs for materials</p>
+                </div>
+                <div class="tab-pane" id="category3">
+                    <h2>Category 3</h2>
+
+                    <p>graphs</p>
                 </div>
             </div>
         </div>
-
-        <!-- /. row-->
-
     </div>
-    <!-- /.container -->
+
+    <!-- /. row-->
+
+</div>
+<!-- /.container -->
 
 {% endblock %}
