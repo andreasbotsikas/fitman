@@ -11,7 +11,7 @@ urlpatterns = patterns('',
                        # url(r'^$', 'UIapp.views.home', name='home'),
                        # url(r'^UIapp/', include('UIapp.foo.urls')),
 
-                       url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+                       # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
                        url(r'^admin/', include(admin.site.urls)),
                        url(r'^$', views.welcome, name='welcome'),
                        url(r'^welcome$', views.welcome, name='welcome'),
