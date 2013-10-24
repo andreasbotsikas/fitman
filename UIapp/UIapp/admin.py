@@ -37,3 +37,9 @@ class Query_propertiesAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Query_properties, ResultsAdmin)
+
+class TeamAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(Team, ResultsAdmin)

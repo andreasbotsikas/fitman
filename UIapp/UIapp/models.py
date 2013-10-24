@@ -1,7 +1,31 @@
 __author__ = 'Jo'
 
 from django.db import models
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group,User
+
+#Every user has a team
+class Team(models.Model):
+    name = models.CharField(max_length=255, blank=False, unique=True)
+    created_by = models.ForeignKey(User, blank=False)
+    created = models.DateTimeField(auto_now_add=True)
+    class Admin:
+        pass
+
+    def __unicode__(self):
+        return "%s" % self.name
+
+
+class Project(models.Model):
+    name = models.CharField(max_length=255, blank=False)
+    created_by = models.ForeignKey(User, blank=False)
+    owned_by = models.ForeignKey(Team, blank=False)
+    created = models.DateTimeField(auto_now_add=True)
+    class Admin:
+        pass
+
+    def __unicode__(self):
+        return "%s" % self.name
+
 
 # Accounts, Keywords, Materials, Companies
 class Category(models.Model):
@@ -15,9 +39,9 @@ class Category(models.Model):
 
 # Every Group may create a series of values for the categories
 class Category_value(models.Model):
-    value = models.CharField(max_length=255, blank=True)
-    category = models.ManyToManyField(Category, blank=False)
-    created_by = models.ForeignKey(Group, blank=False)
+    value = models.TextField(max_length=255, blank=True)
+    category = models.ForeignKey(Category, blank=False)
+    owned_by = models.ForeignKey(Project, blank=False)
 
     class Admin:
         pass
@@ -27,17 +51,25 @@ class Category_value(models.Model):
 
 
 class Query(models.Model):
-    name = models.CharField(max_length=255, null=True, blank=True)
+    name = models.TextField(max_length=255, null=True, blank=True)
     venn = models.CharField(max_length=5, default="OR", blank=False, )
     #query = models.TextField(null=True, blank=True)  # JSON query
     from_date = models.DateTimeField()
     to_date = models.DateTimeField()
     created = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, blank=False)
+    owned_by= models.ForeignKey(Project, blank=False)
+    class Admin:
+        pass
+
+    def __unicode__(self):
+        return "%s" % self.name
 
 
 class Query_properties(models.Model):
     query = models.ForeignKey(Query, blank=False)
-    value = models.ManyToManyField(Category_value, blank=False)
+    category = models.ForeignKey(Category, blank=False)
+    properties = models.TextField(max_length=400, null=False, blank=False)
 
 
 class Results(models.Model):
@@ -45,5 +77,6 @@ class Results(models.Model):
     results = models.TextField(null=True, blank=True)  # JSON result
     updated = models.DateTimeField()
     created = models.DateTimeField(auto_now_add=True)
+
 
 

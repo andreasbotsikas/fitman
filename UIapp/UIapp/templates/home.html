@@ -134,30 +134,15 @@
             "bJQueryUI": true,
             "sPaginationType": "full_numbers",
             "aaData": [
-                /* Reduced data set */
-                ["<a href=\"queries/12\">Spanish Sofas</a>", "Sofas Spain", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
-                ["Yo Sofas", "Sofas Whatever", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
-                ["Italian Sofas", "Sofas Italy", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
-                ["Spanish Sofas", "Sofas Spain", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
-                ["Yo Sofas", "Sofas Whatever", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
-                ["Italian Sofas", "Sofas Italy", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
-                ["Spanish Sofas", "Sofas Spain", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
-                ["Yo Sofas", "Sofas Whatever", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
-                ["Italian Sofas", "Sofas Italy", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
-                ["Spanish Sofas", "Sofas Spain", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
-                ["Yo Sofas", "Sofas Whatever", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"],
-                ["Italian Sofas", "Sofas Italy", "@Aidima", "leather, red", "metal,leather", "AIDIMA, IKEA", "22.3.2012", "01.01.2013", "03.03.2013"]
+                {% for query in content %}
+                    ["<a href=\"queries/{{ query.id }}\">{{ query.Name }}</a>", "{{ query.Keywords }}", "{{ query.Created_by }}", "{{ query.From }}", "{{ query.From }}", "{{ query.To }}", "{{ query.Created }}"],
+                {% endfor %}
+
             ],
             "aoColumns": [
-                { "sTitle": "Name"},
-                { "sTitle": "Query"},
-                { "sTitle": "Accounts"},
-                { "sTitle": "Keywords"},
-                { "sTitle": "Materials"},
-                { "sTitle": "Companies"},
-                { "sTitle": "From"},
-                { "sTitle": "To"},
-                { "sTitle": "Created"}
+                {% for header in headers %}
+                    { "sTitle": "{{header}}" },
+                {% endfor %}
             ]
         });
     });
