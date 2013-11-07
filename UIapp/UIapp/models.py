@@ -71,7 +71,7 @@ class Query_properties(models.Model):
     category = models.ForeignKey(Category, blank=False)
     properties = models.TextField(max_length=400, null=False, blank=False)
 
-
+# cash results to improve system performance and require refresh for update
 class Results(models.Model):
     query = models.ForeignKey(Query, blank=False)
     results = models.TextField(null=True, blank=True)  # JSON result

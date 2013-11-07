@@ -135,7 +135,7 @@
             "sPaginationType": "full_numbers",
             "aaData": [
                 {% for query in content %}
-                    ["<a href=\"queries/{{ query.id }}\">{{ query.Name }}</a>", "{{ query.Keywords }}", "{{ query.Created_by }}", "{{ query.From }}", "{{ query.From }}", "{{ query.To }}", "{{ query.Created }}"],
+                    ["<a href=\"queries/{{ query.id }}\">{{ query.Name }}</a>", "{{ query.Keywords }}", "{{ query.Usernames }}","{{ query.Created_by }}", "{{ query.From }}", "{{ query.From }}", "{{ query.To }}", "{{ query.Created }}"],
                 {% endfor %}
 
             ],

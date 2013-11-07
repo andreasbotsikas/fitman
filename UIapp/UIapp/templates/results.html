@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load tz %}
 
 {% block title %}{{ query_name }}{% endblock %}
 
@@ -122,17 +123,30 @@
             "sPaginationType": "full_numbers",
             "aaData": [
                 /* Reduced data set */
-                ["+", "I love my new sofa", "@mpetyx", "22-8-2013 15:50 UTC+1", "sofa, coolfurniture", "15"],
-                ["+", "I want this chair #ikea", "@pkokk", "20-8-2013 10:10 UTC+1", "ikea", "1"],
-                ["o", "Looking for a sofa #ikea #aidima", "@alvertisjo", "05-08-2013 UTC+1", "aidima, ikea", "N/A"],
-                ["-", "No luck to find a bed #ikea", "@flamp", "10-7-2013 09:11 UTC+1", "ikea", "0"]
+                {% for message in response %}
+
+                    {% if message.senti_tag == "positive" %}
+                        ["<select><option value=\"positive\" selected=true >positive</option><option value=\"negative\" >negative</option><option value=\"neutral\" >neutral</option><option value=\"na\" >n/a</option></select>",
+                    {%  elif message.senti_tag == "negative" %}
+                        ["<select><option value=\"positive\"  >positive</option><option value=\"negative\" selected=true >negative</option><option value=\"neutral\" >neutral</option><option value=\"na\" >n/a</option></select>",
+                    {%  elif message.senti_tag == "neutral" %}
+                        ["<select><option value=\"positive\"  >positive</option><option value=\"negative\" >negative</option><option value=\"neutral\" selected=true >neutral</option><option value=\"na\" >n/a</option></select>",
+                    {% else %}
+                        ["<select><option value=\"positive\"  >positive</option><option value=\"negative\" >negative</option><option value=\"neutral\"  >neutral</option><option value=\"na\" selected=true>n/a</option></select>",
+                    {% endif %}
+
+                     "{{ message.text }}", "{{ message.user_screen_name }}", "{{ message.created_at  }}", "{{ message.retweet_count }}"],
+                {% endfor %}
+                //["+", "I love my new sofa", "@mpetyx", "22-8-2013 15:50 UTC+1", "sofa, coolfurniture", "15"],
+                //["+", "I want this chair #ikea", "@pkokk", "20-8-2013 10:10 UTC+1", "ikea", "1"],
+                //["o", "Looking for a sofa #ikea #aidima", "@alvertisjo", "05-08-2013 UTC+1", "aidima, ikea", "N/A"],
+                //["-", "No luck to find a bed #ikea", "@flamp", "10-7-2013 09:11 UTC+1", "ikea", "0"]
             ],
             "aoColumns": [
                 { "sTitle": "Sentiment"},
                 { "sTitle": "Text"},
                 { "sTitle": "From"},
                 { "sTitle": "Datetime"},
-                { "sTitle": "Keywords"},
                 { "sTitle": "Retweets"}
             ]
         });
@@ -182,9 +196,9 @@
     function drawChart() {
         var data = google.visualization.arrayToDataTable([
             ['Messages', 'Number'],
-            ['Positive', 2],
-            ['Negative', 11],
-            ['Neutral', 2]
+            ['Positive', {{ positive }}],
+            ['Negative', {{ negative }}],
+            ['Neutral', {{ neutral }}]
         ]);
 
         var options = {
