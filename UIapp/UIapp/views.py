@@ -5,12 +5,13 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.http import Http404
 from initialiaze_repo import initialize
-from models import Category, Team, Project, Category_value, Query, Query_properties
+from models import Category, Team, Project, Category_value, Query, Query_properties, Results
 from django.contrib.auth.models import Group, User
 import urllib2
 import json
 from django.core import serializers
 from collections import namedtuple
+import datetime
 
 
 def index(request):
@@ -113,28 +114,36 @@ def results(request, query_id):
         #Must store the response, if there is no reponse, otherwise return the stored one.
         # IF NOT STORED
         query = Query.objects.filter(id=query_id)
-        properties = get_query_properties(query)
-        #print properties["Keywords"]
-        #print properties["Usernames"]
-        #must put it into settings
-        req = urllib2.Request('http://83.212.114.237:9200/twitter/_search?pretty=1&size=500')
-        req.add_header('-d',
-                       '{"min_score": 0.5,"query":{"bool":{"must":[{"query_string":{"term":"%s","default_field":"couchbaseDocument.doc.text", "operator" : "and"}}, {"query_string":{"term":"%s","default_field":"_all", "operator" : "and"}}, {"query_string": {"query": "doc.lang:\'en\'", "operator" : "and"}}],"should":[{"terms": {"doc.lang": ["en"]}},{"terms": {"doc.lang": ["es"]}}],"must_not":[]}},"sort":[{ "couchbaseDocument.doc.created_at" : {"order" : "desc"}}],"from":0}' % (
-                           properties["Keywords"], properties["Usernames"]))
+        results = Results.objects.filter(query=query)
+        if results:
+            response = results[0].results
+        else:
+            properties = get_query_properties(query)
+            #print properties["Keywords"]
+            #print properties["Usernames"]
+            #must put it into settings
+            req = urllib2.Request('http://83.212.114.237:9200/twitter/_search?pretty=1&size=500')
+            req.add_header('-d',
+                           '{"min_score": 0.5,"query":{"bool":{"must":[{"query_string":{"term":"%s","default_field":"couchbaseDocument.doc.text", "operator" : "and"}}, {"query_string":{"term":"%s","default_field":"_all", "operator" : "and"}}, {"query_string": {"query": "doc.lang:\'en\'", "operator" : "and"}}],"should":[{"terms": {"doc.lang": ["en"]}},{"terms": {"doc.lang": ["es"]}}],"must_not":[]}},"sort":[{ "couchbaseDocument.doc.created_at" : {"order" : "desc"}}],"from":0}' % (
+                               properties["Keywords"], properties["Usernames"]))
 
-        # req.add_header('-d',
-        #     {"query":{"bool":{"must":[{"query_string":{"default_field":"_all","query":"Furniture"}}],"must_not":[],"should":[]}},"from":0, "sort":[],"facets":{}})
-        resp = urllib2.urlopen(req)
-        response = resp.read()
-        print response
-        #   parse the response for easier handlying on the template
-        # -- Insert messages in the table
+            # req.add_header('-d',
+            #     {"query":{"bool":{"must":[{"query_string":{"default_field":"_all","query":"Furniture"}}],"must_not":[],"should":[]}},"from":0, "sort":[],"facets":{}})
+            resp = urllib2.urlopen(req)
+            response = resp.read()
+            print response
+            #   parse the response for easier handlying on the template
+            # -- Insert messages in the table
 
-        response = json.loads(response)["hits"]["hits"]
-        #print response
+            response = json.loads(response)["hits"]["hits"]
+            print "Got response"
+            newResponse = Results.objects.create(query=query, results=response, updated=datetime.datetime.now())
+            print "Stored object"
+            newResponse.save()
+            #print response
 
         for message in response:
-            if message["_score"]>0.5:
+            if message["_score"] > 0.5:
                 data.append(message["_source"]["doc"])
                 #print "Just Added: %s" %message["_source"]["doc"]
                 try:
@@ -152,15 +161,17 @@ def results(request, query_id):
                     continue
 
     except ValueError:
+        print ValueError.message
         raise Http404()
         #for i in data:
     #    print i
-    return render_to_response("results.html", {"query_name": query_id, "response": data, "positive": positive_counter,
+    return render_to_response("results.html", {"query_name": query.name, "response": data, "positive": positive_counter,
                                                "negative": negative_counter, "neutral": neutral_counter})
 
 
 def test(request):
     return render_to_response("legend-template.html")
+
 
 def search(request):
     return render_to_response("search.html")
