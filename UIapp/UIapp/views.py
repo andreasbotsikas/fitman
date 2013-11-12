@@ -60,7 +60,7 @@ def home(request):
     # queries
     queries = Query.objects.filter(owned_by=current_project.id)
     list_of_queries = []
-    titles = ['Name', 'Keywords', 'Usernames','Created by', 'From', 'To', 'Created']
+    titles = ['Name', 'Keywords', 'Usernames', 'Created by', 'From', 'To', 'Created']
     for query in queries:
         query_response = {}
         query_response['id'] = query.id
@@ -72,8 +72,8 @@ def home(request):
 
         #query_response= "{'id':'%s','Name': '%s'" %(query.id, query.name)
         dynamic_properties = get_query_properties(query)
-        query_response['Keywords'] = dynamic_properties ["Keywords"]
-        query_response['Usernames'] = dynamic_properties ["Usernames"]
+        query_response['Keywords'] = dynamic_properties["Keywords"]
+        query_response['Usernames'] = dynamic_properties["Usernames"]
         #print "The property name is:%s" % query_response['Keywords']
 
         # query_properties = Query_properties.objects.filter(query=query)
@@ -104,6 +104,10 @@ def results(request, query_id):
     :param query_id:
     :return: :raise:
     """
+    data = []
+    positive_counter = 0
+    negative_counter = 0
+    neutral_counter = 0
     try:
         #query_id = str(query_id)
         #Must store the response, if there is no reponse, otherwise return the stored one.
@@ -113,38 +117,53 @@ def results(request, query_id):
         #print properties["Keywords"]
         #print properties["Usernames"]
         #must put it into settings
-        req = urllib2.Request('http://83.212.114.237:9200/twitter/_search?pretty')
+        req = urllib2.Request('http://83.212.114.237:9200/twitter/_search?pretty=1&size=500')
         req.add_header('-d',
-                       '{"size":1000,"facets":{},"query":{"bool":{"must":[{"query_string":{"query":"%s","default_field":"couchbaseDocument.doc.text"}}],"should":[{"query_string":{"query":"%s","default_field":"_all"}}],"must_not":[]}},"sort":[],"from":0}' % (
+                       '{"min_score": 0.5,"query":{"bool":{"must":[{"query_string":{"term":"%s","default_field":"couchbaseDocument.doc.text", "operator" : "and"}}, {"query_string":{"term":"%s","default_field":"_all", "operator" : "and"}}, {"query_string": {"query": "doc.lang:\'en\'", "operator" : "and"}}],"should":[{"terms": {"doc.lang": ["en"]}},{"terms": {"doc.lang": ["es"]}}],"must_not":[]}},"sort":[{ "couchbaseDocument.doc.created_at" : {"order" : "desc"}}],"from":0}' % (
                            properties["Keywords"], properties["Usernames"]))
+
+        # req.add_header('-d',
+        #     {"query":{"bool":{"must":[{"query_string":{"default_field":"_all","query":"Furniture"}}],"must_not":[],"should":[]}},"from":0, "sort":[],"facets":{}})
         resp = urllib2.urlopen(req)
-        response=resp.read()
+        response = resp.read()
+        print response
         #   parse the response for easier handlying on the template
         # -- Insert messages in the table
-        response=json.loads(response)["hits"]["hits"]
-        data=[]
-        positive_counter=0
-        negative_counter=0
-        neutral_counter=0
+
+        response = json.loads(response)["hits"]["hits"]
+        #print response
+
         for message in response:
-            data.append(message["_source"]["doc"])
-            try:
-                if message["_source"]["doc"]["senti_tag"] == "positive":
-                    positive_counter+=1
-                elif message["_source"]["doc"]["senti_tag"] == "negative":
-                    negative_counter+=1
-                elif message["_source"]["doc"]["senti_tag"] == "neutral":
-                    neutral_counter+=1
-            except:
-                print "No sentiment tag for message %s" %message["_source"]["doc"]
+            if message["_score"]>0.5:
+                data.append(message["_source"]["doc"])
+                #print "Just Added: %s" %message["_source"]["doc"]
+                try:
+                    if message["_source"]["doc"]["senti_tag"] == "positive":
+                        positive_counter += 1
+
+                    elif message["_source"]["doc"]["senti_tag"] == "negative":
+                        negative_counter += 1
+
+                    elif message["_source"]["doc"]["senti_tag"] == "neutral":
+                        neutral_counter += 1
+                    print "Found a message with tag: " % message["_source"]["doc"]
+                except:
+                    #print "No sentiment tag for message %s" %message["_source"]["doc"]
+                    continue
 
     except ValueError:
         raise Http404()
-    return render_to_response("results.html", {"query_name": query_id, "response":data, "positive":positive_counter, "negative":negative_counter, "neutral":neutral_counter})
+        #for i in data:
+    #    print i
+    return render_to_response("results.html", {"query_name": query_id, "response": data, "positive": positive_counter,
+                                               "negative": negative_counter, "neutral": neutral_counter})
 
 
 def test(request):
     return render_to_response("legend-template.html")
+
+def search(request):
+    return render_to_response("search.html")
 
 # Get all the properties for a query
 def get_query_properties(query):
@@ -159,9 +178,9 @@ def get_query_properties(query):
         if query_property.category.name == 'Keywords':
             keywords = query_property.properties
         elif query_property.category.name == 'Twitter':
-            usernames = '%s %s' %(usernames,query_property.properties)
+            usernames = '%s %s' % (usernames, query_property.properties)
         elif query_property.category.name == 'Facebook':
-            usernames = '%s %s' %(usernames,query_property.properties)
+            usernames = '%s %s' % (usernames, query_property.properties)
     result = {"Keywords": keywords, "Usernames": usernames}
     #print result
     return result

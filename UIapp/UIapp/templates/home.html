@@ -151,11 +151,20 @@
 {% endblock %}
 
 {% block body %}
+<div class="row">
 <div class="container">
-    <div class="span11">
-        <a href="/create_query" class="btn pull-right">Create new+</a></div>
+    <div class="span1">
+        <a href="/search" class="btn">Free Search</a>
+    </div>
+    <div class="span10"/>
+    <div class="span4">
+        <a href="/create_query" class="btn">Create new query+</a>
+    </div>
+
 </div>
 </div>
+</div>
+<div class="row">
 <!-- Responsive table -->
 <div class="container">
     <!-- Four columns -->
@@ -198,6 +207,6 @@
     <!-- /.row -->
 </div>
 <!-- /.container -->
-
+</div>
 
 {% endblock %}

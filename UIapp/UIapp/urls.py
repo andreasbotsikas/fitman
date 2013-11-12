@@ -24,6 +24,7 @@ urlpatterns = patterns('',
                        url(r'^welcome_account', views.welcome_account, name='welcome_account'),
                        url(r'^welcome_train$', views.welcome_train, name='welcome_train'),
                        url(r'^test', views.test, name='template'),
+                       url(r'^search', views.search, name='search'),
                        (r'^s/(?P<path>.*)$', 'django.views.static.serve',
                         {'document_root': settings.STATIC_DOC_ROOT}),
 )

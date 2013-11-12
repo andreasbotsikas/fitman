@@ -1,7 +1,6 @@
 {% extends "base.html" %}
-{% load tz %}
 
-{% block title %}{{ query_name }}{% endblock %}
+{% block title %}Query {{ query_name }}{% endblock %}
 
 {% block menu %}
 <li xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"><a
@@ -122,32 +121,24 @@
             "bJQueryUI": true,
             "sPaginationType": "full_numbers",
             "aaData": [
-                /* Reduced data set */
+                {% autoescape on %}
                 {% for message in response %}
-
-                    {% if message.senti_tag == "positive" %}
-                        ["<select><option value=\"positive\" selected=true >positive</option><option value=\"negative\" >negative</option><option value=\"neutral\" >neutral</option><option value=\"na\" >n/a</option></select>",
-                    {%  elif message.senti_tag == "negative" %}
-                        ["<select><option value=\"positive\"  >positive</option><option value=\"negative\" selected=true >negative</option><option value=\"neutral\" >neutral</option><option value=\"na\" >n/a</option></select>",
-                    {%  elif message.senti_tag == "neutral" %}
-                        ["<select><option value=\"positive\"  >positive</option><option value=\"negative\" >negative</option><option value=\"neutral\" selected=true >neutral</option><option value=\"na\" >n/a</option></select>",
-                    {% else %}
-                        ["<select><option value=\"positive\"  >positive</option><option value=\"negative\" >negative</option><option value=\"neutral\"  >neutral</option><option value=\"na\" selected=true>n/a</option></select>",
-                    {% endif %}
-
-                     "{{ message.text }}", "{{ message.user_screen_name }}", "{{ message.created_at  }}", "{{ message.retweet_count }}"],
+                    ["{{ message.senti_tag }}","{{ message.text|linebreaksbr }}", "{{ message.user_screen_name }}","{{ message.created_at}}","{{ message.retweet_count }}","{{ message.score }}" ],
+                {% empty %}
+                    ["-","-", "-","-","-"]
                 {% endfor %}
-                //["+", "I love my new sofa", "@mpetyx", "22-8-2013 15:50 UTC+1", "sofa, coolfurniture", "15"],
-                //["+", "I want this chair #ikea", "@pkokk", "20-8-2013 10:10 UTC+1", "ikea", "1"],
-                //["o", "Looking for a sofa #ikea #aidima", "@alvertisjo", "05-08-2013 UTC+1", "aidima, ikea", "N/A"],
-                //["-", "No luck to find a bed #ikea", "@flamp", "10-7-2013 09:11 UTC+1", "ikea", "0"]
+                {% endautoescape %}
             ],
             "aoColumns": [
                 { "sTitle": "Sentiment"},
                 { "sTitle": "Text"},
                 { "sTitle": "From"},
                 { "sTitle": "Datetime"},
-                { "sTitle": "Retweets"}
+                { "sTitle": "Retweets"},
+                { "sTitle": "Relevant"}
+            ],
+            "aoColumnDefs": [
+                { "sWidth": "auto", "aTargets": [ -1 ] }
             ]
         });
     });
