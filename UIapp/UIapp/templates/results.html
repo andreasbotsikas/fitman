@@ -123,9 +123,9 @@
             "aaData": [
                 {% autoescape on %}
                 {% for message in response %}
-                    ["{{ message.senti_tag }}","{{ message.text|linebreaksbr }}", "{{ message.user_screen_name }}","{{ message.created_at}}","{{ message.retweet_count }}","{{ message.score }}" ],
+                    ["{{message.senti_tag}}","{{ message.text|linebreaksbr }}", "{{ message.user_screen_name }}","{{ message.created_at}}","{{ message.retweet_count }}" ],
                 {% empty %}
-                    ["-","-", "-","-","-"]
+                    ["-","-", "-","-"]
                 {% endfor %}
                 {% endautoescape %}
             ],
@@ -134,8 +134,7 @@
                 { "sTitle": "Text"},
                 { "sTitle": "From"},
                 { "sTitle": "Datetime"},
-                { "sTitle": "Retweets"},
-                { "sTitle": "Relevant"}
+                { "sTitle": "Retweets"}
             ],
             "aoColumnDefs": [
                 { "sWidth": "auto", "aTargets": [ -1 ] }
@@ -194,7 +193,7 @@
 
         var options = {
             colors: [ '#A5DF00', '#FA8258', '#BDBDBD'],
-            title: 'Sentiment analysis of the messages',
+            title: '',
             backgroundColor: 'none'
         };
 

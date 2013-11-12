@@ -11,7 +11,7 @@ import urllib2
 import json
 from django.core import serializers
 from collections import namedtuple
-import datetime
+import datetime, time
 
 
 def index(request):
@@ -113,37 +113,44 @@ def results(request, query_id):
         #query_id = str(query_id)
         #Must store the response, if there is no reponse, otherwise return the stored one.
         # IF NOT STORED
-        query = Query.objects.filter(id=query_id)
+        query = Query.objects.get(id=query_id)
         results = Results.objects.filter(query=query)
-        if results:
-            response = results[0].results
-        else:
-            properties = get_query_properties(query)
-            #print properties["Keywords"]
-            #print properties["Usernames"]
-            #must put it into settings
-            req = urllib2.Request('http://83.212.114.237:9200/twitter/_search?pretty=1&size=500')
-            req.add_header('-d',
-                           '{"min_score": 0.5,"query":{"bool":{"must":[{"query_string":{"term":"%s","default_field":"couchbaseDocument.doc.text", "operator" : "and"}}, {"query_string":{"term":"%s","default_field":"_all", "operator" : "and"}}, {"query_string": {"query": "doc.lang:\'en\'", "operator" : "and"}}],"should":[{"terms": {"doc.lang": ["en"]}},{"terms": {"doc.lang": ["es"]}}],"must_not":[]}},"sort":[{ "couchbaseDocument.doc.created_at" : {"order" : "desc"}}],"from":0}' % (
-                               properties["Keywords"], properties["Usernames"]))
+        #run for all categories
+        properties = get_query_properties(query)
+        all_properties=''
+        # Get all properties
+        for property in properties.keys():
+            all_properties += '+(%s) ' % properties[property]
 
-            # req.add_header('-d',
-            #     {"query":{"bool":{"must":[{"query_string":{"default_field":"_all","query":"Furniture"}}],"must_not":[],"should":[]}},"from":0, "sort":[],"facets":{}})
-            resp = urllib2.urlopen(req)
-            response = resp.read()
-            print response
-            #   parse the response for easier handlying on the template
-            # -- Insert messages in the table
-
-            response = json.loads(response)["hits"]["hits"]
-            print "Got response"
-            newResponse = Results.objects.create(query=query, results=response, updated=datetime.datetime.now())
-            print "Stored object"
+        if results: #bring it from the database
+            response = results.__getitem__(0).results
+            response= json.loads(response)
+            #print response
+        else: #make a new query
+            query_all='{"query":{"bool":{"must":[{"query_string":{"query":"%s"}},{"term":{"doc.lang":"en"}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":1000, "sort":["_score"]}' %(all_properties, int(time.mktime(query.from_date.timetuple())*1000), int(time.mktime(query.to_date.timetuple())*1000))
+            response = parse_query_for_sentiments(query_all)
+            #print "Got response: %s " %response
+            newResponse = Results(query=query, results=json.dumps(response), updated=datetime.datetime.now())
+            #print "Stored object"
             newResponse.save()
             #print response
+        categories_counter=[]
+        #count the occurrences in response
+        for property in properties.keys():
+            list=properties[property].split(",")
+            word_counter=[]
+            for word in list:
+                number = json.dumps(response).count(word)
+                text='{"%s":"%s"}'%(word,number)
+                word_counter.append(json.loads(text))
+                print " The property %s in list of properties %s has been found %s times" % (word, property, number)
+            text='{"%s":"%s"}'%(property, word_counter)
+            categories_counter.append(json.loads(text))
+
+        print categories_counter
 
         for message in response:
-            if message["_score"] > 0.5:
+            if message["_score"] > 0.05:
                 data.append(message["_source"]["doc"])
                 #print "Just Added: %s" %message["_source"]["doc"]
                 try:
@@ -155,7 +162,7 @@ def results(request, query_id):
 
                     elif message["_source"]["doc"]["senti_tag"] == "neutral":
                         neutral_counter += 1
-                    print "Found a message with tag: " % message["_source"]["doc"]
+                    #print "Found a message with tag: " % message["_source"]["doc"]
                 except:
                     #print "No sentiment tag for message %s" %message["_source"]["doc"]
                     continue
@@ -168,7 +175,6 @@ def results(request, query_id):
     return render_to_response("results.html", {"query_name": query.name, "response": data, "positive": positive_counter,
                                                "negative": negative_counter, "neutral": neutral_counter})
 
-
 def test(request):
     return render_to_response("legend-template.html")
 
@@ -179,19 +185,27 @@ def search(request):
 # Get all the properties for a query
 def get_query_properties(query):
     query_properties = Query_properties.objects.filter(query=query)
-    usernames = ' '
+    results={}
+    #usernames = ' '
     for query_property in query_properties:
-        #print "The property object is:%s" % query_property.category.name
-        # a Category that must a appear in the table header
-        #if query_property.category.name not in titles:
-        #titles.append("%s" % query_property.category.name)
-        # add the property name & value to the response
-        if query_property.category.name == 'Keywords':
-            keywords = query_property.properties
-        elif query_property.category.name == 'Twitter':
-            usernames = '%s %s' % (usernames, query_property.properties)
-        elif query_property.category.name == 'Facebook':
-            usernames = '%s %s' % (usernames, query_property.properties)
-    result = {"Keywords": keywords, "Usernames": usernames}
+        results[str(query_property.category.name)] = str(query_property.properties)
+        # if query_property.category.name == 'Keywords':
+        #     keywords = query_property.properties
+        # elif query_property.category.name == 'Twitter':
+        #     usernames = '%s %s' % (usernames, query_property.properties)
+        # elif query_property.category.name == 'Facebook':
+        #     usernames = '%s %s' % (usernames, query_property.properties)
+
+    #result = {"Keywords": keywords, "Usernames": usernames}
     #print result
-    return result
+    return results
+
+def parse_query_for_sentiments (query):
+    #query='{"query":{"bool":{"must":[{"query_string":{"query":"+(%s) +(%s)"}},{"term":{"doc.lang":"en"}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":6000, "sort":["_score"]}' %(properties["Keywords"],properties["Usernames"], int(time.mktime(query.from_date.timetuple())*1000), int(time.mktime(query.to_date.timetuple())*1000))
+    response = urllib2.urlopen(
+        'http://83.212.114.237:9200/twitter/_search',
+        query
+    )
+    response = response.read()
+    response = json.loads(response)["hits"]["hits"]
+    return response

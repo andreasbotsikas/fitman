@@ -71,12 +71,18 @@ class Query_properties(models.Model):
     category = models.ForeignKey(Category, blank=False)
     properties = models.TextField(max_length=400, null=False, blank=False)
 
+    def __unicode__(self):
+        return "%s : %s" % (self.query, self.category)
+
 # cash results to improve system performance and require refresh for update
 class Results(models.Model):
     query = models.ForeignKey(Query, blank=False)
     results = models.TextField(null=True, blank=True)  # JSON result
     updated = models.DateTimeField()
     created = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return "%s" % self.query
 
 
 
