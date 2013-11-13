@@ -106,6 +106,7 @@ def results(request, query_id):
     :return: :raise:
     """
     data = []
+    categories_counter = []
     positive_counter = 0
     negative_counter = 0
     neutral_counter = 0
@@ -117,35 +118,41 @@ def results(request, query_id):
         results = Results.objects.filter(query=query)
         #run for all categories
         properties = get_query_properties(query)
-        all_properties=''
+        all_properties = ''
         # Get all properties
         for property in properties.keys():
             all_properties += '+(%s) ' % properties[property]
 
         if results: #bring it from the database
             response = results.__getitem__(0).results
-            response= json.loads(response)
+            response = json.loads(response)
             #print response
         else: #make a new query
-            query_all='{"query":{"bool":{"must":[{"query_string":{"query":"%s"}},{"term":{"doc.lang":"en"}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":1000, "sort":["_score"]}' %(all_properties, int(time.mktime(query.from_date.timetuple())*1000), int(time.mktime(query.to_date.timetuple())*1000))
+            query_all = '{"query":{"bool":{"must":[{"query_string":{"query":"%s"}},{"term":{"doc.lang":"en"}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":1000, "sort":["_score"]}' % (
+                all_properties, int(time.mktime(query.from_date.timetuple()) * 1000),
+                int(time.mktime(query.to_date.timetuple()) * 1000))
             response = parse_query_for_sentiments(query_all)
             #print "Got response: %s " %response
             newResponse = Results(query=query, results=json.dumps(response), updated=datetime.datetime.now())
             #print "Stored object"
             newResponse.save()
             #print response
-        categories_counter=[]
         #count the occurrences in response
         for property in properties.keys():
-            list=properties[property].split(",")
-            word_counter=[]
+            list = properties[property].split(",")
+            word_counter = []
             for word in list:
                 number = json.dumps(response).count(word)
-                text='{"%s":"%s"}'%(word,number)
+                text = '{"name":"%s","times":"%s"}' % (word, number)
                 word_counter.append(json.loads(text))
                 print " The property %s in list of properties %s has been found %s times" % (word, property, number)
-            text='{"%s":"%s"}'%(property, word_counter)
-            categories_counter.append(json.loads(text))
+            text={}
+            text["category"]=property
+            text["properties"]=word_counter
+            #text = '{"category":"%s","properties":"%s"}' % (property, word_counter)
+            categories_counter.append(text)
+            #categories_counter.append(property)
+            #categories_counter.append(word_counter)
 
         print categories_counter
 
@@ -162,7 +169,7 @@ def results(request, query_id):
 
                     elif message["_source"]["doc"]["senti_tag"] == "neutral":
                         neutral_counter += 1
-                    #print "Found a message with tag: " % message["_source"]["doc"]
+                        #print "Found a message with tag: " % message["_source"]["doc"]
                 except:
                     #print "No sentiment tag for message %s" %message["_source"]["doc"]
                     continue
@@ -173,7 +180,9 @@ def results(request, query_id):
         #for i in data:
     #    print i
     return render_to_response("results.html", {"query_name": query.name, "response": data, "positive": positive_counter,
-                                               "negative": negative_counter, "neutral": neutral_counter})
+                                               "negative": negative_counter, "neutral": neutral_counter,
+                                               "categories": categories_counter})
+
 
 def test(request):
     return render_to_response("legend-template.html")
@@ -185,7 +194,7 @@ def search(request):
 # Get all the properties for a query
 def get_query_properties(query):
     query_properties = Query_properties.objects.filter(query=query)
-    results={}
+    results = {}
     #usernames = ' '
     for query_property in query_properties:
         results[str(query_property.category.name)] = str(query_property.properties)
@@ -200,7 +209,8 @@ def get_query_properties(query):
     #print result
     return results
 
-def parse_query_for_sentiments (query):
+
+def parse_query_for_sentiments(query):
     #query='{"query":{"bool":{"must":[{"query_string":{"query":"+(%s) +(%s)"}},{"term":{"doc.lang":"en"}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":6000, "sort":["_score"]}' %(properties["Keywords"],properties["Usernames"], int(time.mktime(query.from_date.timetuple())*1000), int(time.mktime(query.to_date.timetuple())*1000))
     response = urllib2.urlopen(
         'http://83.212.114.237:9200/twitter/_search',
