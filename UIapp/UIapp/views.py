@@ -74,7 +74,7 @@ def home(request):
         #query_response= "{'id':'%s','Name': '%s'" %(query.id, query.name)
         dynamic_properties = get_query_properties(query)
         query_response['Keywords'] = dynamic_properties["Keywords"]
-        query_response['Usernames'] = dynamic_properties["Usernames"]
+        query_response['Usernames'] = dynamic_properties["Twitter"]
         #print "The property name is:%s" % query_response['Keywords']
 
         # query_properties = Query_properties.objects.filter(query=query)
@@ -128,7 +128,7 @@ def results(request, query_id):
             response = json.loads(response)
             #print response
         else: #make a new query
-            query_all = '{"query":{"bool":{"must":[{"query_string":{"query":"%s"}},{"term":{"doc.lang":"en"}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":1000, "sort":["_score"]}' % (
+            query_all = '{"query":{"bool":{"must":[{"query_string":{"query":"%s"}},{"term":{"doc.lang":"en"}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":6000, "sort":["_score"]}' % (
                 all_properties, int(time.mktime(query.from_date.timetuple()) * 1000),
                 int(time.mktime(query.to_date.timetuple()) * 1000))
             response = parse_query_for_sentiments(query_all)
@@ -138,23 +138,22 @@ def results(request, query_id):
             newResponse.save()
             #print response
         #count the occurrences in response
+
         for property in properties.keys():
             list = properties[property].split(",")
             word_counter = []
             for word in list:
                 number = json.dumps(response).count(word)
-                text = '{"name":"%s","times":"%s"}' % (word, number)
+                text = '{"name":"%s","times":"%s", "sentiment":0}' % (word, number)
                 word_counter.append(json.loads(text))
-                print " The property %s in list of properties %s has been found %s times" % (word, property, number)
+                #print " The property %s in list of properties %s has been found %s times" % (word, property, number)
             text={}
             text["category"]=property
             text["properties"]=word_counter
-            #text = '{"category":"%s","properties":"%s"}' % (property, word_counter)
             categories_counter.append(text)
-            #categories_counter.append(property)
-            #categories_counter.append(word_counter)
 
-        print categories_counter
+        #print categories_counter
+
 
         for message in response:
             if message["_score"] > 0.05:
@@ -162,17 +161,38 @@ def results(request, query_id):
                 #print "Just Added: %s" %message["_source"]["doc"]
                 try:
                     if message["_source"]["doc"]["senti_tag"] == "positive":
+                        # for global metrics
                         positive_counter += 1
+                        #print "Found a message with positive tag: %s " % json.dumps(message["_source"]["doc"])
+                        # for mosaic diagram
+                        for category in categories_counter:
+                            for property in category["properties"]:
+                                if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"])>0:
+                                    #print " Message with positive tag: %s : the found property is: %s"%(json.dumps(message["_source"]["doc"]), property["name"])
+                                    pos_number= int(property["sentiment"]) + 1
+                                    property["sentiment"] = pos_number
 
                     elif message["_source"]["doc"]["senti_tag"] == "negative":
                         negative_counter += 1
+                        print "Found a message with negative tag: %s " % json.dumps(message["_source"]["doc"])
+                        # for mosaic diagram
+                        for category in categories_counter:
+                            for property in category:
+                                if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"])>0:
+                                    pos_number= int(property["sentiment"]) - 1
+                                    property["sentiment"] = pos_number
 
                     elif message["_source"]["doc"]["senti_tag"] == "neutral":
                         neutral_counter += 1
-                        #print "Found a message with tag: " % message["_source"]["doc"]
+                        print "Found a message with tag: " % message["_source"]["doc"]
                 except:
                     #print "No sentiment tag for message %s" %message["_source"]["doc"]
                     continue
+
+        print categories_counter
+
+
+
 
     except ValueError:
         print ValueError.message

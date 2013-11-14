@@ -154,18 +154,14 @@
         var data = google.visualization.arrayToDataTable([
             ['Keyword', 'Parent', 'Number of appearance (size)', 'Sentiment(color)'],
             ['All', null, 0, 0],
-            ['Brands', 'All', 0, 0],
-            ['Materials', 'All', 0, 0],
-            ['Colors', 'All', 0, 0],
-            ['Category Y', 'All', 0, 0],
-            ['leather', 'Materials', 5, -5],
-            ['cotton', 'Materials', 15, +1],
-            ['IKEA', 'Brands', 100, +10],
-            ['AIDIMA', 'Brands', 10, +50],
-            ['green', 'Colors', 20, -10],
-            ['red', 'Colors', 30, +30],
-            ['Keyword 3', 'Category Y', 40, 0],
-            ['Keyword 4', 'Category Y', 50, 0]
+    {% for category in categories %}
+            ['{{ category.category }}', 'All', 0, 0],
+        {% for property in category.properties %}
+            ['{{ property.name }}', '{{ category.category }}', {{ property.times }}, {{ property.sentiment}}],
+        {% endfor %}
+    {% endfor %}
+            //['Materials', 'All', 0, 0],
+            //['leather', 'Materials', 5, -5],
         ]);
 
         // Create and draw the visualization.
@@ -238,6 +234,7 @@
 
 <!-- Graphs -->
 <div class="container">
+<br/>
     <!-- row: pie for sentiments and blocks for terms-->
     <div class="row">
         <div class="span5">
