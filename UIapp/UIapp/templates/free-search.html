@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Query {{ query_name }}{% endblock %}
+
+{% block menu %}
+    <li xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"
+        xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"><a
+            title="settings" href="#">settings</a></li>
+    <li><a title="logout" href="#">logout</a></li>
+{%  endblock%}
+
+{% block extra_header %}
+
+{% endblock %}
+
+{% block body %}
+<div style="height: 100%">
+
+    <iframe width=100% height=100% seamless=true src="http://83.212.114.237:9200/_plugin/kibana3/#/dashboard/elasticsearch/sentiexper"></iframe>
+
+</div>
+
+
+{% endblock %}

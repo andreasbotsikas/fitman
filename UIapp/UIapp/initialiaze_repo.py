@@ -36,7 +36,7 @@ def initialize():
         value4.save()
 
         #extend for queries
-        categoryM = Category.objects.create(name="Materials")
+        categoryM = Category.objects.create(name="materials")
         categoryM.save()
         value5 = Category_value.objects.create(value="leather, cotton", category=categoryM, owned_by=project)
         value5.save()

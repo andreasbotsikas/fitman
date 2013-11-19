@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Query {{ query_name }}{% endblock %}
+
+{% block menu %}
+<li xmlns="http://www.w3.org/1999/html"><a
+        title="settings" href="#">settings</a></li>
+<li><a title="logout" href="#">logout</a></li>
+{%  endblock%}
+
+{% block extra_header %}
+
+
+{% endblock %}
+
+{% block body %}
+
+    <!--******************** Contact Section ********************-->
+<section id="portfolio" class="single-page scrollblock" xmlns="http://www.w3.org/1999/html">
+        <div class="container">
+            <h2>Train Anlzer to fit your industry</h2>
+            <hr width="100%">
+            <div class="row">
+                <div class="cform" id="theme-form">
+                <form action="#" method="post" class="cform-form">
+                <div class="row"><br></div>
+                <!-- File Upload-->
+                <div class="row">
+                    <div class="span4"> <span class="label-important alignright">
+                                    <label>File Upload: </label>
+                                </span></div>
+                    <div class="span4 aligncenter"> <span class="text-left">
+                                    <input type="file" required="true">
+                                </span></div>
+                    <div class="span4"> <span class="label-info">
+                                    <label>Upload the .csv file as shown below to train the system</label>
+                                </span></div>
+                </div>
+                <div class="row"><br></div>
+                <!-- Info-->
+                <div class="row">
+                    <div class="span4"> <span class="label-important alignright">
+                                    <label>.csv example: </label>
+                                </span></div>
+                    <div class="span4">
+                        <textarea name="keyrwords" class="cform-textarea" cols="50" rows="5"
+                                  placeholder="" title="csv. example" disabled="true">I feel wonderful in Disneyland, positive
+I feel sick on the roller coaster :(, negative
+Waiting for hours in the queue, negative
+Yahoo!! This is Disneyland!!, positive
+                        </textarea>
+                   </div>
+                </div>
+                <div class="aligncenter">
+                        <input type="submit" value="Upload" class="cform-submit pull-right">
+                </div>
+            </form>
+            </div>
+            </div>
+        </div>
+        <!-- /.container -->
+
+</section>
+
+{% endblock %}

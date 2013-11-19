@@ -9,10 +9,10 @@ from models import Category, Team, Project, Category_value, Query, Query_propert
 from django.contrib.auth.models import Group, User
 import urllib2
 import json
-from django.core import serializers
-from collections import namedtuple
 import datetime, time
-
+from django.utils import timezone
+from django.core.context_processors import csrf
+from dateutil import parser
 
 def index(request):
     return render_to_response("index.html")
@@ -46,7 +46,60 @@ def welcome_categories(request):
 
 
 def create_query(request):
-    return render_to_response("create_query.html")
+    if request.method == 'POST': # If the form has been submitted...
+        ##Do not allow users to vote before a timeperiod has passed.
+        #if request.session.get('has_voted', False):
+        #        return HttpResponse("Wow, your mood changes fast! Try again in 30 seconds.")
+        #request.session['has_voted'] = True
+        #request.session.set_expiry(30) #60 secs
+        user = User.objects.get(username="test1")
+        print "user %s"%user
+        #team = Team.objects.filter(name="AIDIMA-team")
+        project = Project.objects.get(created_by=user)
+        print "project %s"%project
+        query_name= request.POST.get("query_name","")
+        print "name: %s"%query_name
+
+        from_date= request.POST.get("datepicker_from","")
+        to_date= request.POST.get("datepicker_to","")
+        print "from date: %s" %from_date
+        print "to date: %s" %to_date
+
+
+        query=Query(name=query_name,venn="", from_date = parser.parse(from_date), to_date=parser.parse(to_date),created=timezone.now(), created_by=user, owned_by=project)
+        query.save()
+        #print "query %s"%query
+        keywords=request.POST.get("keywords", "")
+        #print "keywords: %s"%keywords
+        category=Category.objects.get(name="Keywords")
+        query_property=Query_properties(query=query,category=category,properties=keywords)
+        query_property.save()
+
+        keywords=request.POST.get("twitter", "")
+        #print "keywords: %s"%keywords
+        category=Category.objects.get(name="Twitter")
+        query_property=Query_properties(query=query,category=category,properties=keywords)
+        query_property.save()
+
+        #print "query_property %s"%query_property
+
+        twitter=request.POST.get("twitter", "")
+        #print "twitter %s"%twitter
+
+        brands=request.POST.get("brands", "")
+        #print "brands %s"%brands
+        #host=request.META['REMOTE_ADDR']
+        #agent=request.META['HTTP_USER_AGENT']
+
+        #form = ContactForm(request.POST) # A form bound to the POST data
+        #if form.is_valid(): # All validation rules pass
+            # Process the data in form.cleaned_data
+            # ...
+        return HttpResponseRedirect("/dashboard") # Redirect after POST
+    else:
+        return render(request,'create_query.html')
+        #return render_to_response("create_query.html")
+
 
 
 def home(request):
@@ -209,7 +262,10 @@ def test(request):
 
 
 def search(request):
-    return render_to_response("search.html")
+    return render_to_response("free-search.html")
+
+def train(request):
+    return render_to_response("training.html")
 
 # Get all the properties for a query
 def get_query_properties(query):

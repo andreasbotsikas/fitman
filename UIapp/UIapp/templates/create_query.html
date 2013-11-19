@@ -7,14 +7,14 @@
 {%  endblock%}
 
 {% block extra_header %}
-<!--link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 <script>
     $(function() {
         $( "#datepicker_from").datepicker();
         $( "#datepicker_to" ).datepicker();
     });
-</script-->
+</script>
 {% endblock %}
 
 {% block body %}
@@ -28,15 +28,27 @@
             <div class="span12">
                 <div class="cform" id="theme-form">
                     <form action="#" method="post" class="cform-form">
+                        {% csrf_token %}
+                        <!-- query name-->
+                        <div class="row">
+                            <div class="span1"> <span class="label-important">
+                                    <label>Name*: </label>
+                                </span></div>
+                            <div class="span7"> <span class="text-left">
+                                    <textarea id="query_name" name="query_name" class="cform-textarea" cols="40" rows="1"
+                                              placeholder="e.g. My new query for products"
+                                              title="Give a name to the querr" required="true"></textarea>
+                                </span></div>
+                        </div>
                         <!-- keywords-->
                         <div class="row">
                             <div class="span1"> <span class="label-important">
                                     <label>Keywords*: </label>
                                 </span></div>
                             <div class="span7"> <span class="text-left">
-                                    <textarea name="keyrwords" class="cform-textarea" cols="40" rows="3"
+                                    <textarea id="keywords" name="keywords" class="cform-textarea" cols="40" rows="3"
                                               placeholder="e.g. shoes, furniture, smartphones"
-                                              title="Fill in the keywords" required></textarea>
+                                              title="Fill in the keywords" required="true"></textarea>
                                 </span></div>
                         </div>
                         <!-- Brands-->
@@ -45,7 +57,7 @@
                                     <label>Brands: </label>
                                 </span></div>
                             <div class="span7"> <span class="text-left">
-                                    <textarea name="brands" class="cform-textarea" cols="40" rows="3"
+                                    <textarea id="brands" name="brands" class="cform-textarea" cols="40" rows="3"
                                               placeholder="e.g. IKEA, Nike"
                                               title="Choose the brands to search for"></textarea>
                                 </span></div>
@@ -60,7 +72,7 @@
                                     <label>Twitter accounts: </label>
                                 </span></div>
                             <div class="span7"> <span class="text-left">
-                                    <textarea name="twitter" class="cform-textarea" cols="40" rows="3"
+                                    <textarea id="twitter" name="twitter" class="cform-textarea" cols="40" rows="3"
                                               placeholder="@username"
                                               title="Focus on specific Twitter accounts"></textarea>
                                 </span></div>
@@ -69,13 +81,14 @@
                                 </span></div>
                         </div>
                         <!-- End: Twitter Accounts-->
+
                         <!-- Datapicker-->
                         <div class="row">
                             <div class="span2"> <span class="text-right">
                                     <label>Search from: </label>
                                 </span></div>
                             <div class="span3"> <span class="text-left">
-                                    <input id="datepicker_from" type="date" name="your-email" placeholder="Date from">
+                                    <input id="datepicker_from" type="date" name="datepicker_from" placeholder="Date from">
                                 </span></div>
 
                             <div class="span1"> <span class="text-right">
@@ -83,14 +96,15 @@
                                 </span></div>
 
                             <div class="span3"> <span class="text-center">
-                                    <input id="datepicker_to" type="date" name="your-email" placeholder="Date to">
+                                    <input id="datepicker_to" type="date" name="datepicker_to" placeholder="Date to">
                                 </span></div>
 
                         </div>
                         <!-- End: Datapicker-->
+
                         <div class="row"><br></div>
                         <!-- Radiobuttons-->
-                        <div class="row">
+                        <!--div class="row">
                             <div class="span2"><span class="text-right">
                                     <label>Type of the query: </label>
                                 </span></div>
@@ -100,8 +114,21 @@
                             <div class="span1"><span class="text-left">
                                     <input type="radio" name="Query_type" id="or" checked="checked"> OR
                                 </span></div>
-                        </div>
+                        </div-->
                         <!-- End:Radiobuttons-->
+
+                        <!-- Add new row-->
+                        <div id="new-rows"></div>
+
+                        <div class="row">
+                            <div class="span1"></div>
+                            <div class="span7">
+                                <a class="bar-info">Add properties</a>
+                            </div>
+
+                        </div>
+                        <!-- End add new row -->
+
 
                         <div class="row"><br></div>
 

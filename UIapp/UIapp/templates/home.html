@@ -3,9 +3,10 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block menu %}
-<li xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"><a
-        title="settings" href="#">settings</a></li>
-<li><a title="logout" href="#">logout</a></li>
+<li xmlns="http://www.w3.org/1999/html"><a title="search" href="/search">Free Search</a></li>
+<li xmlns="http://www.w3.org/1999/html"><a title="training" href="/train">Training</a></li>
+<li xmlns="http://www.w3.org/1999/html"><a title="ettings" href="#">Settings</a></li>
+<li><a title="logout" href="#">Logout</a></li>
 {%  endblock%}
 
 
@@ -152,16 +153,11 @@
 
 {% block body %}
 <div class="row">
-<div class="container">
-    <div class="span1">
-        <a href="/search" class="btn">Free Search</a>
+    <div class="container">
+        <div class="span12">
+            <a href="/create_query" class="btn btn-alt pull-right">Create new query+</a>
+        </div>
     </div>
-    <div class="span10"/>
-    <div class="span4">
-        <a href="/create_query" class="btn">Create new query+</a>
-    </div>
-
-</div>
 </div>
 </div>
 <div class="row">

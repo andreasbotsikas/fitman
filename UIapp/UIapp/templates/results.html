@@ -3,8 +3,7 @@
 {% block title %}Query {{ query_name }}{% endblock %}
 
 {% block menu %}
-<li xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"
-    xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"><a
+<li xmlns="http://www.w3.org/1999/html"><a
         title="settings" href="#">settings</a></li>
 <li><a title="logout" href="#">logout</a></li>
 {%  endblock%}
@@ -213,6 +212,29 @@
 
 {% block body %}
 
+    <div class="container">
+
+                <a data-toggle="modal" href="#myModal" class="btn btn-primary pull-right">Delete query</a>
+
+            <!--div id="myModal" class="modal hide fade in" style="display: none; ">
+                <div class="modal-header">
+                    <a class="close" data-dismiss="modal">×</a>
+                    <h3>This is a Modal Heading</h3>
+                </div>
+                <div class="modal-body">
+                    <h4>Text in a modal</h4>
+                    <p>You can add some text here.</p>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-success">Call to action</a>
+                    <a href="#" class="btn" data-dismiss="modal">Close</a>
+                </div>
+            </div-->
+
+    </div>
+
+
+
 <!-- Textual Results -->
 <div class="container">
     <!-- Four columns -->
@@ -331,7 +353,5 @@
 
 </div>
 <!-- /.container -->
-
-
 
 {% endblock %}
