@@ -165,8 +165,8 @@ def results(request, query_id):
     neutral_counter = 0
     try:
         #query_id = str(query_id)
-        #Must store the response, if there is no reponse, otherwise return the stored one.
-        # IF NOT STORED
+        ## Must store the response, if there is no reponse, otherwise return the stored one.
+        ## IF NOT STORED
         query = Query.objects.get(id=query_id)
         results = Results.objects.filter(query=query)
         #run for all categories
@@ -179,7 +179,7 @@ def results(request, query_id):
         if results: #bring it from the database
             response = results.__getitem__(0).results
             response = json.loads(response)
-            #print response
+            print response
         else: #make a new query
             query_all = '{"query":{"bool":{"must":[{"query_string":{"query":"%s"}},{"term":{"doc.lang":"en"}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":6000, "sort":["_score"]}' % (
                 all_properties, int(time.mktime(query.from_date.timetuple()) * 1000),
@@ -189,8 +189,9 @@ def results(request, query_id):
             newResponse = Results(query=query, results=json.dumps(response), updated=datetime.datetime.now())
             #print "Stored object"
             newResponse.save()
-            #print response
-        #count the occurrences in response
+            print response
+
+        ## count the occurrences in response
 
         for property in properties.keys():
             list = properties[property].split(",")
@@ -242,7 +243,7 @@ def results(request, query_id):
                     #print "No sentiment tag for message %s" %message["_source"]["doc"]
                     continue
 
-        print categories_counter
+        #print categories_counter
 
 
 
@@ -252,9 +253,29 @@ def results(request, query_id):
         raise Http404()
         #for i in data:
     #    print i
-    return render_to_response("results.html", {"query_name": query.name, "response": data, "positive": positive_counter,
+
+    return render(request,"results.html", {"query_id":query.id, "query_name": query.name, "response": data, "positive": positive_counter,
                                                "negative": negative_counter, "neutral": neutral_counter,
                                                "categories": categories_counter})
+
+
+def results_update(request):
+    if request.method != 'POST': # If the form has been submitted...
+        raise Http404('Only POST methods allowed')
+    update_bulk= request.POST.get("retrain","")
+    ##send the bulk to the db service
+
+    ##delete cashing from results, to get the updated ones from "results" methods
+    results_id= request.POST.get("results-id","")
+    query = Query.objects.get(id=results_id)
+    results = Results.objects.get(query=query)
+    if results:
+        results.delete()
+
+    ## redirect to the proper page again
+    path= "/queries/%s" % results_id
+    return HttpResponseRedirect(path) # Redirect after update to the page
+
 
 
 def test(request):

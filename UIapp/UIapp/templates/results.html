@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Query {{ query_name }}{% endblock %}
+{% block title %}Query: {{ query_name }}{% endblock %}
 
 {% block menu %}
 <li xmlns="http://www.w3.org/1999/html"><a
@@ -123,7 +123,15 @@
             "aaData": [
                 {% autoescape on %}
                 {% for message in response %}
-                    ["{{message.senti_tag}}","{{ message.text|linebreaksbr }}", "{{ message.user_screen_name }}","{{ message.created_at}}" ],
+                    {% if message.senti_tag == "positive" %}
+                        ["<select class=\"train\" name=\"{{ message.id }}\"><option value=\"positive\" selected=true>positive</option><option value=\"negative\">negative</option><option value=\"na\">n/a</option></select>","{{ message.text|linebreaksbr }}", "{{ message.user_screen_name }}","{{ message.created_at}}"],
+                    {%  elif message.senti_tag == "negative" %}
+                        ["<select class=\"train\" name=\"{{ message.id }}\"><option value=\"positive\"  >positive</option><option value=\"negative\" selected=true >negative</option><option value=\"na\" >n/a</option></select>","{{ message.text|linebreaksbr }}", "{{ message.user_screen_name }}","{{ message.created_at}}"],
+                    {%  elif message.senti_tag == "neutral" %}
+                        ["<select class=\"train\" name=\"{{ message.id }}\"><option value=\"positive\"  >positive</option><option value=\"negative\" >negative</option><option value=\"neutral\" selected=true >neutral</option><option value=\"na\" >n/a</option></select>","{{ message.text|linebreaksbr }}", "{{ message.user_screen_name }}","{{ message.created_at}}"],
+                    {% else %}
+                        ["<select class=\"train\" name=\"{{ message.id }}\"><option value=\"positive\">positive</option><option value=\"negative\" >negative</option><option value=\"na\" selected=true>n/a</option></select>","{{ message.text|linebreaksbr }}", "{{ message.user_screen_name }}","{{ message.created_at}}"],
+                    {% endif %}
                 {% empty %}
                     ["-","-", "-","-"]
                 {% endfor %}
@@ -206,7 +214,20 @@
         $('#tabs').tab();
     });
 </script>
-</div> <!-- container -->
+
+
+<script type="text/javascript" charset="utf-8">
+    $( document ).ready(function() {
+        console.log( "ready!" );
+
+        $('select').on('change', function() {
+            console.log ( this.name + " : "+this.value ); // or $(this).val()
+            $('#retrain').val($('#retrain').val() + this.name + " , "+this.value + " \n ");
+            $()
+        });
+    });
+</script>
+
 
 {% endblock %}
 
@@ -233,8 +254,6 @@
 
     </div>
 
-
-
 <!-- Textual Results -->
 <div class="container">
     <!-- Four columns -->
@@ -246,6 +265,20 @@
             <tbody></tbody>
             <tfoot></tfoot>
         </table>
+
+        <!-- the retrain form goes here-->
+
+        <div class="span12">
+            <div class="cform" id="theme-form">
+                <form action="/results-update" method="post" class="cform-form">
+                    {% csrf_token %}
+                    <input id="results-id" type="hidden" name="results-id" value="{{ query_id }}">
+                    <input id="retrain" type="hidden" name="retrain">
+                    <input id="update" type="submit" value="Save changes" class="cform-submit pull-right">
+                </form>
+            </div>
+        </div>
+
 
         <!-- /.table-queries -->
     </div>
