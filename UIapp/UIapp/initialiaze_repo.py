@@ -16,6 +16,8 @@ def initialize():
         categoryT.save()
         categoryF = Category.objects.create(name="Facebook")
         categoryF.save()
+        categoryF = Category.objects.create(name="brands")
+        categoryF.save()
         categoryR = Category.objects.create(name="RSS")
         categoryR.save()
 

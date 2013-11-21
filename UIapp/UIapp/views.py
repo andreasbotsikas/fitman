@@ -75,26 +75,68 @@ def create_query(request):
         query_property=Query_properties(query=query,category=category,properties=keywords)
         query_property.save()
 
-        keywords=request.POST.get("twitter", "")
+        twitter=request.POST.get("twitter", "")
         #print "keywords: %s"%keywords
         category=Category.objects.get(name="Twitter")
-        query_property=Query_properties(query=query,category=category,properties=keywords)
+        query_property=Query_properties(query=query,category=category,properties=twitter)
         query_property.save()
 
-        #print "query_property %s"%query_property
-
-        twitter=request.POST.get("twitter", "")
-        #print "twitter %s"%twitter
-
         brands=request.POST.get("brands", "")
-        #print "brands %s"%brands
-        #host=request.META['REMOTE_ADDR']
-        #agent=request.META['HTTP_USER_AGENT']
+        try:
+            category=Category.objects.filter(name="brands")
+        except ValueError:
+            print ValueError.message
+        if category.__len__(): #exists already the category
+            #print category
+            category=category[0]
+        ## otherwise create the category
+        else:
+            print "is empty"
+            category=Category(name="brands")
+            category.save()
+        query_property=Query_properties(query=query,category=category,properties=twitter)
+        query_property.save()
 
         #form = ContactForm(request.POST) # A form bound to the POST data
         #if form.is_valid(): # All validation rules pass
             # Process the data in form.cleaned_data
             # ...
+
+        ##handle dynamic properties
+        i=0;
+        prop_value="prop-value-%s" %i
+        prop_name="prop-name-%s" %i
+        while request.POST.get(prop_value, ""):
+            property_name=request.POST.get(prop_name, "")
+            property_value=request.POST.get(prop_value, "")
+            print property_name
+            print property_value
+            try:
+                ## try to find if the category already exists - in lowercase
+                category= Category.objects.filter(name=(str(property_name).lower()))
+            except ValueError:
+                print ValueError.message
+                continue
+
+            print category
+            if category.__len__(): #exists already the category
+                print category
+                category=category[0]
+            ## otherwise create the category
+            else:
+                print "is empty"
+                category=Category(name=str(property_name).lower())
+                category.save()
+            ## end store the properties in the category
+            query_property=Query_properties(query=query,category=category,properties=property_value)
+            query_property.save()
+
+            i+=1
+            prop_value="prop-value-%s" %i
+            prop_name="prop-name-%s" %i
+
+
+
         return HttpResponseRedirect("/dashboard") # Redirect after POST
     else:
         return render(request,'create_query.html')
@@ -244,9 +286,6 @@ def results(request, query_id):
                     continue
 
         #print categories_counter
-
-
-
 
     except ValueError:
         print ValueError.message

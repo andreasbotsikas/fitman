@@ -218,12 +218,11 @@
 
 <script type="text/javascript" charset="utf-8">
     $( document ).ready(function() {
-        console.log( "ready!" );
+        //console.log( "ready!" );
 
         $('select').on('change', function() {
-            console.log ( this.name + " : "+this.value ); // or $(this).val()
+            //console.log ( this.name + " : "+this.value ); // or $(this).val()
             $('#retrain').val($('#retrain').val() + this.name + " , "+this.value + " \n ");
-            $()
         });
     });
 </script>
