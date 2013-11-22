@@ -3,9 +3,9 @@
 {% block title %}Query: {{ query_name }}{% endblock %}
 
 {% block menu %}
-<li xmlns="http://www.w3.org/1999/html"><a
+<li xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"><a
         title="settings" href="#">settings</a></li>
-<li><a title="logout" href="#">logout</a></li>
+<li><a title="logout" href="/logout">logout</a></li>
 {%  endblock%}
 
 {% block extra_header %}
@@ -164,7 +164,7 @@
     {% for category in categories %}
             ['{{ category.category }}', 'All', 0, 0],
         {% for property in category.properties %}
-            ['{{ property.name }}', '{{ category.category }}', {{ property.times }}, {{ property.sentiment}}],
+            ['{{ category.category }}:{{ property.name }}', '{{ category.category }}', {{ property.times }}, {{ property.sentiment}}],
         {% endfor %}
     {% endfor %}
             //['Materials', 'All', 0, 0],
@@ -222,7 +222,7 @@
 
         $('select').on('change', function() {
             //console.log ( this.name + " : "+this.value ); // or $(this).val()
-            $('#retrain').val($('#retrain').val() + this.name + " , "+this.value + " \n ");
+            $('#retrain').val($('#retrain').val() + this.name + ":"+this.value + ", \n ");
         });
     });
 </script>
@@ -233,24 +233,7 @@
 {% block body %}
 
     <div class="container">
-
-                <a data-toggle="modal" href="#myModal" class="btn btn-primary pull-right">Delete query</a>
-
-            <!--div id="myModal" class="modal hide fade in" style="display: none; ">
-                <div class="modal-header">
-                    <a class="close" data-dismiss="modal">×</a>
-                    <h3>This is a Modal Heading</h3>
-                </div>
-                <div class="modal-body">
-                    <h4>Text in a modal</h4>
-                    <p>You can add some text here.</p>
-                </div>
-                <div class="modal-footer">
-                    <a href="#" class="btn btn-success">Call to action</a>
-                    <a href="#" class="btn" data-dismiss="modal">Close</a>
-                </div>
-            </div-->
-
+         <a data-toggle="modal" href="/query/delete/{{ query_id }}" class="btn btn-primary pull-right"><i class="fa fa-trash-o"></i> Delete</a>
     </div>
 
 <!-- Textual Results -->
@@ -273,7 +256,7 @@
                     {% csrf_token %}
                     <input id="results-id" type="hidden" name="results-id" value="{{ query_id }}">
                     <input id="retrain" type="hidden" name="retrain">
-                    <input id="update" type="submit" value="Save changes" class="cform-submit pull-right">
+                    <input id="update" type="submit" value='Save' class="cform-submit pull-right">
                 </form>
             </div>
         </div>
@@ -291,14 +274,15 @@
 <br/>
     <!-- row: pie for sentiments and blocks for terms-->
     <div class="row">
-        <div class="span5">
-        <div id="piechart" style="width: auto; height: 500px;"></div>
-        </div>
+
     <!-- /. row-->
     <!-- row: treemap for sentiments and blocks for terms-->
         <div class="span7">
             <div id="chart_div" style="width: auto; height: 500px;">Google Charts loading</div>
             <div>*left-click on a category to see keywords, right-click to navigate back</div>
+        </div>
+        <div class="span5">
+            <div id="piechart" style="width: auto; height: 500px;"></div>
         </div>
      </div>
     <!-- /. row-->

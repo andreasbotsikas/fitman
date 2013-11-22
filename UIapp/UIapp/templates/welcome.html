@@ -25,22 +25,38 @@
             <div class="row">
                 <div class="span12">
                     <div class="cform" id="theme-form">
-                        <form action="" method="post" class="cform-form">
+                        <form action="/welcome" method="post" class="cform-form">
                             {% csrf_token %}
                             <div class="row">
-                                <div class="aligncenter">
-                                    <input type="email" name="email" placeholder="Email" class="cform-text" size="40"
-                                           title="Email">
+                                <div class="span4">
+
+
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="aligncenter">
-                                    <input type="password" name="password" placeholder="Password" class="cform-text"
-                                           size="40" title="company">
+                                <div class="span3">
+                                    <div class="aligncenter">
+                                        <input type="email" name="email" placeholder="Email" class="cform-text" size="40"
+                                               title="Email">
+                                    </div>
+                                    <div class="aligncenter">
+                                        <input type="password" name="password" placeholder="Password" class="cform-text"
+                                               size="40" title="company">
+                                    </div>
+                                    <div class="aligncenter">
+                                        <a class="" href="#">Forgot password?</a>
+                                    </div>
                                 </div>
-                                <div class="aligncenter">
-                                    <button value="Login" class="btn">Login</button>
+                                <div class="span2">
+                                    <div class="alignleft">
+                                        <input type="submit" name="login" value="login">
+                                        <!--button value="Login" class="btn">Login</button-->
+                                                <div class="aligncenter">
+                                                    <label class="checkbox"><input type="checkbox"><span>Remember me</span></label>
+                                                </div>
+                                    </div>
                                 </div>
+                                <div class="span3"></div>
+
+
                             </div>
 
                             <div class="cform-response-output"></div>

@@ -13,15 +13,43 @@ import datetime, time
 from django.utils import timezone
 from django.core.context_processors import csrf
 from dateutil import parser
+from django.contrib.auth import authenticate, logout
 
 def index(request):
     return render_to_response("index.html")
 
+def logout_view(request):
+    logout(request)
+    # Redirect to a success page.
+    return HttpResponseRedirect("/welcome")
 
 def welcome(request):
+    if request.user.is_authenticated():
+        # Do something for authenticated users.
+        return HttpResponseRedirect("/dashboard") # Redirect after POST
+    else:
+        # Do something for anonymous users.
+        print ('not autenticated')
+
     if request.method == 'POST': # If the form has been submitted...
-        email = request.session.get('email')
-        password = request.session.get('password')
+        #email = request.session.get('email')
+        #password = request.session.get('password')
+        email=request.POST.get("email","")
+        password=request.POST.get("password","")
+        user = authenticate(username=email, password=password)
+        if user is not None:
+            # the password verified for the user
+            if user.is_active:
+                print("User is valid, active and authenticated")
+                #set user on session property to read it from results
+            else:
+                print("The password is valid, but the account has been disabled!")
+                return HttpResponseRedirect("/") # Redirect after POST
+        else:
+            # the authentication system was unable to verify the username and password
+            print("The username or password were incorrect.")
+            return HttpResponseRedirect("/") # Redirect after POST
+
         #Check authenticated
         #If  ok
         return HttpResponseRedirect("/dashboard") # Redirect after POST
@@ -195,7 +223,6 @@ def results(request, query_id):
     #if authorized
     #MUST DEVELOP
     """
-
     :param request:
     :param query_id:
     :return: :raise:
@@ -304,18 +331,22 @@ def results_update(request):
     update_bulk= request.POST.get("retrain","")
     ##send the bulk to the db service
 
+
+
     ##delete cashing from results, to get the updated ones from "results" methods
     results_id= request.POST.get("results-id","")
     query = Query.objects.get(id=results_id)
     results = Results.objects.get(query=query)
     if results:
         results.delete()
-
     ## redirect to the proper page again
     path= "/queries/%s" % results_id
     return HttpResponseRedirect(path) # Redirect after update to the page
 
-
+def results_delete(request, query_id):
+    query = Query.objects.get(id=query_id)
+    query.delete()
+    return HttpResponseRedirect("/dashboard") # Redirect after update to the page
 
 def test(request):
     return render_to_response("legend-template.html")
