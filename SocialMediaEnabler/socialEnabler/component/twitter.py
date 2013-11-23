@@ -85,7 +85,9 @@ class StreamListener(tweepy.StreamListener):
             user_name = json_tweet["user"]["name"]
             user_name = 'twitter:' + user_name
             json_to_keep["user_name"]= user_name
-            json_to_keep["user_screen_name"]=json_tweet["user"]["screen_name"]
+            user_screen_name = json_tweet["user"]["screen_name"]
+            user_screen_name = 'twitter:'+user_screen_name
+            json_to_keep["user_screen_name"]=user_screen_name
             json_to_keep["senti_tag"] = "neutral"
             cbucket.set(data_md5,json_to_keep)
             
