@@ -89,7 +89,7 @@ class StreamListener(tweepy.StreamListener):
             json_to_keep["senti_tag"] = "neutral"
             cbucket.set(data_md5,json_to_keep)
             
-             if json_tweet["lang"]:
+            if json_tweet["lang"]:
                 language = json_tweet["lang"]
                 if language == 'en':
                     result_file = open("./files/%s"%data_md5,"w")
