@@ -14,6 +14,7 @@ from django.utils import timezone
 from django.core.context_processors import csrf
 from dateutil import parser
 from django.contrib.auth import authenticate, logout
+from django import forms
 
 def index(request):
     return render_to_response("index.html")
@@ -356,7 +357,34 @@ def search(request):
     return render_to_response("free-search.html")
 
 def train(request):
-    return render_to_response("training.html")
+    if request.method == 'POST': # If the form has been submitted...
+        #must handle .csv
+        csv=request.FILES.get("file","")
+        #csv=request.FILES['file']
+        file = request.FILES['file']
+        print file
+        #print file.content_type
+        if file.content_type == 'text/csv':
+            #response = urllib2.urlopen('http://83.212.114.237:9200/twitter/_search',file)
+            req = urllib2.Request('http://83.212.114.237:8081/RA/public_process/sentimentTrain')
+            req.add_header('-T',file)
+            resp = urllib2.urlopen(req)
+            response = resp.read()
+            #print response
+            return HttpResponseRedirect("/dashboard") # Redirect after POST
+
+        #print file.read()
+        #print file.name           # Gives name
+        #print file.content_type   # Gives Content type text/html etc
+        #print file.size           # Gives file's size in byte
+        #print file.read()         # Reads file
+        #print csv
+        else:
+            print "not valid file"
+            return HttpResponseRedirect("/training") #
+
+    else:
+        return render(request,'training.html')
 
 # Get all the properties for a query
 def get_query_properties(query):

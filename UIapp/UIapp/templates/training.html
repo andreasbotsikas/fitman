@@ -22,39 +22,40 @@
             <hr width="100%">
             <div class="row">
                 <div class="cform" id="theme-form">
-                <form action="#" method="post" class="cform-form">
-                <div class="row"><br></div>
-                <!-- File Upload-->
-                <div class="row">
-                    <div class="span4"> <span class="label-important alignright">
-                                    <label>File Upload: </label>
-                                </span></div>
-                    <div class="span4 aligncenter"> <span class="text-left">
-                                    <input type="file" required="true">
-                                </span></div>
-                    <div class="span4"> <span class="label-info">
-                                    <label>Upload the .csv file as shown below to train the system</label>
-                                </span></div>
-                </div>
-                <div class="row"><br></div>
+                <form action="/train" method="post" class="cform-form" enctype="multipart/form-data">
+                    {% csrf_token %}
+                     <div class="row"><br></div>
+                     <!-- File Upload-->
+                    <div class="row">
+                        <div class="span4"> <span class="label-important alignright">
+                                        <label>File Upload: </label>
+                                    </span></div>
+                        <div class="span4 aligncenter"> <span class="text-left">
+                                        <input type="file" required name="file">
+                                    </span></div>
+                        <div class="span4"> <span class="label-info">
+                                        <label>Upload the .csv file as shown below to train the system</label>
+                                    </span></div>
+                    </div>
+                    <div class="row"><br></div>
                 <!-- Info-->
-                <div class="row">
-                    <div class="span4"> <span class="label-important alignright">
-                                    <label>.csv example: </label>
-                                </span></div>
-                    <div class="span4">
-                        <textarea name="keyrwords" class="cform-textarea" cols="50" rows="5"
-                                  placeholder="" title="csv. example" disabled="true">I feel wonderful in Disneyland, positive
+                    <div class="row">
+                        <div class="span4"> <span class="label-important alignright">
+                                        <label>.csv example: </label>
+                                    </span></div>
+                        <div class="span4">
+                            <textarea name="keyrwords" class="cform-textarea" cols="50" rows="5"
+                                      placeholder="" title="csv. example" disabled="true">I feel wonderful in Disneyland, positive
 I feel sick on the roller coaster :(, negative
 Waiting for hours in the queue, negative
 Yahoo!! This is Disneyland!!, positive
-                        </textarea>
-                   </div>
-                </div>
-                <div class="aligncenter">
+                            </textarea>
+                        </div>
+                    </div>
+                    <div class="aligncenter">
                         <input type="submit" value="Upload" class="cform-submit pull-right">
-                </div>
-            </form>
+                    </div>
+                </form>
             </div>
             </div>
         </div>
