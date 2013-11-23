@@ -1,28 +1,35 @@
 __author__ = 'Jo'
 
-from django.shortcuts import render_to_response
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
-from django.http import Http404
-from initialiaze_repo import initialize
-from models import Category, Team, Project, Category_value, Query, Query_properties, Results
-from django.contrib.auth.models import Group, User
 import urllib2
 import json
-import datetime, time
+import datetime
+import time
+
+from django.shortcuts import render_to_response
+from django.http import HttpResponseRedirect, HttpResponse
+from django.shortcuts import render
+from django.http import Http404
+from django.contrib.auth.models import Group, User
 from django.utils import timezone
 from django.core.context_processors import csrf
 from dateutil import parser
 from django.contrib.auth import authenticate, logout
 from django import forms
 
+from initialiaze_repo import initialize
+from models import Category, Team, Project, Category_value, Query, Query_properties, Results
+from updateSentimentKeys import multiple_values_update
+
+
 def index(request):
     return render_to_response("index.html")
+
 
 def logout_view(request):
     logout(request)
     # Redirect to a success page.
     return HttpResponseRedirect("/welcome")
+
 
 def welcome(request):
     if request.user.is_authenticated():
@@ -35,8 +42,8 @@ def welcome(request):
     if request.method == 'POST': # If the form has been submitted...
         #email = request.session.get('email')
         #password = request.session.get('password')
-        email=request.POST.get("email","")
-        password=request.POST.get("password","")
+        email = request.POST.get("email", "")
+        password = request.POST.get("password", "")
         user = authenticate(username=email, password=password)
         if user is not None:
             # the password verified for the user
@@ -82,67 +89,67 @@ def create_query(request):
         #request.session['has_voted'] = True
         #request.session.set_expiry(30) #60 secs
         user = User.objects.get(username="test1")
-        print "user %s"%user
+        print "user %s" % user
         #team = Team.objects.filter(name="AIDIMA-team")
         project = Project.objects.get(created_by=user)
-        print "project %s"%project
-        query_name= request.POST.get("query_name","")
-        print "name: %s"%query_name
+        print "project %s" % project
+        query_name = request.POST.get("query_name", "")
+        print "name: %s" % query_name
 
-        from_date= request.POST.get("datepicker_from","")
-        to_date= request.POST.get("datepicker_to","")
-        print "from date: %s" %from_date
-        print "to date: %s" %to_date
+        from_date = request.POST.get("datepicker_from", "")
+        to_date = request.POST.get("datepicker_to", "")
+        print "from date: %s" % from_date
+        print "to date: %s" % to_date
 
-
-        query=Query(name=query_name,venn="", from_date = parser.parse(from_date), to_date=parser.parse(to_date),created=timezone.now(), created_by=user, owned_by=project)
+        query = Query(name=query_name, venn="", from_date=parser.parse(from_date), to_date=parser.parse(to_date),
+                      created=timezone.now(), created_by=user, owned_by=project)
         query.save()
         #print "query %s"%query
-        keywords=request.POST.get("keywords", "")
+        keywords = request.POST.get("keywords", "")
         #print "keywords: %s"%keywords
-        category=Category.objects.get(name="Keywords")
-        query_property=Query_properties(query=query,category=category,properties=keywords)
+        category = Category.objects.get(name="Keywords")
+        query_property = Query_properties(query=query, category=category, properties=keywords)
         query_property.save()
 
-        twitter=request.POST.get("twitter", "")
+        twitter = request.POST.get("twitter", "")
         #print "keywords: %s"%keywords
-        category=Category.objects.get(name="Twitter")
-        query_property=Query_properties(query=query,category=category,properties=twitter)
+        category = Category.objects.get(name="Twitter")
+        query_property = Query_properties(query=query, category=category, properties=twitter)
         query_property.save()
 
-        brands=request.POST.get("brands", "")
+        brands = request.POST.get("brands", "")
         try:
-            category=Category.objects.filter(name="brands")
+            category = Category.objects.filter(name="brands")
         except ValueError:
             print ValueError.message
         if category.__len__(): #exists already the category
             #print category
-            category=category[0]
+            category = category[0]
         ## otherwise create the category
         else:
             print "is empty"
-            category=Category(name="brands")
+            category = Category(name="brands")
             category.save()
-        query_property=Query_properties(query=query,category=category,properties=twitter)
+        query_property = Query_properties(query=query, category=category, properties=twitter)
         query_property.save()
 
         #form = ContactForm(request.POST) # A form bound to the POST data
         #if form.is_valid(): # All validation rules pass
-            # Process the data in form.cleaned_data
-            # ...
+        # Process the data in form.cleaned_data
+        # ...
 
         ##handle dynamic properties
-        i=0;
-        prop_value="prop-value-%s" %i
-        prop_name="prop-name-%s" %i
+        i = 0;
+        prop_value = "prop-value-%s" % i
+        prop_name = "prop-name-%s" % i
         while request.POST.get(prop_value, ""):
-            property_name=request.POST.get(prop_name, "")
-            property_value=request.POST.get(prop_value, "")
+            property_name = request.POST.get(prop_name, "")
+            property_value = request.POST.get(prop_value, "")
             print property_name
             print property_value
             try:
                 ## try to find if the category already exists - in lowercase
-                category= Category.objects.filter(name=(str(property_name).lower()))
+                category = Category.objects.filter(name=(str(property_name).lower()))
             except ValueError:
                 print ValueError.message
                 continue
@@ -150,27 +157,24 @@ def create_query(request):
             print category
             if category.__len__(): #exists already the category
                 print category
-                category=category[0]
+                category = category[0]
             ## otherwise create the category
             else:
                 print "is empty"
-                category=Category(name=str(property_name).lower())
+                category = Category(name=str(property_name).lower())
                 category.save()
-            ## end store the properties in the category
-            query_property=Query_properties(query=query,category=category,properties=property_value)
+                ## end store the properties in the category
+            query_property = Query_properties(query=query, category=category, properties=property_value)
             query_property.save()
 
-            i+=1
-            prop_value="prop-value-%s" %i
-            prop_name="prop-name-%s" %i
-
-
+            i += 1
+            prop_value = "prop-value-%s" % i
+            prop_name = "prop-name-%s" % i
 
         return HttpResponseRedirect("/dashboard") # Redirect after POST
     else:
-        return render(request,'create_query.html')
+        return render(request, 'create_query.html')
         #return render_to_response("create_query.html")
-
 
 
 def home(request):
@@ -271,9 +275,9 @@ def results(request, query_id):
                 text = '{"name":"%s","times":"%s", "sentiment":0}' % (word, number)
                 word_counter.append(json.loads(text))
                 #print " The property %s in list of properties %s has been found %s times" % (word, property, number)
-            text={}
-            text["category"]=property
-            text["properties"]=word_counter
+            text = {}
+            text["category"] = property
+            text["properties"] = word_counter
             categories_counter.append(text)
 
         #print categories_counter
@@ -291,9 +295,9 @@ def results(request, query_id):
                         # for mosaic diagram
                         for category in categories_counter:
                             for property in category["properties"]:
-                                if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"])>0:
+                                if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
                                     #print " Message with positive tag: %s : the found property is: %s"%(json.dumps(message["_source"]["doc"]), property["name"])
-                                    pos_number= int(property["sentiment"]) + 1
+                                    pos_number = int(property["sentiment"]) + 1
                                     property["sentiment"] = pos_number
 
                     elif message["_source"]["doc"]["senti_tag"] == "negative":
@@ -302,8 +306,8 @@ def results(request, query_id):
                         # for mosaic diagram
                         for category in categories_counter:
                             for property in category:
-                                if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"])>0:
-                                    pos_number= int(property["sentiment"]) - 1
+                                if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
+                                    pos_number = int(property["sentiment"]) - 1
                                     property["sentiment"] = pos_number
 
                     elif message["_source"]["doc"]["senti_tag"] == "neutral":
@@ -313,7 +317,7 @@ def results(request, query_id):
                     #print "No sentiment tag for message %s" %message["_source"]["doc"]
                     continue
 
-        #print categories_counter
+                    #print categories_counter
 
     except ValueError:
         print ValueError.message
@@ -321,33 +325,36 @@ def results(request, query_id):
         #for i in data:
     #    print i
 
-    return render(request,"results.html", {"query_id":query.id, "query_name": query.name, "response": data, "positive": positive_counter,
-                                               "negative": negative_counter, "neutral": neutral_counter,
-                                               "categories": categories_counter})
+    return render(request, "results.html",
+                  {"query_id": query.id, "query_name": query.name, "response": data, "positive": positive_counter,
+                   "negative": negative_counter, "neutral": neutral_counter,
+                   "categories": categories_counter})
 
 
 def results_update(request):
     if request.method != 'POST': # If the form has been submitted...
         raise Http404('Only POST methods allowed')
-    update_bulk= request.POST.get("retrain","")
+    update_bulk = request.POST.get("retrain", "")
     ##send the bulk to the db service
 
 
 
     ##delete cashing from results, to get the updated ones from "results" methods
-    results_id= request.POST.get("results-id","")
+    results_id = request.POST.get("results-id", "")
     query = Query.objects.get(id=results_id)
     results = Results.objects.get(query=query)
     if results:
         results.delete()
-    ## redirect to the proper page again
-    path= "/queries/%s" % results_id
+        ## redirect to the proper page again
+    path = "/queries/%s" % results_id
     return HttpResponseRedirect(path) # Redirect after update to the page
+
 
 def results_delete(request, query_id):
     query = Query.objects.get(id=query_id)
     query.delete()
     return HttpResponseRedirect("/dashboard") # Redirect after update to the page
+
 
 def test(request):
     return render_to_response("legend-template.html")
@@ -355,6 +362,7 @@ def test(request):
 
 def search(request):
     return render_to_response("free-search.html")
+
 
 def train(request):
     if request.method == 'POST': # If the form has been submitted...
@@ -414,3 +422,43 @@ def parse_query_for_sentiments(query):
     response = response.read()
     response = json.loads(response)["hits"]["hits"]
     return response
+
+
+def user_based_sentiment(request):
+    if request.method == 'GET':
+
+        #http://localhost:8000/user_based_sentiment?sentiment_values='395902357026131968:positive,%20395901656044670976:positive,%20396550264318328832:negative,%20395902917976522752:negative,%20395902917976522752:na,'
+        sentiment_values = request.GET.get("sentiment_values", "")
+
+        if sentiment_values:
+
+            sentiment_values = sentiment_values.replace(" ", "")
+
+            sentiment_values = sentiment_values.split(",")
+
+            if '' in sentiment_values:
+                sentiment_values.remove('')
+            lista = []
+
+            for value in sentiment_values:
+                res = value.split(":")
+                if "'" in res:
+                    continue
+                i = 0
+                found = False
+                while i<len(lista):
+                    if res[0] is lista[i]['key']:
+                        lista[i]['value'] = res[1]
+                        found = True
+                    i = i + 1
+                if found is False:
+                    lista.append({'key': res[0], 'value': res[1]})
+            result = multiple_values_update(lista)
+
+            return HttpResponse(status=200, mimetype='application/json')
+        else:
+            return HttpResponse(status=204, mimetype='application/json')
+
+    else:
+        return HttpResponse(status=405)
+
