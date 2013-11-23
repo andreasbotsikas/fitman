@@ -93,7 +93,7 @@ class StreamListener(tweepy.StreamListener):
             # result_file.write(data_md5)
             # result_file.write("\n")
             # print text_no_url
-            result_file.write(str(text_no_url.encode('ascii')) )
+            result_file.write(str(text_no_url.encode('utf-8')) )
             result_file.close()
 
 l = StreamListener()
