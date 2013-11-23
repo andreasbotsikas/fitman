@@ -6,6 +6,8 @@ import hashlib
 import re
 from couchbase import Couchbase
 from tweepy.utils import import_simplejson
+import time
+from threading import Thread
 
 #stuff needed for url replacement - note:could also use entities from twitter json
 urls = '(?: %s)' % '|'.join("""http https telnet gopher file wais
@@ -49,7 +51,7 @@ admin_username = "dev"
 admin_password = "123456dev"
 bucket = "default"
 
-#Twitter auth stuff
+#Facebook auth stuff
 consumer_key = 'GqoGkLHXt0HtnRTiI3bQQ'
 consumer_secret = 'IGb9DKUu51icAI1HrRAhB1P7Pjotni9z9utENrwPcU'
 access_token_key = "1108878662-B8dlM4ALUMggmhvzmxXMVf4WGKywna7uosPKNUo"
@@ -60,9 +62,9 @@ filterTerms = [ "#sofa", "#bed", "white sofa", "#furniture", "#minimaldesign", "
 
 json = import_simplejson()
 
-cbucket = Couchbase.connect(host=server,port=port,bucket=bucket)
-auth1 = tweepy.OAuthHandler(consumer_key, consumer_secret)
-auth1.set_access_token(access_token_key, access_token_secret)
+# cbucket = Couchbase.connect(host=server,port=port,bucket=bucket)
+# auth1 = tweepy.OAuthHandler(consumer_key, consumer_secret)
+# auth1.set_access_token(access_token_key, access_token_secret)
 
 class StreamListener(tweepy.StreamListener):
     json = import_simplejson()
@@ -96,6 +98,15 @@ class StreamListener(tweepy.StreamListener):
             result_file.write(str(text_no_url.encode('ascii')) )
             result_file.close()
 
-l = StreamListener()
-streamer = tweepy.Stream(auth=auth1, listener=l, timeout=3000)
-streamer.filter(track = filterTerms)
+# l = StreamListener()
+# streamer = tweepy.Stream(auth=auth1, listener=l, timeout=3000)
+# streamer.filter(track = filterTerms)
+
+
+def fbThread():
+    print "doing something"
+
+while True:
+    t = Thread(target=fbThread, args=())
+    time.sleep(5)
+    t.start()
