@@ -88,13 +88,17 @@ class StreamListener(tweepy.StreamListener):
             json_to_keep["user_screen_name"]=json_tweet["user"]["screen_name"]
             json_to_keep["senti_tag"] = "neutral"
             cbucket.set(data_md5,json_to_keep)
+            
+             if json_tweet["lang"]:
+                language = json_tweet["lang"]
+                if language == 'en':
+                    result_file = open("./files/%s"%data_md5,"w")
+                    # result_file.write(data_md5)
+                    # result_file.write("\n")
+                    # print text_no_url
+                    result_file.write(str(text_no_url.encode('utf-8')) )
+                    result_file.close()
 
-            result_file = open("./files/%s"%data_md5,"w")
-            # result_file.write(data_md5)
-            # result_file.write("\n")
-            # print text_no_url
-            result_file.write(str(text_no_url.encode('utf-8')) )
-            result_file.close()
 
 l = StreamListener()
 streamer = tweepy.Stream(auth=auth1, listener=l, timeout=3000)
