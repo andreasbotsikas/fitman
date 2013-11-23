@@ -9,6 +9,22 @@ from tweepy.utils import import_simplejson
 import time
 from threading import Thread
 
+from facepy import GraphAPI
+
+#Define Database connection creds
+server = "localhost"
+port = 8091
+admin_username = "dev"
+admin_password = "123456dev"
+bucket = "default"
+cbucket = Couchbase.connect(host=server,port=port,bucket=bucket)
+
+#Define filter terms
+# filterTerms = [ "#sofa", "#bed", "white sofa", "#furniture", "#minimaldesign", "#couch", "#chair", "#table", "#desk", "#bookcase", "#fengshui", "furniture", "zen furniture", "feng shui furniture", "kitchen table", "leather sofa", "minimal style","aidima","ikea","homedeco","@designmilk","@decorandceramic","@molostudio","@apparatu"]
+
+
+
+
 #stuff needed for url replacement - note:could also use entities from twitter json
 urls = '(?: %s)' % '|'.join("""http https telnet gopher file wais
 ftp""".split())
@@ -44,69 +60,39 @@ def replace_url(text):
     withoutURL = url_re.sub('_URL',text)
     return withoutURL
 
-#Define Database connection creds
-server = "localhost"
-port = 8091
-admin_username = "dev"
-admin_password = "123456dev"
-bucket = "default"
 
-#Facebook auth stuff
-consumer_key = 'GqoGkLHXt0HtnRTiI3bQQ'
-consumer_secret = 'IGb9DKUu51icAI1HrRAhB1P7Pjotni9z9utENrwPcU'
-access_token_key = "1108878662-B8dlM4ALUMggmhvzmxXMVf4WGKywna7uosPKNUo"
-access_token_secret = "xYVo8LnUoyqfUcK76MjNettKemW7mHXKvzybUx3q2c"
+access_token = "CAACEdEose0cBAMbkxbLoZCL86bpYPA4t2Mnrd2rOlIMI0mqZBaYlgNydtGZBS2kU47bwr6KYz7qmVjKdZCABns5Pe5y2AZANfqi82LmZCF909YrfaMEmFnrZCyMX5xvrOrRQZCSQSnyBXG5ZCSfrUE60ceI7lTtqKRPxyLAeOHUeFDVkIdR4QB3QK0hMBfYYALCoZD"
+graph = GraphAPI(access_token)
 
-#Define filter terms
-filterTerms = [ "#sofa", "#bed", "white sofa", "#furniture", "#minimaldesign", "#couch", "#chair", "#table", "#desk", "#bookcase", "#fengshui", "furniture", "zen furniture", "feng shui furniture", "kitchen table", "leather sofa", "minimal style","aidima","ikea","homedeco","@designmilk","@decorandceramic","@molostudio","@apparatu"]
+feed = graph.get('/coca-cola?fields=feed.limit(30)')
 
-json = import_simplejson()
+feed = feed['feed']['data']
 
-# cbucket = Couchbase.connect(host=server,port=port,bucket=bucket)
-# auth1 = tweepy.OAuthHandler(consumer_key, consumer_secret)
-# auth1.set_access_token(access_token_key, access_token_secret)
+#pprint(feed)
 
-class StreamListener(tweepy.StreamListener):
-    json = import_simplejson()
-    def on_status(self, tweet):
-        #print 'Ran on_status'
-        pass
-    def on_error(self, status_code):
-        return False
-    def on_data(self, data):
-        if data[0].isdigit():
-            pass
-        else:
-            #print 'Ran on_data'
-            data_md5 = hashlib.md5(json.dumps(data, sort_keys=True)).hexdigest()
-            #cbucket.set(data_md5,json.loads(data))
-            json_tweet=json.loads(data)
-            fields_wanted = {"created_at","text","lang","retweet_count","id","retweeted","entities"}
-            text = json_tweet["text"]
-            json_to_keep={k:json_tweet[k] for k in fields_wanted}
-            text_no_url = replace_url(json_tweet["text"])
-            json_to_keep["text_no_url"]=text_no_url
-            json_to_keep["user_name"]=json_tweet["user"]["name"]
-            json_to_keep["user_screen_name"]=json_tweet["user"]["screen_name"]
-            json_to_keep["senti_tag"] = "neutral"
-            cbucket.set(data_md5,json_to_keep)
-
-            result_file = open("./files/%s"%data_md5,"w")
-            # result_file.write(data_md5)
-            # result_file.write("\n")
-            # print text_no_url
-            result_file.write(str(text_no_url.encode('ascii')) )
-            result_file.close()
-
-# l = StreamListener()
-# streamer = tweepy.Stream(auth=auth1, listener=l, timeout=3000)
-# streamer.filter(track = filterTerms)
+for message in feed:
+    try:
+        text = message['message']
+        text_no_url = replace_url(text)
+        created_at = message['created_time']
+        user_name=message['from']['name']
+        user_name = 'facebook:' + user_name
+        fbid = message['id']
+        json_to_keep={"text":text,"text_no_url":text_no_url,"user_name":user_name,"created_at":created_at,"fb_id":fbid}
+        data_md5 = hashlib.md5(json.dumps(message, sort_keys=True)).hexdigest()
+        # print data_md5
+        cbucket.set(data_md5, json_to_keep)
+    except KeyError,e:
+        continue
 
 
-def fbThread():
-    print "doing something"
 
-while True:
-    t = Thread(target=fbThread, args=())
-    time.sleep(5)
-    t.start()
+
+
+# def fbThread():
+#     print "doing something"
+#
+# while True:
+#     t = Thread(target=fbThread, args=())
+#     time.sleep(5)
+#     t.start()
