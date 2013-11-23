@@ -82,7 +82,9 @@ class StreamListener(tweepy.StreamListener):
             json_to_keep={k:json_tweet[k] for k in fields_wanted}
             text_no_url = replace_url(json_tweet["text"])
             json_to_keep["text_no_url"]=text_no_url
-            json_to_keep["user_name"]=json_tweet["user"]["name"]
+            user_name = json_tweet["user"]["name"]
+            user_name = 'twitter:' + user_name
+            json_to_keep["user_name"]= user_name
             json_to_keep["user_screen_name"]=json_tweet["user"]["screen_name"]
             json_to_keep["senti_tag"] = "neutral"
             cbucket.set(data_md5,json_to_keep)
