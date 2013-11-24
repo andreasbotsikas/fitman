@@ -222,7 +222,7 @@
 
         $('select').on('change', function() {
             //console.log ( this.name + " : "+this.value ); // or $(this).val()
-            $('#retrain').val($('#retrain').val() + this.name + ":"+this.value + ", \n ");
+            $('#retrain').val($('#retrain').val() + this.name + ":"+this.value + ",");
         });
     });
 </script>

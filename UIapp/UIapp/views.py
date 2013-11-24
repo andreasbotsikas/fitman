@@ -18,7 +18,7 @@ from django import forms
 
 from initialiaze_repo import initialize
 from models import Category, Team, Project, Category_value, Query, Query_properties, Results
-from updateSentimentKeys import multiple_values_update
+#from updateSentimentKeys import multiple_values_update
 
 
 def index(request):
@@ -313,7 +313,7 @@ def results(request, query_id):
             query_all = '{"query":{"bool":{"must":[{"query_string":{"query":"%s"}},{"term":{"doc.lang":"en"}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":6000, "sort":["_score"]}' % (
                 all_properties, int(time.mktime(query.from_date.timetuple()) * 1000),
                 int(time.mktime(query.to_date.timetuple()) * 1000))
-            print query_all
+            #print query_all
             response = parse_query_for_sentiments(query_all)
             #print "Got response: %s " %response
             newResponse = Results(query=query, results=json.dumps(response), updated=datetime.datetime.now())
@@ -392,8 +392,19 @@ def results_update(request):
         raise Http404('Only POST methods allowed')
     update_bulk = request.POST.get("retrain", "")
     ##send the bulk to the db service
+    #http://localhost:8000/user_based_sentiment?sentiment_values='395902357026131968:positive,%20395901656044670976:positive,%20396550264318328832:negative,%20395902917976522752:negative,%20395902917976522752:na,'
+    req = urllib2.Request('http://localhost:8000/user_based_sentiment?sentiment_values=%s' % str(update_bulk))
+    resp = urllib2.urlopen(req)
+    response = resp.read()
 
-
+    #
+    #
+    # response = urllib2.urlopen(
+    #     'http://localhost:8000/user_based_sentiment?sentiment_values=%s' % str(update_bulk)
+    # )
+    # response = response.read()
+    # #response = json.loads(response)
+    print "stored: %s" %response
 
     ##delete cashing from results, to get the updated ones from "results" methods
     results_id = request.POST.get("results-id", "")
