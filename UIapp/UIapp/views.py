@@ -68,17 +68,66 @@ def welcome(request):
         initialize()
         return render(request, "welcome.html")
 
+def signup(request):
+    if request.method == 'POST': # If the form has been submitted...
+        #email = request.session.get('email')
+        #password = request.session.get('password')
+        email=request.POST.get("email","")
+        password=request.POST.get("password","")
+
+
+
+        #Check authenticated
+        #If  ok
+        return HttpResponseRedirect("/welcome-categories") # Redirect after POST
+        #If not authenticated
+        #inform
+    else:
+        #for development mode only!!
+        initialize()
+        return render(request, "signup.html")
+
+    return render_to_response("signup.html")
 
 def welcome_account(request):
+    if request.method == 'POST': # If the form has been submitted...
+        #email = request.session.get('email')
+        #password = request.session.get('password')
+        email=request.POST.get("email","")
+        password=request.POST.get("password","")
+        user = authenticate(username=email, password=password)
+        if user is not None:
+            # the password verified for the user
+            if user.is_active:
+                print("User is valid, active and authenticated")
+                #set user on session property to read it from results
+            else:
+                print("The password is valid, but the account has been disabled!")
+                return HttpResponseRedirect("/") # Redirect after POST
+        else:
+            # the authentication system was unable to verify the username and password
+            print("The username or password were incorrect.")
+            return HttpResponseRedirect("/") # Redirect after POST
+
+        #Check authenticated
+        #If  ok
+        return HttpResponseRedirect("/dashboard") # Redirect after POST
+        #If not authenticated
+        #inform
+    else:
+        #for development mode only!!
+        initialize()
+        return render(request, "welcome.html")
+
     return render_to_response("welcome_account.html")
 
 
 def welcome_train(request):
-    return render_to_response("welcome_train.html")
+    return render(request, "welcome_train.html")
 
 
 def welcome_categories(request):
-    return render_to_response("welcome_categories.html")
+    return render(request, "welcome_categories.html")
 
 
 def create_query(request):
@@ -202,7 +251,10 @@ def home(request):
         #query_response= "{'id':'%s','Name': '%s'" %(query.id, query.name)
         dynamic_properties = get_query_properties(query)
         query_response['Keywords'] = dynamic_properties["Keywords"]
-        query_response['Usernames'] = dynamic_properties["Twitter"]
+        if (dynamic_properties.get("Twitter")or dynamic_properties.get("twitter")):
+            query_response['Usernames'] = dynamic_properties["Twitter"]
+        if (dynamic_properties.get("Facebook") or dynamic_properties.get("facebook")):
+            query_response['Usernames'] = dynamic_properties["Facebook"]
         #print "The property name is:%s" % query_response['Keywords']
 
         # query_properties = Query_properties.objects.filter(query=query)
@@ -248,7 +300,10 @@ def results(request, query_id):
         all_properties = ''
         # Get all properties
         for property in properties.keys():
-            all_properties += '+(%s) ' % properties[property]
+            if len(properties)==1:
+                all_properties += '%s' % properties[property]
+            else:
+                all_properties += '+(%s) ' % properties[property]
 
         if results: #bring it from the database
             response = results.__getitem__(0).results
@@ -258,6 +313,7 @@ def results(request, query_id):
             query_all = '{"query":{"bool":{"must":[{"query_string":{"query":"%s"}},{"term":{"doc.lang":"en"}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":6000, "sort":["_score"]}' % (
                 all_properties, int(time.mktime(query.from_date.timetuple()) * 1000),
                 int(time.mktime(query.to_date.timetuple()) * 1000))
+            print query_all
             response = parse_query_for_sentiments(query_all)
             #print "Got response: %s " %response
             newResponse = Results(query=query, results=json.dumps(response), updated=datetime.datetime.now())
@@ -312,7 +368,7 @@ def results(request, query_id):
 
                     elif message["_source"]["doc"]["senti_tag"] == "neutral":
                         neutral_counter += 1
-                        print "Found a message with tag: " % message["_source"]["doc"]
+                        #print "Found a message with tag: " % message["_source"]["doc"]
                 except:
                     #print "No sentiment tag for message %s" %message["_source"]["doc"]
                     continue
@@ -400,7 +456,10 @@ def get_query_properties(query):
     results = {}
     #usernames = ' '
     for query_property in query_properties:
-        results[str(query_property.category.name)] = str(query_property.properties)
+            if str(query_property.properties) is "":
+                continue
+            else:
+                results[str(query_property.category.name)] = str(query_property.properties)
         # if query_property.category.name == 'Keywords':
         #     keywords = query_property.properties
         # elif query_property.category.name == 'Twitter':

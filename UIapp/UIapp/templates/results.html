@@ -124,13 +124,13 @@
                 {% autoescape on %}
                 {% for message in response %}
                     {% if message.senti_tag == "positive" %}
-                        ["<select class=\"train\" name=\"{{ message.id }}\"><option value=\"positive\" selected=true>positive</option><option value=\"negative\">negative</option><option value=\"na\">n/a</option></select>","{{ message.text|linebreaksbr }}", "{{ message.user_screen_name }}","{{ message.created_at}}"],
+                        ["<select class=\"train\" name=\"{{ message.id }}\"><option value=\"positive\" selected=true>positive</option><option value=\"negative\">negative</option><option value=\"neutral\" >neutral</option></select>","{{ message.text|linebreaksbr }}", "{{ message.user_screen_name }}","{{ message.created_at}}"],
                     {%  elif message.senti_tag == "negative" %}
-                        ["<select class=\"train\" name=\"{{ message.id }}\"><option value=\"positive\"  >positive</option><option value=\"negative\" selected=true >negative</option><option value=\"na\" >n/a</option></select>","{{ message.text|linebreaksbr }}", "{{ message.user_screen_name }}","{{ message.created_at}}"],
+                        ["<select class=\"train\" name=\"{{ message.id }}\"><option value=\"positive\"  >positive</option><option value=\"negative\" selected=true >negative</option><option value=\"neutral\">neutral</option></select>","{{ message.text|linebreaksbr }}", "{{ message.user_screen_name }}","{{ message.created_at}}"],
                     {%  elif message.senti_tag == "neutral" %}
-                        ["<select class=\"train\" name=\"{{ message.id }}\"><option value=\"positive\"  >positive</option><option value=\"negative\" >negative</option><option value=\"neutral\" selected=true >neutral</option><option value=\"na\" >n/a</option></select>","{{ message.text|linebreaksbr }}", "{{ message.user_screen_name }}","{{ message.created_at}}"],
+                        ["<select class=\"train\" name=\"{{ message.id }}\"><option value=\"positive\"  >positive</option><option value=\"negative\" >negative</option><option value=\"neutral\" selected=true >neutral</option></select>","{{ message.text|linebreaksbr }}", "{{ message.user_screen_name }}","{{ message.created_at}}"],
                     {% else %}
-                        ["<select class=\"train\" name=\"{{ message.id }}\"><option value=\"positive\">positive</option><option value=\"negative\" >negative</option><option value=\"na\" selected=true>n/a</option></select>","{{ message.text|linebreaksbr }}", "{{ message.user_screen_name }}","{{ message.created_at}}"],
+                        ["<select class=\"train\" name=\"{{ message.id }}\"><option value=\"positive\">positive</option><option value=\"negative\" >negative</option><option value=\"neutral\">neutral</option><option value=\"na\" selected=true>n/a</option></select>","{{ message.text|linebreaksbr }}", "{{ message.user_screen_name }}","{{ message.created_at}}"],
                     {% endif %}
                 {% empty %}
                     ["-","-", "-","-"]
