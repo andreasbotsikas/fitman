@@ -1,7 +1,10 @@
 __author__ = 'mpetyx'
 
-from facepy import GraphAPI
 from pprint import pprint
+
+from facepy import GraphAPI
+
+
 access_token = "CAACEdEose0cBANiiJrpe30QCgJbtDSayhdZCbWYQEZBHNJvhvJ5wsNYMjNU3ZAVd1bQ2dRICE7ienZCjr0wqMKg7eS3cnmCKv3rL2jwJ1oOZBsKVuWd9zIvbdmvP0B2Cl1CdTEqq4IVNtZBA1zmRwQvqJZBHZBRaV3ZBfHuCWeWpgWGWZBFU41VU302CmggFRYYO0ZD"
 graph = GraphAPI(access_token)
 
@@ -15,5 +18,5 @@ for message in feed:
 
     try:
         pprint(str(message['message'].encode('utf-8')))
-    except KeyError,e :
+    except KeyError, e:
         continue
