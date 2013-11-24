@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Query: {{ query_name }}{% endblock %}
+{% block title %}{{ query_name }}{% endblock %}
 
 {% block menu %}
 <li xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"><a
@@ -123,14 +123,14 @@
             "aaData": [
                 {% autoescape on %}
                 {% for message in response %}
-                    {% if message.senti_tag == "positive" %}
-                        ["<select class=\"train\" name=\"{{ message.id }}\"><option value=\"positive\" selected=true>positive</option><option value=\"negative\">negative</option><option value=\"neutral\" >neutral</option></select>","{{ message.text|linebreaksbr }}", "{{ message.user_screen_name }}","{{ message.created_at}}"],
-                    {%  elif message.senti_tag == "negative" %}
-                        ["<select class=\"train\" name=\"{{ message.id }}\"><option value=\"positive\"  >positive</option><option value=\"negative\" selected=true >negative</option><option value=\"neutral\">neutral</option></select>","{{ message.text|linebreaksbr }}", "{{ message.user_screen_name }}","{{ message.created_at}}"],
-                    {%  elif message.senti_tag == "neutral" %}
-                        ["<select class=\"train\" name=\"{{ message.id }}\"><option value=\"positive\"  >positive</option><option value=\"negative\" >negative</option><option value=\"neutral\" selected=true >neutral</option></select>","{{ message.text|linebreaksbr }}", "{{ message.user_screen_name }}","{{ message.created_at}}"],
+                    {% if message.doc.senti_tag == "positive" %}
+                        ["<select class=\"train\" name=\"{{ message.meta.id }}\"><option value=\"positive\" selected=true>positive</option><option value=\"negative\">negative</option><option value=\"neutral\" >neutral</option></select>","{{ message.doc.text|linebreaksbr }}", "{{ message.doc.user_screen_name }}","{{ message.doc.created_at}}"],
+                    {%  elif message.doc.senti_tag == "negative" %}
+                        ["<select class=\"train\" name=\"{{ message.meta.id}}\"><option value=\"positive\"  >positive</option><option value=\"negative\" selected=true >negative</option><option value=\"neutral\">neutral</option></select>","{{ message.doc.text|linebreaksbr }}", "{{ message.doc.user_screen_name }}","{{ message.doc.created_at}}"],
+                    {%  elif message.doc.senti_tag == "neutral" %}
+                        ["<select class=\"train\" name=\"{{ message.meta.id}}\"><option value=\"positive\"  >positive</option><option value=\"negative\" >negative</option><option value=\"neutral\" selected=true >neutral</option></select>","{{ message.doc.text|linebreaksbr }}", "{{ message.doc.user_screen_name }}","{{ message.doc.created_at}}"],
                     {% else %}
-                        ["<select class=\"train\" name=\"{{ message.id }}\"><option value=\"positive\">positive</option><option value=\"negative\" >negative</option><option value=\"neutral\">neutral</option><option value=\"na\" selected=true>n/a</option></select>","{{ message.text|linebreaksbr }}", "{{ message.user_screen_name }}","{{ message.created_at}}"],
+                        ["<select class=\"train\" name=\"{{ message.meta.id }}\"><option value=\"positive\">positive</option><option value=\"negative\" >negative</option><option value=\"neutral\">neutral</option><option value=\"na\" selected=true>n/a</option></select>","{{ message.doc.text|linebreaksbr }}", "{{ message.doc.user_screen_name }}","{{ message.doc.created_at}}"],
                     {% endif %}
                 {% empty %}
                     ["-","-", "-","-"]
@@ -233,11 +233,13 @@
 {% block body %}
 
     <div class="container">
+        <h1 class="brand pull-left">Query: {{ query_name }}</h1>
          <a data-toggle="modal" href="/query/delete/{{ query_id }}" class="btn btn-primary pull-right"><i class="fa fa-trash-o"></i> Delete</a>
     </div>
 
 <!-- Textual Results -->
 <div class="container">
+
     <!-- Four columns -->
     <h1 class="brand pull-left">Sentiment Analysis</h1>
     <hr width="100%">
