@@ -17,7 +17,7 @@ from django.contrib.auth import authenticate, logout
 
 from initialiaze_repo import initialize
 from models import Category, Team, Project, Category_value, Query, Query_properties, Results
-#from updateSentimentKeys import multiple_values_update
+from updateSentimentKeys import multiple_values_update
 
 
 def index(request):
