@@ -17,11 +17,13 @@ cb = Couchbase.connect(host=server,port=port,bucket=bucket)
 
 def update(key, value):
 
+    # print "tried to retrieve " + str(key)
+
     document = cb.get(key)
 
-    document["senti_tag"] = value
+    document.value["senti_tag"] = value
 
-    cb.set(key, document)
+    cb.set(document.key, document.value)
     return 1
 
 
