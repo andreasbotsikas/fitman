@@ -719,7 +719,10 @@ section#team .align, section#contact .align {
 }
 
 #theme-form input[type=text] {
-    height: 3.25em;
+    height: 2.00em;
+    width: 220px;
+    font-size: 1.0em; /* 21px */
+    padding: 0.5em;
 }
 
 #theme-form input[type=submit] {

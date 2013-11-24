@@ -27,7 +27,7 @@
             <div class="row">
                 <div class="span12">
                     <div class="cform" id="theme-form">
-                        <form action="/welcome-train" method="post" class="cform-form">
+                        <form action="/dashboard" method="post" class="cform-form">
                             {% csrf_token %}
                             <!-- twitter-->
                             <div class="row">
@@ -37,7 +37,7 @@
                                 </span></div>
                                 <div class="span3"> <span class="text-left">
                                     <input name="twitter" type="text"
-                                           placeholder="e.g. ikea, nikerunning"
+                                           value="ikea, aidima"
                                            title="Fill in the username"></textarea>
                                 </span></div>
                                 <div class="span4"></div>
@@ -50,7 +50,7 @@
                                 </span></div>
                                 <div class="span3"> <span class="text-left">
                                     <input name="facebook" type="text"
-                                           placeholder="e.g. ikea-official, nikerunning-greece"
+                                           value="aidima,ikea-official"
                                            title="Fill in the facebook pages" ></textarea>
                                 </span></div>
                                 <div class="span4"></div>
@@ -62,8 +62,8 @@
                                     <label>Hashtags: </label>
                                 </span></div>
                                 <div class="span3"> <span class="text-left">
-                                    <input name="email" type="text"
-                                           placeholder="e.g. furniture, shoes, clothes, holidays"
+                                    <input name="keywords" type="text"
+                                           value="furniture, bed, sofa, living room, chair, ikea, aidima"
                                            title="Fill in the hashtags" required></textarea>
                                 </span></div>
                                 <div class="span4"></div>
@@ -75,8 +75,7 @@
                             <div>
                                 <div class="span3"></div>
                                 <div class="span6">
-                                    <input type="button" value="< Back" class="cform-button pull-left" onClick="history.go(-1);return true;">
-                                    <input type="submit" value="Next >" class="cform-submit pull-right">
+                                    <input type="submit" value="Update" class="cform-submit pull-right">
                                 </div>
                                 <div class="span3"></div>
                             </div>

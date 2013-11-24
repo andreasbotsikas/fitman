@@ -239,7 +239,7 @@ def home(request):
     # queries
     queries = Query.objects.filter(owned_by=current_project.id)
     list_of_queries = []
-    titles = ['Name', 'Keywords', 'Usernames', 'Created by', 'From', 'To', 'Created']
+    titles = ['Name', 'Keywords', 'Accounts', 'Created by', 'From', 'To', 'Created']
     for query in queries:
         query_response = {}
         query_response['id'] = query.id
