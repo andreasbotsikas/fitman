@@ -31,7 +31,7 @@ def update(key, value):
         print "done for: " + str(key) + "\n"
     except:
         print "oups"
-    return 1
+    return True
 
 # parse file
 def parse(data):
@@ -39,7 +39,7 @@ def parse(data):
     result = data['"prediction(att2)"']
 
     if update(file_name, result):
-        silentremove(file_name)
+        silentremove("./files/"+file_name)
 
 # "label":"unlabeled","metadata_file":"6.txt","metadata_path":"/home/user/Downloads/rapidst/
 # SentiTrainData/unlabeledTweets/6.txt","metadata_date":"7/10/2013 5:20 ","confidence(positive)":0.7437240118385439,"confidence(negative)":0.25627598816145614,"prediction(att2)":"positive"
