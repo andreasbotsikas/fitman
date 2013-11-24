@@ -19,12 +19,17 @@ def update(key, value):
 
     # print "tried to retrieve " + str(key)
 
-    document = cb.get(key)
+    try:
+        document = cb.get(key)
 
-    document.value["senti_tag"] = value
+        document.value["senti_tag"] = value
 
-    cb.set(document.key, document.value)
-    return 1
+        cb.set(document.key, document.value)
+
+        return 1
+    except:
+
+        return 0
 
 
 def multiple_values_update( lista ):
