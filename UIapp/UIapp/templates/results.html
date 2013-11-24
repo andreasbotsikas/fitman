@@ -4,7 +4,7 @@
 
 {% block menu %}
 <li xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"><a
-        title="settings" href="#">settings</a></li>
+        title="settings" href="/settings">settings</a></li>
 <li><a title="logout" href="/logout">logout</a></li>
 {%  endblock%}
 
@@ -31,6 +31,8 @@
             top: -9999px;
             left: -9999px;
         }
+
+
 
         tr {
             border: 1px solid #ccc;
@@ -257,7 +259,7 @@
                 <form action="/results-update" method="post" class="cform-form">
                     {% csrf_token %}
                     <input id="results-id" type="hidden" name="results-id" value="{{ query_id }}">
-                    <input id="retrain" type="hidden" name="retrain">
+                    <input id="retrain" type="text" name="retrain">
                     <input id="update" type="submit" value='Save' class="cform-submit pull-right">
                 </form>
             </div>

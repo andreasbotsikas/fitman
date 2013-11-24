@@ -14,11 +14,10 @@ from django.utils import timezone
 from django.core.context_processors import csrf
 from dateutil import parser
 from django.contrib.auth import authenticate, logout
-from django import forms
 
 from initialiaze_repo import initialize
 from models import Category, Team, Project, Category_value, Query, Query_properties, Results
-from updateSentimentKeys import multiple_values_update
+#from updateSentimentKeys import multiple_values_update
 
 
 def index(request):
