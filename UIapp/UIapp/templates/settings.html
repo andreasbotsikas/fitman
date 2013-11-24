@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}New query{% endblock %}
+
+{% block menu %}
+    <!-- no menu -->
+{%  endblock%}
+
+{% block extra_header %}
+    <!--link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <script>
+        $(function() {
+            $( "#datepicker_from").datepicker();
+            $( "#datepicker_to" ).datepicker();
+        });
+    </script-->
+{% endblock %}
+
+{% block body %}
+
+    <!--******************** Contact Section ********************-->
+    <section id="portfolio" class="single-page scrollblock" xmlns="http://www.w3.org/1999/html">
+        <div class="container">
+            <h2>Setup your account</h2>
+            <hr width="100%">
+            <div class="row">
+                <div class="span12">
+                    <div class="cform" id="theme-form">
+                        <form action="/welcome-train" method="post" class="cform-form">
+                            {% csrf_token %}
+                            <!-- twitter-->
+                            <div class="row">
+                                <div class="span4"></div>
+                                <div class="span1"> <span class="label-important">
+                                    <label>Twitter Accounts: </label>
+                                </span></div>
+                                <div class="span3"> <span class="text-left">
+                                    <input name="twitter" type="text"
+                                           placeholder="e.g. ikea, nikerunning"
+                                           title="Fill in the username"></textarea>
+                                </span></div>
+                                <div class="span4"></div>
+                            </div>
+                            <!-- password-->
+                            <div class="row">
+                                <div class="span4"></div>
+                                <div class="span1"> <span class="label-important">
+                                    <label>Facebook: </label>
+                                </span></div>
+                                <div class="span3"> <span class="text-left">
+                                    <input name="facebook" type="text"
+                                           placeholder="e.g. ikea-official, nikerunning-greece"
+                                           title="Fill in the facebook pages" ></textarea>
+                                </span></div>
+                                <div class="span4"></div>
+                            </div>
+                            <!-- hashtags-->
+                            <div class="row">
+                                <div class="span4"></div>
+                                <div class="span1"> <span class="label-important">
+                                    <label>Hashtags: </label>
+                                </span></div>
+                                <div class="span3"> <span class="text-left">
+                                    <input name="email" type="text"
+                                           placeholder="e.g. furniture, shoes, clothes, holidays"
+                                           title="Fill in the hashtags" required></textarea>
+                                </span></div>
+                                <div class="span4"></div>
+                            </div>
+
+
+                            <div class="row"><br></div>
+
+                            <div>
+                                <div class="span3"></div>
+                                <div class="span6">
+                                    <input type="button" value="< Back" class="cform-button pull-left" onClick="history.go(-1);return true;">
+                                    <input type="submit" value="Next >" class="cform-submit pull-right">
+                                </div>
+                                <div class="span3"></div>
+                            </div>
+                            <div class="cform-response-output"></div>
+                        </form>
+                    </div>
+                </div>
+                <!-- ./span12 -->
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container -->
+    </section>
+
+
+{% endblock %}

@@ -128,6 +128,8 @@ def welcome_train(request):
 def welcome_categories(request):
     return render(request, "welcome_categories.html")
 
+def settings(request):
+    return render(request, "settings.html")
 
 def create_query(request):
     if request.method == 'POST': # If the form has been submitted...
