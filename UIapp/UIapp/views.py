@@ -285,7 +285,6 @@ def results(request, query_id):
     :return: :raise:
     """
     data = []
-    ids =[]
     test =[]
     categories_counter = []
     positive_counter = 0
@@ -382,13 +381,7 @@ def results(request, query_id):
         #print ValueError.message
         raise Http404()
         #for i in data:
-<<<<<<< HEAD
-    #    print i
-    #print data
-=======
-    #    #print i
 
->>>>>>> 7311a1d5f1ebfad8f5fb42adb76ccd4fba932844
     return render(request, "results.html",
                   {"query_id": query.id, "query_name": query.name, "response": test, "positive": positive_counter,
                    "negative": negative_counter, "neutral": neutral_counter,
