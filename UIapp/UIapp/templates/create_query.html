@@ -25,10 +25,10 @@
                 console.log ( this.name + " : "+this.value ); // or $(this).val()
                 $('#more-prop').append( '<div class="row">'+
                         '<div class="span1"> <span class="label-important">' +
-                            '<input type="text" name="prop-name-'+count+'">' +
+                            '<input type="text" name="prop-name-'+count+'" placeholder="category name" >' +
                         '</span></div>' +
                     '<div class="span7"> <span class="text-left">' +
-                        '<textarea name="prop-value-'+count+'" class="cform-textarea" cols="40" rows="3"></textarea>' +
+                        '<textarea name="prop-value-'+count+'" class="cform-textarea" cols="40" rows="3" placeholder="properties"></textarea>' +
                         '</span></div>' +
                     '</div>'
                 )
