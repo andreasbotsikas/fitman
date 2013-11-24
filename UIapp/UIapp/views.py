@@ -512,7 +512,9 @@ def user_based_sentiment(request):
                     i = i + 1
                 if found is False:
                     lista.append({'key': res[0], 'value': res[1]})
-            result = multiple_values_update(lista)
+
+            print lista
+            # result = multiple_values_update(lista)
 
             return HttpResponse(status=200, mimetype='application/json')
         else:

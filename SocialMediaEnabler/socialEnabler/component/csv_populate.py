@@ -8,8 +8,8 @@ from couchbase import Couchbase
 # server = "localhost"
 server = "83.212.114.237"
 port = 8091
-admin_username = "Administrator"
-admin_password = "dev123456"
+# admin_username = "Administrator"
+# admin_password = "dev123456"
 bucket = "default"
 
 data = []
