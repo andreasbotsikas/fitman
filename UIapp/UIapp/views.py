@@ -312,7 +312,7 @@ def results(request, query_id):
             response = json.loads(response)
             #print response
         else: #make a new query
-            query_all = '{"query":{"bool":{"must":[{"query_string":{"query":"%s"}},{"term":{"doc.lang":"en"}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":6000, "sort":["_score"]}' % (
+            query_all = '{"query":{"bool":{"must":[{"query_string":{"query":"%s"}},{"term":{"doc.lang":"en"}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":100000, "sort":["_score"]}' % (
                 all_properties, int(time.mktime(query.from_date.timetuple()) * 1000),
                 int(time.mktime(query.to_date.timetuple()) * 1000))
             #print query_all
@@ -395,7 +395,7 @@ def results_update(request):
     update_bulk = request.POST.get("retrain", "")
     ##send the bulk to the db service
     #http://localhost:8000/user_based_sentiment?sentiment_values='395902357026131968:positive,%20395901656044670976:positive,%20396550264318328832:negative,%20395902917976522752:negative,%20395902917976522752:na,'
-    req = urllib2.Request('http://localhost:8000/user_based_sentiment?sentiment_values=%s' % str(update_bulk))
+    req = urllib2.Request("http://localhost:8000/user_based_sentiment?sentiment_values=%s" % str(update_bulk))
     resp = urllib2.urlopen(req)
     response = resp.read()
 
@@ -526,7 +526,7 @@ def user_based_sentiment(request):
                 if found is False:
                     lista.append({'key': res[0], 'value': res[1]})
 
-            #print lista
+            print lista
             result = multiple_values_update(lista)
 
             return HttpResponse(status=200, mimetype='application/json')
