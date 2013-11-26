@@ -13,11 +13,13 @@ from django.contrib.auth.models import Group, User
 from django.utils import timezone
 from django.core.context_processors import csrf
 from dateutil import parser
-from django.contrib.auth import authenticate, logout
-
+from django.contrib.auth import authenticate, logout, login
+from django.contrib.auth.models import User
 from initialiaze_repo import initialize
 from models import Category, Team, Project, Category_value, Query, Query_properties, Results
 from updateSentimentKeys import multiple_values_update
+
+
 
 
 def index(request):
@@ -33,6 +35,7 @@ def logout_view(request):
 def welcome(request):
     if request.user.is_authenticated():
         # Do something for authenticated users.
+        print ('is autenticated')
         return HttpResponseRedirect("/dashboard") # Redirect after POST
     else:
         # Do something for anonymous users.
@@ -44,13 +47,15 @@ def welcome(request):
         email = request.POST.get("email", "")
         password = request.POST.get("password", "")
         user = authenticate(username=email, password=password)
+        #request.session["user"] = user
         if user is not None:
             # the password verified for the user
             if user.is_active:
+                login(request, user)
                 print("User is valid, active and authenticated")
                 #set user on session property to read it from results
             else:
-                #print("The password is valid, but the account has been disabled!")
+                print("The password is valid, but the account has been disabled!")
                 return HttpResponseRedirect("/") # Redirect after POST
         else:
             # the authentication system was unable to verify the username and password
@@ -64,10 +69,11 @@ def welcome(request):
         #inform
     else:
         #for development mode only!!
-        initialize()
+        #initialize()
         return render(request, "welcome.html")
 
 def signup(request):
+    #must create project!!!
     if request.method == 'POST': # If the form has been submitted...
         #email = request.session.get('email')
         #password = request.session.get('password')
@@ -115,7 +121,7 @@ def welcome_account(request):
         #inform
     else:
         #for development mode only!!
-        initialize()
+        #initialize()
         return render(request, "welcome.html")
 
     return render_to_response("welcome_account.html")
@@ -229,48 +235,52 @@ def create_query(request):
 
 def home(request):
     # get the authenicated user instead
-    # user = User.objects.filter(username="test1").latest('get_latest_by'=id)
-    # teams = Team.objects.filter(created_by=user)
+    #teams = Team.objects.filter(created_by=request.user)
     # # to be selected by the user
     # current_team=teams.latest()
     # projects=Project.objects.filter(owned_by=current_team.name, created_by=user.username)
-    current_project = Project.objects.latest("created")
-    # #print current_project.name # debug
-    # queries
-    queries = Query.objects.filter(owned_by=current_project.id)
-    list_of_queries = []
-    titles = ['Name', 'Keywords', 'Accounts', 'Created by', 'From', 'To', 'Created']
-    for query in queries:
-        query_response = {}
-        query_response['id'] = query.id
-        query_response['Name'] = query.name
-        query_response['Created_by'] = query.created_by.username
-        query_response['From'] = query.from_date
-        query_response['To'] = query.to_date
-        query_response['Created'] = query.created
 
-        #query_response= "{'id':'%s','Name': '%s'" %(query.id, query.name)
-        dynamic_properties = get_query_properties(query)
-        query_response['Keywords'] = dynamic_properties["Keywords"]
-        if (dynamic_properties.get("Twitter")or dynamic_properties.get("twitter")):
-            query_response['Usernames'] = dynamic_properties["Twitter"]
-        if (dynamic_properties.get("Facebook") or dynamic_properties.get("facebook")):
-            query_response['Usernames'] = dynamic_properties["Facebook"]
-        ##print "The property name is:%s" % query_response['Keywords']
+    if request.user.is_authenticated():
+        current_project=Project.objects.filter(created_by=request.user).latest("created")
+        #current_project = Project.objects.latest("created")
+        # #print current_project.name # debug
+        # queries
+        queries = Query.objects.filter(owned_by=current_project.id)
+        list_of_queries = []
+        titles = ['Name', 'Keywords', 'Accounts', 'Created by', 'From', 'To', 'Created']
+        for query in queries:
+            query_response = {}
+            query_response['id'] = query.id
+            query_response['Name'] = query.name
+            query_response['Created_by'] = query.created_by.username
+            query_response['From'] = query.from_date
+            query_response['To'] = query.to_date
+            query_response['Created'] = query.created
 
-        # query_properties = Query_properties.objects.filter(query=query)
-        # for query_property in query_properties:
-        #     #print "The property object is:%s" %query_property.category.name
-        #     # a Category that must a appear in the table header
-        #     #if query_property.category.name not in titles:
-        #         #titles.append("%s" % query_property.category.name)
-        #     # add the property name & value to the response
-        #     if query_property.category.name=='Keywords':
-        #         #query_response += ",'%s':%s"%(query_property.category.name, query_property.properties)
-        #         query_response['Keywords']=query_property.properties
-        #         #print "The property name is:%s" %query_property.properties
-        list_of_queries.append(query_response)
-    return render_to_response("home.html", {"headers": titles, "content": list_of_queries})
+            #query_response= "{'id':'%s','Name': '%s'" %(query.id, query.name)
+            dynamic_properties = get_query_properties(query)
+            query_response['Keywords'] = dynamic_properties["Keywords"]
+            if (dynamic_properties.get("Twitter")or dynamic_properties.get("twitter")):
+                query_response['Usernames'] = dynamic_properties["Twitter"]
+            if (dynamic_properties.get("Facebook") or dynamic_properties.get("facebook")):
+                query_response['Usernames'] = dynamic_properties["Facebook"]
+            ##print "The property name is:%s" % query_response['Keywords']
+
+            # query_properties = Query_properties.objects.filter(query=query)
+            # for query_property in query_properties:
+            #     #print "The property object is:%s" %query_property.category.name
+            #     # a Category that must a appear in the table header
+            #     #if query_property.category.name not in titles:
+            #         #titles.append("%s" % query_property.category.name)
+            #     # add the property name & value to the response
+            #     if query_property.category.name=='Keywords':
+            #         #query_response += ",'%s':%s"%(query_property.category.name, query_property.properties)
+            #         query_response['Keywords']=query_property.properties
+            #         #print "The property name is:%s" %query_property.properties
+            list_of_queries.append(query_response)
+        return render_to_response("home.html", {"headers": titles, "content": list_of_queries})
+    else:
+        return HttpResponseRedirect("/")
 
 
 def analytics(request):
@@ -285,109 +295,111 @@ def results(request, query_id):
     :param query_id:
     :return: :raise:
     """
-    data = []
-    test =[]
-    categories_counter = []
-    positive_counter = 0
-    negative_counter = 0
-    neutral_counter = 0
-    try:
-        #query_id = str(query_id)
-        ## Must store the response, if there is no reponse, otherwise return the stored one.
-        ## IF NOT STORED
-        query = Query.objects.get(id=query_id)
-        results = Results.objects.filter(query=query)
-        #run for all categories
-        properties = get_query_properties(query)
-        all_properties = ''
-        # Get all properties
-        for property in properties.keys():
-            if len(properties)==1:
-                all_properties += '%s' % properties[property]
-            else:
-                all_properties += '+(%s) ' % properties[property]
+    if request.user.is_authenticated():
+        data = []
+        test =[]
+        categories_counter = []
+        positive_counter = 0
+        negative_counter = 0
+        neutral_counter = 0
+        try:
+            #query_id = str(query_id)
+            ## Must store the response, if there is no reponse, otherwise return the stored one.
+            ## IF NOT STORED
+            query = Query.objects.get(id=query_id,created_by=request.user)
+            results = Results.objects.filter(query=query)
+            #run for all categories
+            properties = get_query_properties(query)
+            all_properties = ''
+            # Get all properties
+            for property in properties.keys():
+                if len(properties)==1:
+                    all_properties += '%s' % properties[property]
+                else:
+                    all_properties += '+(%s) ' % properties[property]
 
-        if results: #bring it from the database
-            response = results.__getitem__(0).results
-            response = json.loads(response)
-            #print response
-        else: #make a new query
-            query_all = '{"query":{"bool":{"must":[{"query_string":{"query":"%s"}},{"term":{"doc.lang":"en"}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":100000, "sort":["_score"]}' % (
-                all_properties, int(time.mktime(query.from_date.timetuple()) * 1000),
-                int(time.mktime(query.to_date.timetuple()) * 1000))
-            #print query_all
-            response = parse_query_for_sentiments(query_all)
-            ##print "Got response: %s " %response
-            newResponse = Results(query=query, results=json.dumps(response), updated=datetime.datetime.now())
-            ##print "Stored object"
-            newResponse.save()
-            #print response
+            if results: #bring it from the database
+                response = results.__getitem__(0).results
+                response = json.loads(response)
+                #print response
+            else: #make a new query
+                query_all = '{"query":{"bool":{"must":[{"query_string":{"query":"%s"}},{"term":{"doc.lang":"en"}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":100000, "sort":["_score"]}' % (
+                    all_properties, int(time.mktime(query.from_date.timetuple()) * 1000),
+                    int(time.mktime(query.to_date.timetuple()) * 1000))
+                #print query_all
+                response = parse_query_for_sentiments(query_all)
+                ##print "Got response: %s " %response
+                newResponse = Results(query=query, results=json.dumps(response), updated=datetime.datetime.now())
+                ##print "Stored object"
+                newResponse.save()
+                #print response
 
-        ## count the occurrences in response
+            ## count the occurrences in response
 
-        for property in properties.keys():
-            list = properties[property].split(",")
-            word_counter = []
-            for word in list:
-                number = json.dumps(response).count(word)
-                text = '{"name":"%s","times":"%s", "sentiment":0}' % (word, number)
-                word_counter.append(json.loads(text))
-                ##print " The property %s in list of properties %s has been found %s times" % (word, property, number)
-            text = {}
-            text["category"] = property
-            text["properties"] = word_counter
-            categories_counter.append(text)
+            for property in properties.keys():
+                list = properties[property].split(",")
+                word_counter = []
+                for word in list:
+                    number = json.dumps(response).count(word)
+                    text = '{"name":"%s","times":"%s", "sentiment":0}' % (word, number)
+                    word_counter.append(json.loads(text))
+                    ##print " The property %s in list of properties %s has been found %s times" % (word, property, number)
+                text = {}
+                text["category"] = property
+                text["properties"] = word_counter
+                categories_counter.append(text)
 
-        ##print categories_counter
+            ##print categories_counter
 
 
-        for message in response:
-            if message["_score"] > 0.05:
-                test.append(message["_source"])
-                data.append(message["_source"]["doc"])
-                ##print "Just Added: %s" %message["_source"]["doc"]
-                try:
-                    if message["_source"]["doc"]["senti_tag"] == "positive":
-                        # for global metrics
-                        positive_counter += 1
-                        ##print "Found a message with positive tag: %s " % json.dumps(message["_source"]["doc"])
-                        # for mosaic diagram
-                        for category in categories_counter:
-                            for property in category["properties"]:
-                                if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
-                                    ##print " Message with positive tag: %s : the found property is: %s"%(json.dumps(message["_source"]["doc"]), property["name"])
-                                    pos_number = int(property["sentiment"]) + 1
-                                    property["sentiment"] = pos_number
+            for message in response:
+                if message["_score"] > 0.05:
+                    test.append(message["_source"])
+                    data.append(message["_source"]["doc"])
+                    ##print "Just Added: %s" %message["_source"]["doc"]
+                    try:
+                        if message["_source"]["doc"]["senti_tag"] == "positive":
+                            # for global metrics
+                            positive_counter += 1
+                            ##print "Found a message with positive tag: %s " % json.dumps(message["_source"]["doc"])
+                            # for mosaic diagram
+                            for category in categories_counter:
+                                for property in category["properties"]:
+                                    if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
+                                        ##print " Message with positive tag: %s : the found property is: %s"%(json.dumps(message["_source"]["doc"]), property["name"])
+                                        pos_number = int(property["sentiment"]) + 1
+                                        property["sentiment"] = pos_number
 
-                    elif message["_source"]["doc"]["senti_tag"] == "negative":
-                        negative_counter += 1
-                        #print "Found a message with negative tag: %s " % json.dumps(message["_source"]["doc"])
-                        # for mosaic diagram
-                        for category in categories_counter:
-                            for property in category:
-                                if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
-                                    pos_number = int(property["sentiment"]) - 1
-                                    property["sentiment"] = pos_number
+                        elif message["_source"]["doc"]["senti_tag"] == "negative":
+                            negative_counter += 1
+                            #print "Found a message with negative tag: %s " % json.dumps(message["_source"]["doc"])
+                            # for mosaic diagram
+                            for category in categories_counter:
+                                for property in category:
+                                    if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
+                                        pos_number = int(property["sentiment"]) - 1
+                                        property["sentiment"] = pos_number
 
-                    elif message["_source"]["doc"]["senti_tag"] == "neutral":
-                        neutral_counter += 1
-                        ##print "Found a message with tag: " % message["_source"]["doc"]
-                except:
-                    ##print "No sentiment tag for message %s" %message["_source"]["doc"]
-                    continue
+                        elif message["_source"]["doc"]["senti_tag"] == "neutral":
+                            neutral_counter += 1
+                            ##print "Found a message with tag: " % message["_source"]["doc"]
+                    except:
+                        ##print "No sentiment tag for message %s" %message["_source"]["doc"]
+                        continue
 
-                    ##print categories_counter
+                        ##print categories_counter
 
-    except ValueError:
-        #print ValueError.message
-        raise Http404()
-        #for i in data:
+        except ValueError:
+            #print ValueError.message
+            raise Http404()
+            #for i in data:
 
-    return render(request, "results.html",
-                  {"query_id": query.id, "query_name": query.name, "response": test, "positive": positive_counter,
-                   "negative": negative_counter, "neutral": neutral_counter,
-                   "categories": categories_counter})
-
+        return render(request, "results.html",
+                      {"query_id": query.id, "query_name": query.name, "response": test, "positive": positive_counter,
+                       "negative": negative_counter, "neutral": neutral_counter,
+                       "categories": categories_counter})
+    else:
+        return HttpResponseRedirect("/")
 
 def results_update(request):
     if request.method != 'POST': # If the form has been submitted...

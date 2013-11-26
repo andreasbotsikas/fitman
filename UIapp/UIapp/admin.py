@@ -43,3 +43,8 @@ class TeamAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Team, ResultsAdmin)
+
+class ProjectAdmin(admin.ModelAdmin):
+    pass
+
+admin.site.register(Project, ResultsAdmin)
