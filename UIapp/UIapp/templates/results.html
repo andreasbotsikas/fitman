@@ -328,7 +328,7 @@
         <div id="links">
             {% for message in response %}
                 {% for media in message.doc.entities.media %}
-                    <a href="{{ media.media_url_https }}" title="{{ message.doc.senti_tag }}: {{ message.doc.user_screen_name }}: {{ message.doc.text|linebreaksbr }}" data-gallery>
+                    <a href="{{ media.media_url_https }}" title="{{ message.doc.senti_tag }} @{{ message.doc.user_screen_name }} : {{ message.doc.text|linebreaksbr }}" data-gallery>
                         <img src="{{ media.media_url_https }}" alt="{{ message.doc.user_screen_name }}" class="crop">
                     </a>
                 {% endfor %}
