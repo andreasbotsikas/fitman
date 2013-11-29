@@ -9,7 +9,21 @@
 {%  endblock%}
 
 {% block extra_header %}
+<style>
+    .crop{
+        float:left;
+        margin:.5em 10px .5em 0;
+        overflow:hidden; /* this is important */
+        border:1px solid #ccc;
+        height: 100px;
+        width: 100px;
+    }
+        /* input values to crop the image: top, right, bottom, left */
+    .crop img{
+        margin:-20px -15px -40px -55px;
+    }
 
+</style>
 <script type="text/javascript" charset="utf-8">
     $(document).ready(function () {
         $('#table').dataTable({
@@ -124,6 +138,9 @@
     });
 </script>
 
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://blueimp.github.io/Gallery/css/blueimp-gallery.min.css">
+    <link rel="stylesheet" href="/s/css/bootstrap-image-gallery.min.css">
 
 {% endblock %}
 
@@ -167,7 +184,6 @@
     <!-- /.row -->
 </div>
 <!-- /.container -->
-
 <!-- Graphs -->
 <div class="container">
 <br/>
@@ -210,7 +226,7 @@
                         <div class="tab-pane" id="{{ category.category }}">
                     {% endif %}
 
-                    <div id="pie_{{ category.category }}" style="width: 900px; height: 700px;">Google Pie Chart for Category</div>
+                    <div id="pie_{{ category.category }}" style="width: auto; height: auto;">Google Pie Chart for Category</div>
                     <script type="text/javascript">
                         google.load("visualization", "1", {packages: ["corechart"]});
                         google.setOnLoadCallback(drawChart);
@@ -267,6 +283,66 @@
     <!-- /. row-->
 
 </div>
+    </div>
+ </div>
 <!-- /.container -->
+
+<!-- Image Gallery-->
+
+<div class="container">
+    <div class="row">
+        <!-- The Bootstrap Image Gallery lightbox, should be a child element of the document body -->
+        <div id="blueimp-gallery" class="blueimp-gallery">
+            <!-- The container for the modal slides -->
+            <div class="slides"></div>
+            <!-- Controls for the borderless lightbox -->
+            <h3 class="title"></h3>
+            <a class="prev">‹</a>
+            <a class="next">›</a>
+            <a class="close">×</a>
+            <a class="play-pause"></a>
+            <ol class="indicator"></ol>
+            <!-- The modal dialog, which will be used to wrap the lightbox content -->
+            <div class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title"></h4>
+                        </div>
+                        <div class="modal-body next"></div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default pull-left prev">
+                                <i class="glyphicon glyphicon-chevron-left"></i>
+                                Previous
+                            </button>
+                            <button type="button" class="btn btn-primary next">
+                                Next
+                                <i class="glyphicon glyphicon-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="links">
+            {% for message in response %}
+                {% for media in message.doc.entities.media %}
+                    <a href="{{ media.media_url_https }}" title="{{ message.doc.senti_tag }}: {{ message.doc.user_screen_name }}: {{ message.doc.text|linebreaksbr }}" data-gallery>
+                        <img src="{{ media.media_url_https }}" alt="{{ message.doc.user_screen_name }}" class="crop">
+                    </a>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block end_of_body %}
+    <script src="http://blueimp.github.io/Gallery/js/jquery.blueimp-gallery.min.js"></script>
+    <script src="/s/js/bootstrap-image-gallery.min.js"></script>
+
 
 {% endblock %}

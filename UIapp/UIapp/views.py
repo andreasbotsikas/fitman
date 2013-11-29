@@ -606,11 +606,12 @@ def download_csv(request):
     response['Content-Disposition'] = 'attachment; filename="train-sentiment.csv"'
     writer = csv.writer(response)
 
-    training_query = '{"query":{"bool":{"must":[{"query_string":{"query":"happy, sad, bored, excited, nice, bad, welcome"}},{"term":{"doc.lang":"en"}}]}},"from":0,"size":5000, "sort":["_score"]}'
+    training_query = '{"query" : {"filtered" : {"query" : {"bool" : {"should" : [{"query_string" : {"query" : "*"}}]}},"filter" : {"bool" : {"must" : [{"match_all" : {}},{"terms" : {"_type" : ["couchbaseDocument"]}},{"terms" : {"doc.lang" : ["en"]}},{"range" : {"doc.created_at" : {"to" : 1385723853000,"from" : 1385654402000}}},{"bool" : {"must" : [{"match_all" : {}}]}}]}}}},"size" : 1000,"fields" : ["doc.text_no_url","doc.senti_tag"]}'
     parsed = parse_query_for_sentiments(training_query)
+    print parsed
     for message in parsed:
         try:
-            writer.writerow([str(message["_source"]["doc"]["text"]).replace(",", " "), message["_source"]["doc"]["senti_tag"] ])
+            writer.writerow([str(message["fields"]["doc.text_no_url"]).replace(",", " "), message["fields"]["doc.senti_tag"] ])
         except:
             continue
 
