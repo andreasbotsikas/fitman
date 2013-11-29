@@ -32,6 +32,7 @@ urlpatterns = patterns('',
                        url(r'^train', views.train, name='train'),
                        url(r'user_based_sentiment',views.user_based_sentiment,name='user_based_sentiment'),
                        url(r'^results-update', views.results_update, name='results-update'),
+                       url(r'^download-csv', views.download_csv, name='results-update'),
                        (r'^s/(?P<path>.*)$', 'django.views.static.serve',
                         {'document_root': settings.STATIC_DOC_ROOT}),
 )

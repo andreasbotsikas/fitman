@@ -19,6 +19,7 @@ from django.contrib.auth.models import User
 from initialiaze_repo import initialize
 from models import Category, Team, Project, Category_value, Query, Query_properties, Results
 from updateSentimentKeys import multiple_values_update
+import csv
 
 
 
@@ -599,3 +600,18 @@ def user_based_sentiment(request):
     else:
         return HttpResponse(status=405)
 
+def download_csv(request):
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="train-sentiment.csv"'
+    writer = csv.writer(response)
+
+    training_query = '{"query":{"bool":{"must":[{"query_string":{"query":"happy, sad, bored, excited, nice, bad, welcome"}},{"term":{"doc.lang":"en"}}]}},"from":0,"size":5000, "sort":["_score"]}'
+    parsed = parse_query_for_sentiments(training_query)
+    for message in parsed:
+        try:
+            writer.writerow([str(message["_source"]["doc"]["text"]).replace(",", " "), message["_source"]["doc"]["senti_tag"] ])
+        except:
+            continue
+
+    return response
