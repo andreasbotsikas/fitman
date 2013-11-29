@@ -36,6 +36,11 @@
 {% endblock %}
 
 {% block body %}
+    {% if message %}
+        <div class="row">
+            <div class="padded aligncenter bordered" style="color: green;"><i class="fa fa-flag"></i> {{ message }}</div>
+        </div>
+    {% endif %}
 <div class="row">
     <div class="container">
         <div class="span12">
@@ -52,32 +57,8 @@
     <hr width="100%">
     <div class="row">
         <table id="table">
-            <thead class="nav"><!--tr>
-                        <th class="sorttable_sorted_reverse">Name<span id="sorttable_sortrevind">&nbsp;?</span></th>
-                        <th class="">Query</th>
-                        <th class="">Accounts</th>
-                        <th class="">Keywords</th>
-                        <th class="">Materials</th>
-                        <th class="">Companies</th>
-                        <th class="">From</th>
-                        <th class="">To</th>
-                        <th class="">Created</th>
-
-                    </tr-->
-            </thead>
-            <tbody>
-            <!--tr>
-                <td sorttable_customkey="1"><a href="">Spanish Sofas</a></td>
-                <td>Sofas Spain</td>
-                <td>Aidima</td>
-                <td>leather, red</td>
-                <td>metal, leather</td>
-                <td>AIDIMA, IKEA</td>
-                <td>22/3/2012</td>
-                <td>01/01/2013</td>
-                <td>3/3/2013</td>
-            </tr-->
-            </tbody>
+            <thead class="nav"></thead>
+            <tbody></tbody>
             <tfoot></tfoot>
         </table>
 

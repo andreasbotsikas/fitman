@@ -4,6 +4,7 @@ import urllib2
 import json
 import datetime
 import time
+import hashlib
 
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, HttpResponse
@@ -42,12 +43,9 @@ def welcome(request):
         print ('not autenticated')
 
     if request.method == 'POST': # If the form has been submitted...
-        #email = request.session.get('email')
-        #password = request.session.get('password')
         email = request.POST.get("email", "")
         password = request.POST.get("password", "")
         user = authenticate(username=email, password=password)
-        #request.session["user"] = user
         if user is not None:
             # the password verified for the user
             if user.is_active:
@@ -73,31 +71,32 @@ def welcome(request):
         return render(request, "welcome.html")
 
 def signup(request):
-    #must create project!!!
     if request.method == 'POST': # If the form has been submitted...
-        #email = request.session.get('email')
-        #password = request.session.get('password')
+        username=request.POST.get("username","")
         email=request.POST.get("email","")
         password=request.POST.get("password","")
+        password2=request.POST.get("password2","")
+        if str(username).isspace() or str(email).isspace() or str(password).isspace(): #strings with gaps
+            return render(request, "signup.html", {"message": 'Please fill in all the fields'})
+        elif not str(username) or not str(email) or not str(password) or not str(password2): #empty strings
+            return render(request, "signup.html", {"message": 'Please fill in all the fields'})
+        elif User.objects.filter(username=(str(username).lower())): #user exists
+            return render(request, "signup.html", {"message": 'Choose another username'})
+        elif User.objects.filter(username=(str(email).lower())): # email exists
+            return render(request, "signup.html", {"message": 'This email is in use'})
+        elif str(password)!= str(password2): #not same password
+            return render(request, "signup.html", {"message": 'Wrong password verification'})
+        else:
+            request.session['signup-username']=str(username).lower()
+            request.session['signup-email']=str(email).lower()
+            request.session['signup-password'] = password
 
-
-
-        #Check authenticated
-        #If  ok
-        return HttpResponseRedirect("/welcome-categories") # Redirect after POST
-        #If not authenticated
-        #inform
+        return HttpResponseRedirect("/welcome-categories")
     else:
-        #for development mode only!!
-        initialize()
-        return render(request, "signup.html")
-
-    return render_to_response("signup.html")
+        return render(request, 'signup.html')
 
 def welcome_account(request):
     if request.method == 'POST': # If the form has been submitted...
-        #email = request.session.get('email')
-        #password = request.session.get('password')
         email=request.POST.get("email","")
         password=request.POST.get("password","")
         user = authenticate(username=email, password=password)
@@ -132,54 +131,169 @@ def welcome_train(request):
 
 
 def welcome_categories(request):
-    return render(request, "welcome_categories.html")
+    #must create project!!!
+    if request.method == 'POST': # If the form has been submitted...
+        #from session
+        email = request.session.get("signup-email")
+        password = request.session.get("signup-password")
+        username=request.session.get("signup-username")
+        #from request parameters
+        project=request.POST.get("project","")
+        twitter=request.POST.get("twitter","")
+        facebook=request.POST.get("facebook","")
+        hashtags=request.POST.get("hashtags","")
+        rss=request.POST.get("rss","")
+
+        if str(project).isspace() or not str(project): #not a project name
+            return render(request, "welcome_categories.html", {"message": 'Project name is required' })
+        elif str(project).isspace() or str(twitter).isspace() or str(facebook).isspace() or str(hashtags).isspace() or str(hashtags).isspace(): #strings with gaps
+            return render(request, "welcome_categories.html", {"message": 'Please remove empty spaces' })
+        elif not str(twitter) and not str(facebook) and not str(hashtags) and not str(rss): #empty strings
+            return render(request, "welcome_categories.html", {"message": 'Please provide at least one parameter to initialize your project'})
+        else:
+            #create user
+            #create project
+            #create properties
+            user = User(username=username, email=email)
+            user.set_password(password)
+            user.save()
+            print user
+            team = Team(name=username, created_by=user)
+            team.save()
+            project = Project(name=project, created_by=user, owned_by=team)
+            project.save()
+            categoryK = Category.objects.get(name="Keywords")
+            categoryT = Category.objects.get(name="Twitter")
+            categoryF = Category.objects.get(name="Facebook")
+            categoryR = Category.objects.get(name="RSS")
+            if twitter:
+                Category_value.objects.create(value=twitter, category=categoryT, owned_by=project).save()
+            else:
+                Category_value.objects.create(value="", category=categoryT, owned_by=project).save()
+            if facebook:
+                Category_value.objects.create(value=facebook, category=categoryF, owned_by=project).save()
+            else:
+                Category_value.objects.create(value="", category=categoryF, owned_by=project).save()
+            if hashtags:
+                Category_value.objects.create(value=hashtags, category=categoryK, owned_by=project).save()
+            else:
+                Category_value.objects.create(value="", category=categoryK, owned_by=project).save()
+            if rss:
+                Category_value.objects.create(value=rss, category=categoryR, owned_by=project).save()
+            else:
+                Category_value.objects.create(value="", category=categoryR, owned_by=project).save()
+            user2 = authenticate(username=username, password=password)
+            if user2 is not None:
+                # the password verified for the user
+                if user2.is_active:
+                    login(request, user2)
+                    print("User is valid, active and authenticated")
+                    #set user on session property to read it from results
+                else:
+                    print("The password is valid, but the account has been disabled!")
+                    return HttpResponseRedirect("/") # Redirect after POST
+            else:
+                # the authentication system was unable to verify the username and password
+                #print("The username or password were incorrect.")
+                return HttpResponseRedirect("/signup") # Redirect after POST
+
+
+        request.session['signup-username']=""
+        request.session['signup-email']=""
+        request.session['signup-password']=""
+
+        return HttpResponseRedirect("/dashboard")
+    else:
+
+        return render(request, 'welcome_categories.html')
 
 def settings(request):
-    return render(request, "settings.html")
+    if request.user.is_authenticated():
+        project=Project.objects.filter(created_by=request.user).latest("created")
+        if request.method != 'POST':
+            keywords=twitter=facebook=rss=""
+            for project_settings in Category_value.objects.filter(owned_by=project):
+                if project_settings.category.name=="Keywords":
+                    keywords = project_settings.value
+                elif project_settings.category.name=="Twitter":
+                    twitter = project_settings.value
+                elif project_settings.category.name=="Facebook":
+                    facebook = project_settings.value
+                elif project_settings.category.name=="RSS":
+                    rss = project_settings.value
+
+            return render(request, "settings.html",{"keywords":keywords,"twitter":twitter, "facebook":facebook, "rss":rss})
+        else:
+            #get properties
+            twitter = request.POST.get("twitter","")
+            facebook = request.POST.get("facebook","")
+            keywords = request.POST.get("keywords","")
+            rss = request.POST.get("rss","")
+            #update twitter
+            category = Category.objects.get(name="Twitter")
+            if Category_value.objects.filter(owned_by=project, category=category).count()==0:
+                Category_value.objects.create(owned_by=project, category=category, value="").save()
+            else:
+                category_val=Category_value.objects.get(owned_by=project, category=category)
+            category_val.value=twitter
+            category_val.save()
+
+            #update facebook
+            category = Category.objects.get(name="Facebook")
+            if Category_value.objects.filter(owned_by=project, category=category).count()==0:
+                Category_value.objects.create(owned_by=project, category=category, value="").save()
+            else:
+                category_val=Category_value.objects.get(owned_by=project, category=category)
+            category_val.value=facebook
+            category_val.save()
+
+            #update keywords
+            category = Category.objects.get(name="Keywords")
+            if Category_value.objects.filter(owned_by=project, category=category).count()==0:
+                Category_value.objects.create(owned_by=project, category=category, value="").save()
+            else:
+                category_val=Category_value.objects.get(owned_by=project, category=category)
+            category_val.value=keywords
+            category_val.save()
+
+            #update rss
+            category = Category.objects.get(name="RSS")
+            if Category_value.objects.filter(owned_by=project, category=category).count()==0:
+                Category_value.objects.create(owned_by=project, category=category, value="").save()
+            else:
+                category_val=Category_value.objects.get(owned_by=project, category=category)
+            category_val.value=rss
+            category_val.save()
+
+            return render(request, "settings.html",{"keywords":keywords,"twitter":twitter, "facebook":facebook, "rss":rss})
+    else:
+        return HttpResponseRedirect("/")
 
 def create_query(request):
     if request.method == 'POST': # If the form has been submitted...
         ##Do not allow users to vote before a timeperiod has passed.
-        #if request.session.get('has_voted', False):
-        #        return HttpResponse("Wow, your mood changes fast! Try again in 30 seconds.")
-        #request.session['has_voted'] = True
-        #request.session.set_expiry(30) #60 secs
-        user = User.objects.get(username="test1")
-        #print "user %s" % user
-        #team = Team.objects.filter(name="AIDIMA-team")
+        user = request.user
         project = Project.objects.get(created_by=user)
-        #print "project %s" % project
         query_name = request.POST.get("query_name", "")
-        #print "name: %s" % query_name
-
         from_date = request.POST.get("datepicker_from", "")
         to_date = request.POST.get("datepicker_to", "")
-        #print "from date: %s" % from_date
-        #print "to date: %s" % to_date
-
         query = Query(name=query_name, venn="", from_date=parser.parse(from_date), to_date=parser.parse(to_date),
                       created=timezone.now(), created_by=user, owned_by=project)
         query.save()
-        ##print "query %s"%query
         keywords = request.POST.get("keywords", "")
-        ##print "keywords: %s"%keywords
         category = Category.objects.get(name="Keywords")
         query_property = Query_properties(query=query, category=category, properties=keywords)
         query_property.save()
-
         twitter = request.POST.get("twitter", "")
-        ##print "keywords: %s"%keywords
         category = Category.objects.get(name="Twitter")
         query_property = Query_properties(query=query, category=category, properties=twitter)
         query_property.save()
-
         brands = request.POST.get("brands", "")
         try:
             category = Category.objects.filter(name="brands")
         except ValueError:
             print ValueError.message
         if category.__len__(): #exists already the category
-            ##print category
             category = category[0]
         ## otherwise create the category
         else:
@@ -188,11 +302,6 @@ def create_query(request):
             category.save()
         query_property = Query_properties(query=query, category=category, properties=twitter)
         query_property.save()
-
-        #form = ContactForm(request.POST) # A form bound to the POST data
-        #if form.is_valid(): # All validation rules pass
-        # Process the data in form.cleaned_data
-        # ...
 
         ##handle dynamic properties
         i = 0;
@@ -210,13 +319,10 @@ def create_query(request):
                 #print ValueError.message
                 continue
 
-            #print category
             if category.__len__(): #exists already the category
-                #print category
                 category = category[0]
             ## otherwise create the category
             else:
-                #print "is empty"
                 category = Category(name=str(property_name).lower())
                 category.save()
                 ## end store the properties in the category
@@ -230,7 +336,6 @@ def create_query(request):
         return HttpResponseRedirect("/dashboard") # Redirect after POST
     else:
         return render(request, 'create_query.html')
-        #return render_to_response("create_query.html")
 
 
 def home(request):
@@ -242,9 +347,6 @@ def home(request):
 
     if request.user.is_authenticated():
         current_project=Project.objects.filter(created_by=request.user).latest("created")
-        #current_project = Project.objects.latest("created")
-        # #print current_project.name # debug
-        # queries
         queries = Query.objects.filter(owned_by=current_project.id)
         list_of_queries = []
         titles = ['Name', 'Keywords', 'Accounts', 'Created by', 'From', 'To', 'Created']
@@ -321,21 +423,14 @@ def results(request, query_id):
             if results: #bring it from the database
                 response = results.__getitem__(0).results
                 response = json.loads(response)
-                #print response
             else: #make a new query
                 query_all = '{"query":{"bool":{"must":[{"query_string":{"query":"%s"}},{"term":{"doc.lang":"en"}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":100000, "sort":["_score"]}' % (
                     all_properties, int(time.mktime(query.from_date.timetuple()) * 1000),
                     int(time.mktime(query.to_date.timetuple()) * 1000))
-                #print query_all
                 response = parse_query_for_sentiments(query_all)
-                ##print "Got response: %s " %response
                 newResponse = Results(query=query, results=json.dumps(response), updated=datetime.datetime.now())
-                ##print "Stored object"
                 newResponse.save()
-                #print response
-
             ## count the occurrences in response
-
             for property in properties.keys():
                 list = properties[property].split(",")
                 word_counter = []
@@ -343,15 +438,10 @@ def results(request, query_id):
                     number = json.dumps(response).count(word)
                     text = '{"name":"%s","times":"%s", "sentiment":0}' % (word, number)
                     word_counter.append(json.loads(text))
-                    ##print " The property %s in list of properties %s has been found %s times" % (word, property, number)
                 text = {}
                 text["category"] = property
                 text["properties"] = word_counter
                 categories_counter.append(text)
-
-            ##print categories_counter
-
-
             for message in response:
                 if message["_score"] > 0.05:
                     test.append(message["_source"])
@@ -361,12 +451,11 @@ def results(request, query_id):
                         if message["_source"]["doc"]["senti_tag"] == "positive":
                             # for global metrics
                             positive_counter += 1
-                            ##print "Found a message with positive tag: %s " % json.dumps(message["_source"]["doc"])
                             # for mosaic diagram
                             for category in categories_counter:
                                 for property in category["properties"]:
                                     if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
-                                        ##print " Message with positive tag: %s : the found property is: %s"%(json.dumps(message["_source"]["doc"]), property["name"])
+                                        #print " Message with positive tag: %s : the found property is: %s"%(json.dumps(message["_source"]["doc"]), property["name"])
                                         pos_number = int(property["sentiment"]) + 1
                                         property["sentiment"] = pos_number
 
@@ -382,17 +471,11 @@ def results(request, query_id):
 
                         elif message["_source"]["doc"]["senti_tag"] == "neutral":
                             neutral_counter += 1
-                            ##print "Found a message with tag: " % message["_source"]["doc"]
                     except:
-                        ##print "No sentiment tag for message %s" %message["_source"]["doc"]
                         continue
-
-                        ##print categories_counter
-
         except ValueError:
             #print ValueError.message
             raise Http404()
-            #for i in data:
 
         return render(request, "results.html",
                       {"query_id": query.id, "query_name": query.name, "response": test, "positive": positive_counter,
@@ -410,23 +493,14 @@ def results_update(request):
     req = urllib2.Request("http://localhost:8000/user_based_sentiment?sentiment_values=%s" % str(update_bulk))
     resp = urllib2.urlopen(req)
     response = resp.read()
-
-    #
-    #
-    # response = urllib2.urlopen(
-    #     'http://localhost:8000/user_based_sentiment?sentiment_values=%s' % str(update_bulk)
-    # )
-    # response = response.read()
-    # #response = json.loads(response)
     print "stored: %s" %response
-
     ##delete cashing from results, to get the updated ones from "results" methods
     results_id = request.POST.get("results-id", "")
     query = Query.objects.get(id=results_id)
     results = Results.objects.get(query=query)
     if results:
         results.delete()
-        ## redirect to the proper page again
+    ## redirect to the proper page again
     path = "/queries/%s" % results_id
     return HttpResponseRedirect(path) # Redirect after update to the page
 
@@ -449,25 +523,13 @@ def train(request):
     if request.method == 'POST': # If the form has been submitted...
         #must handle .csv
         csv=request.FILES.get("file","")
-        #csv=request.FILES['file']
         file = request.FILES['file']
-        #print file
-        ##print file.content_type
         if file.content_type == 'text/csv':
-            #response = urllib2.urlopen('http://83.212.114.237:9200/twitter/_search',file)
             req = urllib2.Request('http://83.212.114.237:8081/RA/public_process/sentimentTrain')
             req.add_header('-T',file)
             resp = urllib2.urlopen(req)
             response = resp.read()
-            ##print response
             return HttpResponseRedirect("/dashboard") # Redirect after POST
-
-        ##print file.read()
-        ##print file.name           # Gives name
-        ##print file.content_type   # Gives Content type text/html etc
-        ##print file.size           # Gives file's size in byte
-        ##print file.read()         # Reads file
-        ##print csv
         else:
             #print "not valid file"
             return HttpResponseRedirect("/training") #
@@ -485,15 +547,6 @@ def get_query_properties(query):
                 continue
             else:
                 results[str(query_property.category.name)] = str(query_property.properties)
-        # if query_property.category.name == 'Keywords':
-        #     keywords = query_property.properties
-        # elif query_property.category.name == 'Twitter':
-        #     usernames = '%s %s' % (usernames, query_property.properties)
-        # elif query_property.category.name == 'Facebook':
-        #     usernames = '%s %s' % (usernames, query_property.properties)
-
-    #result = {"Keywords": keywords, "Usernames": usernames}
-    ##print result
     return results
 
 
@@ -510,8 +563,6 @@ def parse_query_for_sentiments(query):
 
 def user_based_sentiment(request):
     if request.method == 'GET':
-
-        #http://localhost:8000/user_based_sentiment?sentiment_values='395902357026131968:positive,%20395901656044670976:positive,%20396550264318328832:negative,%20395902917976522752:negative,%20395902917976522752:na,'
         sentiment_values = request.GET.get("sentiment_values", "")
 
         if sentiment_values:

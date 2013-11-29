@@ -1889,7 +1889,7 @@ table td[class*="span"], table th[class*="span"], .row-fluid table td[class*="sp
     background-color: #c4e3f3;
 }
 
-/*[class^="icon-"],
+[class^="icon-"],
 [class*=" icon-"] {
   display: inline-block;
   width: 14px;
@@ -1901,11 +1901,11 @@ table td[class*="span"], table th[class*="span"], .row-fluid table td[class*="sp
   background-image: url("../img/glyphicons-halflings.png");
   background-position: 14px 14px;
   background-repeat: no-repeat;
-}*/
+}
 
 /* White icons with optional class, or on hover/focus/active states of certain elements */
 
-/*.icon-white,
+.icon-white,
 .nav-pills > .active > a > [class^="icon-"],
 .nav-pills > .active > a > [class*=" icon-"],
 .nav-list > .active > a > [class^="icon-"],
@@ -1923,7 +1923,7 @@ table td[class*="span"], table th[class*="span"], .row-fluid table td[class*="sp
 .dropdown-submenu:hover > a > [class*=" icon-"],
 .dropdown-submenu:focus > a > [class*=" icon-"] {
   background-image: url("../img/glyphicons-halflings-white.png");
-}*/
+}
 
 .icon-glass {
     background-position: 0 0;

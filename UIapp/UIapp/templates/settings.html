@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}New query{% endblock %}
+{% block title %}Project settings{% endblock %}
 
 {% block menu %}
     <!-- no menu -->
@@ -22,12 +22,12 @@
     <!--******************** Contact Section ********************-->
     <section id="portfolio" class="single-page scrollblock" xmlns="http://www.w3.org/1999/html">
         <div class="container">
-            <h2>Setup your account</h2>
+            <h2>Update your project settings</h2>
             <hr width="100%">
             <div class="row">
                 <div class="span12">
                     <div class="cform" id="theme-form">
-                        <form action="/dashboard" method="post" class="cform-form">
+                        <form action="" method="post" class="cform-form">
                             {% csrf_token %}
                             <!-- twitter-->
                             <div class="row">
@@ -36,22 +36,20 @@
                                     <label>Twitter Accounts: </label>
                                 </span></div>
                                 <div class="span3"> <span class="text-left">
-                                    <input name="twitter" type="text"
-                                           value="ikea, aidima"
-                                           title="Fill in the username"></textarea>
+                                    <textarea name="twitter" type="text"
+                                           title="Update the username">{{ twitter }}</textarea>
                                 </span></div>
                                 <div class="span4"></div>
                             </div>
-                            <!-- password-->
+                            <!-- facebook-->
                             <div class="row">
                                 <div class="span4"></div>
                                 <div class="span1"> <span class="label-important">
                                     <label>Facebook: </label>
                                 </span></div>
                                 <div class="span3"> <span class="text-left">
-                                    <input name="facebook" type="text"
-                                           value="aidima,ikea-official"
-                                           title="Fill in the facebook pages" ></textarea>
+                                    <textarea name="facebook" type="text"
+                                           title="Update the facebook pages" >{{ facebook }}</textarea>
                                 </span></div>
                                 <div class="span4"></div>
                             </div>
@@ -62,24 +60,33 @@
                                     <label>Hashtags: </label>
                                 </span></div>
                                 <div class="span3"> <span class="text-left">
-                                    <input name="keywords" type="text"
-                                           value="furniture, bed, sofa, living room, chair, ikea, aidima"
-                                           title="Fill in the hashtags" required></textarea>
+                                    <textarea name="keywords" type="text"
+                                           title="Update the hashtags">{{ keywords }}</textarea>
+                                </span></div>
+                                <div class="span4"></div>
+                            </div>
+
+                            <!-- rss-->
+                            <div class="row">
+                                <div class="span4"></div>
+                                <div class="span1"> <span class="label-important">
+                                    <label>RSS: </label>
+                                </span></div>
+                                <div class="span3"> <span class="text-left">
+                                    <textarea name="rss" type="text" title="Update the RSS URLs">{{ rss }}</textarea>
                                 </span></div>
                                 <div class="span4"></div>
                             </div>
 
 
-                            <div class="row"><br></div>
-
                             <div>
                                 <div class="span3"></div>
                                 <div class="span6">
-                                    <input type="submit" value="Update" class="cform-submit pull-right">
+                                    <input type="submit" value="save" class="cform-submit pull-right">
                                 </div>
                                 <div class="span3"></div>
                             </div>
-                            <div class="cform-response-output"></div>
+
                         </form>
                     </div>
                 </div>

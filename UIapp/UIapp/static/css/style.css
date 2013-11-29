@@ -784,6 +784,7 @@ section#team .align, section#contact .align {
 div.cform-response-output {
     max-width: 60%;
     text-align: center;
+    text-emphasis-color: red;
     margin-left: 40% !important;
     margin-top: 0.5em !important;
     padding: 0.5em !important;

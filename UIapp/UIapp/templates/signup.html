@@ -27,8 +27,13 @@
         <div class="row">
             <div class="span12">
                 <div class="cform" id="theme-form">
-                    <form action="/welcome-categories" method="post" class="cform-form">
+                    <form action="" method="post" class="cform-form">
                         {% csrf_token %}
+                        {% if message %}
+                            <div class="row">
+                                <div class="padded aligncenter bordered" style="color: red;"><i class="fa fa-warning"></i> {{ message }}</div>
+                            </div>
+                        {% endif %}
                         <!-- username-->
                         <div class="row">
                             <div class="span4"></div>
@@ -50,7 +55,7 @@
                                 </span></div>
                             <div class="span3"> <span class="text-left">
                                     <input name="password" type="password"
-                                           title="Fill in the password" required></textarea>
+                                           title="Choose a password" required></textarea>
                                 </span></div>
                             <div class="span4"></div>
                         </div>
@@ -62,7 +67,7 @@
                                 </span></div>
                             <div class="span3"> <span class="text-left">
                                     <input name="password2" type="password"
-                                           title="Verify the password" required></textarea>
+                                           title="Verify password" required></textarea>
                                 </span></div>
                             <div class="span4"></div>
                         </div>
@@ -80,9 +85,6 @@
                             <div class="span4"></div>
                         </div>
 
-
-                        <div class="row"><br></div>
-
                         <div>
                             <div class="span3"></div>
                             <div class="span6">
@@ -91,7 +93,7 @@
                             </div>
                             <div class="span3"></div>
                         </div>
-                        <div class="cform-response-output"></div>
+
                     </form>
                 </div>
             </div>

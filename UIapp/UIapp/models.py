@@ -47,7 +47,7 @@ class Category_value(models.Model):
         pass
 
     def __unicode__(self):
-        return "%s" % self.value
+        return "%s : %s : %s" % (self.category.name, self.owned_by.name,self.value)
 
 
 class Query(models.Model):

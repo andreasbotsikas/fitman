@@ -27,8 +27,26 @@
             <div class="row">
                 <div class="span12">
                     <div class="cform" id="theme-form">
-                        <form action="/dashboard" method="post" class="cform-form">
+                        <form action="" method="post" class="cform-form">
                             {% csrf_token %}
+                            {% if message %}
+                                <div class="row">
+                                    <div class="padded aligncenter bordered" style="color: red;"><i class="fa fa-warning"></i> {{ message }}</div>
+                                </div>
+                            {% endif %}
+                            <!-- project-->
+                            <div class="row">
+                                <div class="span4"></div>
+                                <div class="span1"> <span class="label-important">
+                                    <label>Project name*: </label>
+                                </span></div>
+                                <div class="span3"> <span class="text-left">
+                                    <input name="project" type="text"
+                                              placeholder="e.g. myProjectName"
+                                              title="Choose a name for your project"></textarea>
+                                </span></div>
+                                <div class="span4"></div>
+                            </div>
                             <!-- twitter-->
                             <div class="row">
                                 <div class="span4"></div>
@@ -62,7 +80,7 @@
                                     <label>Hashtags: </label>
                                 </span></div>
                                 <div class="span3"> <span class="text-left">
-                                    <textarea name="email" type="text"
+                                    <textarea name="hashtags" type="text"
                                            placeholder="e.g. furniture, shoes, clothes, holidays"
                                            title="Fill in the hashtags" required></textarea>
                                 </span></div>
@@ -82,18 +100,15 @@
                                 </span></div>
                                 <div class="span4"></div>
                             </div>
-
-                            <div class="row"><br></div>
-
                             <div>
                                 <div class="span3"></div>
                                 <div class="span6">
                                     <input type="button" value="< Back" class="cform-button pull-left" onClick="history.go(-1);return true;">
+
                                     <input type="submit" value="Finish" class="cform-submit pull-right">
                                 </div>
                                 <div class="span3"></div>
                             </div>
-                            <div class="cform-response-output"></div>
                         </form>
                     </div>
                 </div>
