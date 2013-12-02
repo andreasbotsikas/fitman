@@ -20,7 +20,7 @@ from initialiaze_repo import initialize
 from models import Category, Team, Project, Category_value, Query, Query_properties, Results
 from updateSentimentKeys import multiple_values_update
 import csv
-
+import configurations
 
 
 
@@ -68,7 +68,7 @@ def welcome(request):
         #inform
     else:
         #for development mode only!!
-        #initialize()
+        initialize()
         return render(request, "welcome.html")
 
 def signup(request):
@@ -486,16 +486,15 @@ def results(request, query_id):
         return HttpResponseRedirect("/")
 
 def results_update(request):
-    if request.method != 'POST': # If the form has been submitted...
+    if request.method != 'POST': # If the form has not been submitted...
         raise Http404('Only POST methods allowed')
     update_bulk = request.POST.get("retrain", "")
-    ##send the bulk to the db service
-    #http://localhost:8000/user_based_sentiment?sentiment_values='395902357026131968:positive,%20395901656044670976:positive,%20396550264318328832:negative,%20395902917976522752:negative,%20395902917976522752:na,'
+    ## send the bulk to the db service
     req = urllib2.Request("http://localhost:8000/user_based_sentiment?sentiment_values=%s" % str(update_bulk))
     resp = urllib2.urlopen(req)
     response = resp.read()
     print "stored: %s" %response
-    ##delete cashing from results, to get the updated ones from "results" methods
+    ## delete cashing from results, to get the updated ones from "results" methods
     results_id = request.POST.get("results-id", "")
     query = Query.objects.get(id=results_id)
     results = Results.objects.get(query=query)
@@ -517,7 +516,7 @@ def test(request):
 
 
 def search(request):
-    return render_to_response("free-search.html")
+    return render_to_response("free-search.html", {"kibana": configurations.kibana_path})
 
 
 def train(request):
@@ -526,7 +525,7 @@ def train(request):
         csv=request.FILES.get("file","")
         file = request.FILES['file']
         if file.content_type == 'text/csv':
-            req = urllib2.Request('http://83.212.114.237:8081/RA/public_process/sentimentTrain')
+            req = urllib2.Request(configurations.sentiment_training_path)
             req.add_header('-T',file)
             resp = urllib2.urlopen(req)
             response = resp.read()
@@ -554,7 +553,7 @@ def get_query_properties(query):
 def parse_query_for_sentiments(query):
     #query='{"query":{"bool":{"must":[{"query_string":{"query":"+(%s) +(%s)"}},{"term":{"doc.lang":"en"}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":6000, "sort":["_score"]}' %(properties["Keywords"],properties["Usernames"], int(time.mktime(query.from_date.timetuple())*1000), int(time.mktime(query.to_date.timetuple())*1000))
     response = urllib2.urlopen(
-        'http://83.212.114.237:9200/twitter/_search',
+        configurations.elastic_search_path,
         query
     )
     response = response.read()

@@ -22,7 +22,6 @@
     .crop img{
         margin:-20px -15px -40px -55px;
     }
-
 </style>
 <script type="text/javascript" charset="utf-8">
     $(document).ready(function () {
@@ -60,8 +59,6 @@
         });
     });
 </script>
-<!-- flat-tabs -->
-<!--link href="/s/css/flat-tabs.css" rel="stylesheet"-->
 <!-- Google Charts-->
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript">
@@ -118,15 +115,11 @@
         chart.draw(data, options);
     }
 </script>
-
-<script type="text/javascript" src="/s/js/bootstrap.js"></script>
 <script type="text/javascript">
     jQuery(document).ready(function ($) {
         $('#tabs').tab();
     });
 </script>
-
-
 <script type="text/javascript" charset="utf-8">
     $( document ).ready(function() {
         //console.log( "ready!" );
@@ -137,10 +130,12 @@
         });
     });
 </script>
+<script type="text/javascript" src="/s/js/bootstrap.js"></script>
 
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="http://blueimp.github.io/Gallery/css/blueimp-gallery.min.css">
-    <link rel="stylesheet" href="/s/css/bootstrap-image-gallery.min.css">
+<!--link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"-->
+<link rel="stylesheet" href="/s/css/bootstrap.min.css">
+<link rel="stylesheet" href="http://blueimp.github.io/Gallery/css/blueimp-gallery.min.css">
+<link rel="stylesheet" href="/s/css/bootstrap-image-gallery.min.css">
 
 {% endblock %}
 
@@ -155,7 +150,7 @@
 <div class="container">
 
     <!-- Four columns -->
-    <h1 class="brand pull-left">Sentiment Analysis</h1>
+    <h4 class="brand pull-left">Sentiment Analysis</h4>
     <hr width="100%">
     <div class="row">
         <table id="table">
@@ -204,7 +199,7 @@
 </div>
 <div class="container">
     <!-- row: Tabs for categories-->
-    <h1 class="brand pull-left">Frequency of Categories</h1>
+    <h4 class="brand pull-left">Frequency of Categories</h4>
     <hr width="100%">
     <div class="row">
         <div class="span9">
@@ -290,6 +285,8 @@
 <!-- Image Gallery-->
 
 <div class="container">
+    <h4 class="brand pull-left">Media Gallery</h4>
+    <hr width="100%">
     <div class="row">
         <!-- The Bootstrap Image Gallery lightbox, should be a child element of the document body -->
         <div id="blueimp-gallery" class="blueimp-gallery">
@@ -312,13 +309,13 @@
                         </div>
                         <div class="modal-body next"></div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-default pull-left prev">
-                                <i class="glyphicon glyphicon-chevron-left"></i>
+                            <button type="button" class="btn pull-left prev">
+                                <i class="fa fa-arrow-left"></i>
                                 Previous
                             </button>
-                            <button type="button" class="btn btn-primary next">
+                            <button type="button" class="btn next pull-right">
                                 Next
-                                <i class="glyphicon glyphicon-chevron-right"></i>
+                                <i class="fa fa-arrow-right"></i>
                             </button>
                         </div>
                     </div>
@@ -343,6 +340,4 @@
 {% block end_of_body %}
     <script src="http://blueimp.github.io/Gallery/js/jquery.blueimp-gallery.min.js"></script>
     <script src="/s/js/bootstrap-image-gallery.min.js"></script>
-
-
 {% endblock %}
