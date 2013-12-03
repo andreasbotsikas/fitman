@@ -1,10 +1,10 @@
 __author__ = 'Jo'
 
-import urllib2
+import urllib2,urllib
 import json
 import datetime
 import time
-import hashlib
+
 
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, HttpResponse
@@ -21,7 +21,12 @@ from models import Category, Team, Project, Category_value, Query, Query_propert
 from updateSentimentKeys import multiple_values_update
 import csv
 import configurations
-
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm
+from django.contrib.auth.tokens import default_token_generator
+#from django.shortcuts import resolve_url
+from django.core.urlresolvers import reverse, resolve
+from django.template.response import TemplateResponse
+from django.contrib.auth.views import password_reset
 
 
 def index(request):
@@ -145,6 +150,8 @@ def welcome_categories(request):
         hashtags=request.POST.get("hashtags","")
         rss=request.POST.get("rss","")
 
+        twitter_properties=""
+
         if str(project).isspace() or not str(project): #not a project name
             return render(request, "welcome_categories.html", {"message": 'Project name is required' })
         elif str(project).isspace() or str(twitter).isspace() or str(facebook).isspace() or str(hashtags).isspace() or str(hashtags).isspace(): #strings with gaps
@@ -169,6 +176,7 @@ def welcome_categories(request):
             categoryR = Category.objects.get(name="RSS")
             if twitter:
                 Category_value.objects.create(value=twitter, category=categoryT, owned_by=project).save()
+                twitter_properties+=twitter
             else:
                 Category_value.objects.create(value="", category=categoryT, owned_by=project).save()
             if facebook:
@@ -177,6 +185,7 @@ def welcome_categories(request):
                 Category_value.objects.create(value="", category=categoryF, owned_by=project).save()
             if hashtags:
                 Category_value.objects.create(value=hashtags, category=categoryK, owned_by=project).save()
+                twitter_properties += ",%s" %hashtags
             else:
                 Category_value.objects.create(value="", category=categoryK, owned_by=project).save()
             if rss:
@@ -202,6 +211,13 @@ def welcome_categories(request):
         request.session['signup-username']=""
         request.session['signup-email']=""
         request.session['signup-password']=""
+
+        # setup project on twitter connector
+        update_twitter_connector(username, project, twitter_properties)
+
+        # setup project on fb connector
+        # setup project on RSS GE
+
 
         return HttpResponseRedirect("/dashboard")
     else:
@@ -266,6 +282,12 @@ def settings(request):
             category_val.value=rss
             category_val.save()
 
+            twitter_properties=twitter+','+keywords
+            #update twitter connector
+            update_twitter_connector(project.owned_by.name, project.name, twitter_properties)
+            #update facebook connector
+            #update RSS connector
+
             return render(request, "settings.html",{"keywords":keywords,"twitter":twitter, "facebook":facebook, "rss":rss})
     else:
         return HttpResponseRedirect("/")
@@ -311,8 +333,6 @@ def create_query(request):
         while request.POST.get(prop_value, ""):
             property_name = request.POST.get(prop_name, "")
             property_value = request.POST.get(prop_value, "")
-            #print property_name
-            #print property_value
             try:
                 ## try to find if the category already exists - in lowercase
                 category = Category.objects.filter(name=(str(property_name).lower()))
@@ -551,7 +571,6 @@ def get_query_properties(query):
 
 
 def parse_query_for_sentiments(query):
-    #query='{"query":{"bool":{"must":[{"query_string":{"query":"+(%s) +(%s)"}},{"term":{"doc.lang":"en"}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":6000, "sort":["_score"]}' %(properties["Keywords"],properties["Usernames"], int(time.mktime(query.from_date.timetuple())*1000), int(time.mktime(query.to_date.timetuple())*1000))
     response = urllib2.urlopen(
         configurations.elastic_search_path,
         query
@@ -615,3 +634,11 @@ def download_csv(request):
             continue
 
     return response
+
+def update_twitter_connector(username, project, twitter_properties):
+    twitter_properties='storeKeywords?id=%s_%s&keywords=%s'%(urllib.quote(str(username)),urllib.quote(str(project)), urllib.quote(twitter_properties))
+    print twitter_properties
+    path="%s%s" %(configurations.twitter_connector,twitter_properties)
+    response = urllib2.urlopen(path)
+    #response = response.read()
+    #print response

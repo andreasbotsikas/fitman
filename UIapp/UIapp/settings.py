@@ -126,7 +126,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     # 'django.contrib.admindocs',
-    'UIapp'
+    'UIapp',
+    'password_reset'
 )
 
 # A sample logging configuration. The only tangible logging
@@ -166,3 +167,4 @@ PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.MD5PasswordHasher',
     'django.contrib.auth.hashers.CryptPasswordHasher',
 )
+
