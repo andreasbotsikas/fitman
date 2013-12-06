@@ -487,8 +487,8 @@ def results(request, query_id):
                             for category in categories_counter:
                                 for property in category:
                                     if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
-                                        pos_number = int(property["sentiment"]) - 1
-                                        property["sentiment"] = pos_number
+                                        neg_number = int(property["sentiment"]) - 1
+                                        property["sentiment"] = neg_number
 
                         elif message["_source"]["doc"]["senti_tag"] == "neutral":
                             neutral_counter += 1
@@ -629,7 +629,7 @@ def download_csv(request):
     print parsed
     for message in parsed:
         try:
-            writer.writerow([str(message["fields"]["doc.text_no_url"]).replace(",", " "), message["fields"]["doc.senti_tag"] ])
+            writer.writerow([str(message["fields"]["doc.text_no_url"]).replace(",", " ").strip(), message["fields"]["doc.senti_tag"] ])
         except:
             continue
 
