@@ -32,7 +32,7 @@ urlpatterns = patterns('',
                        url(r'^train', views.train, name='train'),
                        # Password Reset
                        #url(r'^password_reset', include('password_reset.urls')),
-                       url(r'user_based_sentiment',views.user_based_sentiment,name='user_based_sentiment'),
+                       # url(r'user_based_sentiment',views.user_based_sentiment,name='user_based_sentiment'),
                        url(r'^results-update', views.results_update, name='results-update'),
                        url(r'^download-csv', views.download_csv, name='results-update'),
                        (r'^s/(?P<path>.*)$', 'django.views.static.serve',
