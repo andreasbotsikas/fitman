@@ -624,9 +624,9 @@ def download_csv(request):
     response['Content-Disposition'] = 'attachment; filename="train-sentiment.csv"'
     writer = csv.writer(response)
 
-    training_query = '{"query" : {"filtered" : {"query" : {"bool" : {"should" : [{"query_string" : {"query" : "*"}}]}},"filter" : {"bool" : {"must" : [{"match_all" : {}},{"terms" : {"_type" : ["couchbaseDocument"]}},{"terms" : {"doc.lang" : ["en"]}},{"range" : {"doc.created_at" : {"to" : 1385723853000,"from" : 1385654402000}}},{"bool" : {"must" : [{"match_all" : {}}]}}]}}}},"size" : 1000,"fields" : ["doc.text_no_url","doc.senti_tag"]}'
+    training_query = '{"query" : {"filtered" : {"query" : {"bool" : {"should" : [{"query_string" : {"query" : "*"}}]}},"filter" : {"bool" : {"must" : [{"match_all" : {}},{"terms" : {"_type" : ["couchbaseDocument"]}},{"terms" : {"doc.lang" : ["en"]}},{"bool" : {"must" : [{"match_all" : {}}]}}]}}}},"size" : 1000,"sort": [{"doc.created_at": {"order": "desc"}}],"fields" : ["doc.text_no_url","doc.senti_tag"]}'
     parsed = parse_query_for_sentiments(training_query)
-    print parsed
+    #print parsed
     for message in parsed:
         try:
             writer.writerow([str(message["fields"]["doc.text_no_url"]).replace(",", " ").strip(), message["fields"]["doc.senti_tag"] ])

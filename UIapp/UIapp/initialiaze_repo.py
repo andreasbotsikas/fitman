@@ -16,14 +16,12 @@ def initialize():
         categoryT.save()
         categoryF = Category.objects.create(name="Facebook")
         categoryF.save()
-        categoryF = Category.objects.create(name="brands")
-        categoryF.save()
         categoryR = Category.objects.create(name="RSS")
         categoryR.save()
 
         ## Data below are only for development purposes!!
 
-        # user = User.objects.create(username="test1",password="123")
+        # user = User.objects.create(username="test1",password="foo")
         # user.save()
         # team = Team.objects.create(name="AIDIMA-team", created_by=user)
         # team.save()
@@ -37,7 +35,7 @@ def initialize():
         # value3.save()
         # value4 = Category_value.objects.create(value=" ", category=categoryR, owned_by=project)
         # value4.save()
-        #
+
         # #extend for queries
         # categoryM = Category.objects.create(name="materials")
         # categoryM.save()
