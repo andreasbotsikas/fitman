@@ -430,6 +430,7 @@ def results(request, query_id):
             ## Must store the response, if there is no reponse, otherwise return the stored one.
             ## IF NOT STORED
             query = Query.objects.get(id=query_id,created_by=request.user)
+            query_params=Query_properties.objects.filter(query=query)
             results = Results.objects.filter(query=query)
             #run for all categories
             properties = get_query_properties(query)
@@ -499,7 +500,7 @@ def results(request, query_id):
             raise Http404()
 
         return render(request, "results.html",
-                      {"query_id": query.id, "query_name": query.name, "response": test, "positive": positive_counter,
+                      {"query_id": query.id, "query_name": query.name, "query":query_params , "response": test, "positive": positive_counter,
                        "negative": negative_counter, "neutral": neutral_counter,
                        "categories": categories_counter})
     else:

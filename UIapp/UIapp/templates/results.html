@@ -134,7 +134,7 @@
 {% block body %}
 
     <div class="container">
-        <h1 class="brand pull-left">Report: {{ query_name }}</h1>
+        <h2 class="brand pull-left">Report:"{{ query_name }}"</h2>
          <a data-toggle="modal" href="/query/delete/{{ query_id }}" class="btn btn-primary pull-right"><i class="fa fa-trash-o"></i> Delete</a>
     </div>
 
@@ -149,7 +149,25 @@
     </ul>
     <!-- Tab panes -->
     <div class="tab-content">
-        <div class="tab-pane" id="query"></div>
+        <div class="tab-pane" id="query">
+            <div class="cform">
+                <form action="" class="cform-form">
+                {% for parameters in query %}
+                    <div class="row">
+                        <div class="span4"></div>
+                        <div class="span1">
+                                        <label>{{ parameters.category }}: </label>
+                                    </div>
+                        <div class="span3"> <span class="text-left">
+                                        <textarea type="text"
+                                               title="properties" disabled>{{ parameters.properties }}</textarea>
+                                    </span></div>
+                        <div class="span4"></div>
+                    </div>
+                {% endfor %}
+                </form>
+            </div>
+        </div>
         <div class="tab-pane active" id="messages">
             <!-- Textual Results -->
             <div class="tab-responsive">
