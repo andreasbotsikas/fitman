@@ -376,9 +376,9 @@ def home(request):
             query_response['id'] = query.id
             query_response['Name'] = query.name
             query_response['Created_by'] = query.created_by.username
-            query_response['From'] = query.from_date
-            query_response['To'] = query.to_date
-            query_response['Created'] = query.created
+            query_response['From'] = query.from_date.date()
+            query_response['To'] = query.to_date.date()
+            query_response['Created'] = query.created.date()
 
             #query_response= "{'id':'%s','Name': '%s'" %(query.id, query.name)
             dynamic_properties = get_query_properties(query)

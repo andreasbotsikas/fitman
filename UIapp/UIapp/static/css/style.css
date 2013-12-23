@@ -1281,3 +1281,10 @@ footer p {
 @media only screen  and (min-width : 1224px) {
     /* Styles */
 }
+
+
+@tab-responsive (max-width: 480px) {
+    .nav-tabs > li {
+        float:none;
+    }
+}

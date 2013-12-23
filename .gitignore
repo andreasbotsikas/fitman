@@ -47,3 +47,5 @@ nosetests.xml
 .idea/workspace.xml
 
 .idea/modules.xml
+
+UIapp/uiTest.db
