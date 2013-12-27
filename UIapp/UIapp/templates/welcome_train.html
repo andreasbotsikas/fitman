@@ -20,15 +20,23 @@
 {% block body %}
     <section id="portfolio" class="single-page scrollblock" xmlns="http://www.w3.org/1999/html">
         <div class="container aligncenter">
-            <img src="/s/img/step2.png" height="400px" width="400px"/>
+            <img src="/s/img/step2.png" height="500px" width="500px"/>
+            <div class="row">
+                <div class="span4"></div>
+                <div class="span4">
+                    <label class="aligncenter"><b>Training makes it better!</b><br>
+                        Once you have set up your project, wait some hours for the Anlzer to get the first results. Then you may train him to serve you better, with more intelligence. <br/><br/>
+                        <i>Forgot to include something on step 1? You can still make changes later through the project settings.</i></label>
+                </div>
+                <div class="span4"></div>
+            </div>
         </div>
 
                 <div class="container">
-                    <h2>Train Anlzer to fit your industry</h2>
                     <hr width="100%">
                     <div class="row">
                         <div class="cform" id="theme-form">
-                            <form action="/train" method="post" class="cform-form" enctype="multipart/form-data">
+                            <form action="" method="post" class="cform-form" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 <div class="row"><br></div>
                                 <!-- File Upload-->
@@ -40,21 +48,21 @@
                                         <input type="file" required name="file">
                                     </span></div>
                                     <div class="span4"> <span class="label-info">
-                                        <label>Upload the .csv file as shown below to train the system</label>
+                                        <label>Upload a .csv file to train the system</label>
                                     </span></div>
                                 </div>
 
                                 <!-- Info-->
                                 <div class="row">
                                     <div class="span4"> <span class="label-important alignright">
-                                        <label>.csv example: </label>
+                                        <label>A .csv example: </label>
                                     </span></div>
                                     <div class="span4">
                                         <textarea name="keyrwords" class="cform-textarea" cols="50" rows="5"
                                                   placeholder="" title="csv. example" disabled="true">I feel wonderful in Disneyland, positive
-                                            I feel sick on the roller coaster :(, negative
-                                            Waiting for hours in the queue, negative
-                                            Yahoo!! This is Disneyland!!, positive
+I feel sick on the roller coaster :(, negative
+Waiting for hours in the queue, negative
+Yahoo!! This is Disneyland!!, positive
                                         </textarea>
                                     </div>
                                 </div>
@@ -74,8 +82,13 @@
                                 <div class="row"><br></div>
 
 
-                                <div class="aligncenter">
-                                    <input type="submit" value="Upload" class="cform-submit pull-right">
+                                <div>
+                                    <div class="span3"></div>
+                                    <div class="span6">
+                                        <input type="button" value="Skip" class="cform-button pull-left" onClick='window.location="/welcome-report";'>
+                                        <input type="submit" value="Upload>" class="cform-submit pull-right">
+                                    </div>
+                                    <div class="span3"></div>
                                 </div>
                             </form>
                         </div>

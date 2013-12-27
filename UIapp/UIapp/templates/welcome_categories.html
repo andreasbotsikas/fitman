@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}New query{% endblock %}
+{% block title %}Setup project{% endblock %}
 
 {% block menu %}
     <!-- no menu -->
@@ -20,17 +20,23 @@
 {% block body %}
     <section id="portfolio" class="single-page scrollblock" xmlns="http://www.w3.org/1999/html">
         <div class="container aligncenter">
-            <img src="/s/img/step1.png" height="400px" width="400px"/>
+            <img src="/s/img/step1.png" height="500px" width="500px"/>
+            <div class="row">
+                <div class="span4"></div>
+                <div class="span4">
+                    <label class="aligncenter"><b>First you need to set up your project!</b> <br> Provide the terms to search for, the Twitter accounts to follow and the Facebook pages to track</label>
+                </div>
+                <div class="span4"></div>
+            </div>
         </div>
-    <!--******************** Contact Section ********************-->
+    <!--******************** choose categories ********************-->
 
         <div class="container">
-            <h2>Setup your account</h2>
             <hr width="100%">
             <div class="row">
                 <div class="span12">
                     <div class="cform" id="theme-form">
-                        <form action="" method="post" class="cform-form">
+                        <form action="/welcome-categories" method="post" class="cform-form">
                             {% csrf_token %}
                             {% if message %}
                                 <div class="row">
@@ -46,7 +52,7 @@
                                 <div class="span3"> <span class="text-left">
                                     <input name="project" type="text"
                                            placeholder="e.g. myProjectName"
-                                           title="Choose a name for your project">
+                                           title="Choose a name for your project" required>
                                 </span></div>
                                 <div class="span4"></div>
                             </div>
@@ -63,7 +69,7 @@
                                 </span></div>
                                 <div class="span4"></div>
                             </div>
-                            <!-- password-->
+                            <!-- facebook-->
                             <div class="row">
                                 <div class="span4"></div>
                                 <div class="span1"> <span class="label-important">
@@ -85,7 +91,7 @@
                                 <div class="span3"> <span class="text-left">
                                     <textarea name="hashtags" type="text"
                                               placeholder="e.g. furniture, shoes, clothes, holidays"
-                                              title="Fill in the hashtags" required></textarea>
+                                              title="Fill in the hashtags"></textarea>
                                 </span></div>
                                 <div class="span4"></div>
                             </div>
@@ -99,7 +105,7 @@
                                 <div class="span3"> <span class="text-left">
                                     <textarea name="rss" type="text"
                                               placeholder="e.g. www.mywebsite.com/rss"
-                                              title="Fill in the RSS urls" required></textarea>
+                                              title="Fill in the RSS urls"></textarea>
                                 </span></div>
                                 <div class="span4"></div>
                             </div>
@@ -107,8 +113,7 @@
                                 <div class="span3"></div>
                                 <div class="span6">
                                     <input type="button" value="< Back" class="cform-button pull-left" onClick="history.go(-1);return true;">
-
-                                    <input type="submit" value="Finish" class="cform-submit pull-right">
+                                    <input type="submit" value="Create Project" class="cform-submit pull-right">
                                 </div>
                                 <div class="span3"></div>
                             </div>

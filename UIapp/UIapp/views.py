@@ -132,12 +132,10 @@ def welcome_account(request):
     return render_to_response("welcome_account.html")
 
 
-def welcome_train(request):
-    return render(request, "welcome_train.html")
 
-
+## step1
 def welcome_categories(request):
-    #must create project!!!
+    #must create project!
     if request.method == 'POST': # If the form has been submitted...
         #from session
         email = request.session.get("signup-email")
@@ -151,6 +149,7 @@ def welcome_categories(request):
         rss=request.POST.get("rss","")
 
         twitter_properties=""
+        facebook_properties=""
 
         if str(project).isspace() or not str(project): #not a project name
             return render(request, "welcome_categories.html", {"message": 'Project name is required' })
@@ -181,6 +180,7 @@ def welcome_categories(request):
                 Category_value.objects.create(value="", category=categoryT, owned_by=project).save()
             if facebook:
                 Category_value.objects.create(value=facebook, category=categoryF, owned_by=project).save()
+                facebook_properties+=facebook
             else:
                 Category_value.objects.create(value="", category=categoryF, owned_by=project).save()
             if hashtags:
@@ -214,15 +214,57 @@ def welcome_categories(request):
 
         # setup project on twitter connector
         update_twitter_connector(username, project, twitter_properties)
-
         # setup project on fb connector
+        update_facebook_connector(username, project, facebook_properties)
         # setup project on RSS GE
 
-
-        return HttpResponseRedirect("/dashboard")
+        return HttpResponseRedirect("/welcome-train")
     else:
 
         return render(request, 'welcome_categories.html')
+
+## step 2
+def welcome_train(request):
+    #we have now user, thus we must authenticate them before train the system to avoid attacks
+    if request.user.is_authenticated():
+        # Do something for authenticated users.
+        print ('is autenticated')
+    else:
+        # Do something for anonymous users.
+        print ('not autenticated')
+        return HttpResponseRedirect("/") # Redirect to initial screen
+    if request.method == 'POST': # If the form has been submitted...
+        #must handle .csv
+        csv=request.FILES.get("file","")
+        file = request.FILES['file']
+        if file.content_type == 'text/csv':
+            req = urllib2.Request(configurations.sentiment_training_path)
+            req.add_header('-T',file)
+            resp = urllib2.urlopen(req)
+            response = resp.read()
+            return HttpResponseRedirect("/welcome-report") # Redirect after POST
+        else:
+            #print "not valid file"
+            return HttpResponseRedirect("/welcome-train") #
+
+    else:
+        return render(request,'welcome_train.html')
+
+## step 3
+def welcome_report(request):
+    #we have now user, thus we must authenticate them before train the system to avoid attacks
+    if request.user.is_authenticated():
+        # Do something for authenticated users.
+        print ('is autenticated')
+    else:
+        # Do something for anonymous users.
+        print ('not autenticated')
+        return HttpResponseRedirect("/") # Redirect to initial screen
+    if request.method == 'POST':
+        run_query (request)
+        return HttpResponseRedirect("/dashboard") # Redirect after POST
+
+    return render(request, "welcome_report.html")
 
 def settings(request):
     if request.user.is_authenticated():
@@ -286,6 +328,7 @@ def settings(request):
             #update twitter connector
             update_twitter_connector(project.owned_by.name, project.name, twitter_properties)
             #update facebook connector
+            update_facebook_connector(project.owned_by.name, project.name, facebook)
             #update RSS connector
 
             return render(request, "settings.html",{"keywords":keywords,"twitter":twitter, "facebook":facebook, "rss":rss})
@@ -293,66 +336,16 @@ def settings(request):
         return HttpResponseRedirect("/")
 
 def create_query(request):
+    if request.user.is_authenticated():
+        # Do something for authenticated users.
+        print ('is autenticated')
+    else:
+        # Do something for anonymous users.
+        print ('not autenticated')
+        return HttpResponseRedirect("/dashboard") # Redirect after POST
     if request.method == 'POST': # If the form has been submitted...
         ##Do not allow users to vote before a timeperiod has passed.
-        user = request.user
-        project = Project.objects.get(created_by=user)
-        query_name = request.POST.get("query_name", "")
-        from_date = request.POST.get("datepicker_from", "")
-        to_date = request.POST.get("datepicker_to", "")
-        query = Query(name=query_name, venn="", from_date=parser.parse(from_date), to_date=parser.parse(to_date),
-                      created=timezone.now(), created_by=user, owned_by=project)
-        query.save()
-        keywords = request.POST.get("keywords", "")
-        category = Category.objects.get(name="Keywords")
-        query_property = Query_properties(query=query, category=category, properties=keywords)
-        query_property.save()
-        twitter = request.POST.get("twitter", "")
-        category = Category.objects.get(name="Twitter")
-        query_property = Query_properties(query=query, category=category, properties=twitter)
-        query_property.save()
-        brands = request.POST.get("brands", "")
-        try:
-            category = Category.objects.filter(name="brands")
-        except ValueError:
-            print ValueError.message
-        if category.__len__(): #exists already the category
-            category = category[0]
-        ## otherwise create the category
-        else:
-            #print "is empty"
-            category = Category(name="brands")
-            category.save()
-        query_property = Query_properties(query=query, category=category, properties=twitter)
-        query_property.save()
-
-        ##handle dynamic properties
-        i = 0;
-        prop_value = "prop-value-%s" % i
-        prop_name = "prop-name-%s" % i
-        while request.POST.get(prop_value, ""):
-            property_name = request.POST.get(prop_name, "")
-            property_value = request.POST.get(prop_value, "")
-            try:
-                ## try to find if the category already exists - in lowercase
-                category = Category.objects.filter(name=(str(property_name).lower()))
-            except ValueError:
-                #print ValueError.message
-                continue
-
-            if category.__len__(): #exists already the category
-                category = category[0]
-            ## otherwise create the category
-            else:
-                category = Category(name=str(property_name).lower())
-                category.save()
-                ## end store the properties in the category
-            query_property = Query_properties(query=query, category=category, properties=property_value)
-            query_property.save()
-
-            i += 1
-            prop_value = "prop-value-%s" % i
-            prop_name = "prop-name-%s" % i
+        run_query (request)
 
         return HttpResponseRedirect("/dashboard") # Redirect after POST
     else:
@@ -409,6 +402,69 @@ def home(request):
 def analytics(request):
     return render_to_response("analytics.html")
 
+# create a query
+def run_query (request):
+    user = request.user
+    project = Project.objects.get(created_by=user)
+    query_name = request.POST.get("query_name", "")
+    from_date = request.POST.get("datepicker_from", "")
+    to_date = request.POST.get("datepicker_to", "")
+    query = Query(name=query_name, venn="", from_date=parser.parse(from_date), to_date=parser.parse(to_date),
+                  created=timezone.now(), created_by=user, owned_by=project)
+    query.save()
+    keywords = request.POST.get("keywords", "")
+    category = Category.objects.get(name="Keywords")
+    query_property = Query_properties(query=query, category=category, properties=keywords)
+    query_property.save()
+    twitter = request.POST.get("twitter", "")
+    category = Category.objects.get(name="Twitter")
+    query_property = Query_properties(query=query, category=category, properties=twitter)
+    query_property.save()
+    brands = request.POST.get("brands", "")
+    try:
+        category = Category.objects.filter(name="brands")
+    except ValueError:
+        print ValueError.message
+    if category.__len__(): #exists already the category
+        category = category[0]
+    ## otherwise create the category
+    else:
+        #print "is empty"
+        category = Category(name="brands")
+        category.save()
+    query_property = Query_properties(query=query, category=category, properties=twitter)
+    query_property.save()
+
+    ##handle dynamic properties
+    i = 0;
+    prop_value = "prop-value-%s" % i
+    prop_name = "prop-name-%s" % i
+    while request.POST.get(prop_value, ""):
+        property_name = request.POST.get(prop_name, "")
+        property_value = request.POST.get(prop_value, "")
+        try:
+            ## try to find if the category already exists - in lowercase
+            category = Category.objects.filter(name=(str(property_name).lower()))
+        except ValueError:
+            #print ValueError.message
+            continue
+
+        if category.__len__(): #exists already the category
+            category = category[0]
+        ## otherwise create the category
+        else:
+            category = Category(name=str(property_name).lower())
+            category.save()
+            ## end store the properties in the category
+        query_property = Query_properties(query=query, category=category, properties=property_value)
+        query_property.save()
+
+        i += 1
+        prop_value = "prop-value-%s" % i
+        prop_name = "prop-name-%s" % i
+    return query.id
+
+
 
 def results(request, query_id):
     #if authorized
@@ -437,6 +493,7 @@ def results(request, query_id):
             all_properties = ''
             # Get all properties
             for property in properties.keys():
+                # list = properties[property].split(",")
                 if len(properties)==1:
                     all_properties += '%s' % properties[property]
                 else:
@@ -446,7 +503,7 @@ def results(request, query_id):
                 response = results.__getitem__(0).results
                 response = json.loads(response)
             else: #make a new query
-                query_all = '{"query":{"bool":{"must":[{"query_string":{"query":"%s"}},{"term":{"doc.lang":"en"}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":100000, "sort":["_score"]}' % (
+                query_all = '{"query":{"bool":{"must":[{"query_string":{"query":"%s"}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":100000, "sort":["_score"]}' % (
                     all_properties, int(time.mktime(query.from_date.timetuple()) * 1000),
                     int(time.mktime(query.to_date.timetuple()) * 1000))
                 response = parse_query_for_sentiments(query_all)
@@ -456,9 +513,9 @@ def results(request, query_id):
             for property in properties.keys():
                 list = properties[property].split(",")
                 word_counter = []
-                for word in list:
-                    number = json.dumps(response).count(word)
-                    text = '{"name":"%s","times":"%s", "sentiment":0}' % (word, number)
+                for phrase in list:
+                    number = json.dumps(response).count(phrase)
+                    text = '{"name":"%s","times":"%s", "sentiment":0}' % (phrase, number)
                     word_counter.append(json.loads(text))
                 text = {}
                 text["category"] = property
@@ -532,15 +589,18 @@ def results_delete(request, query_id):
     return HttpResponseRedirect("/dashboard") # Redirect after update to the page
 
 
-def test(request):
-    return render_to_response("legend-template.html")
-
-
 def search(request):
     return render_to_response("free-search.html", {"kibana": configurations.kibana_path})
 
 
 def train(request):
+    if request.user.is_authenticated():
+        # Do something for authenticated users.
+        print ('is autenticated')
+    else:
+        # Do something for anonymous users.
+        print ('not autenticated')
+        return HttpResponseRedirect("/dashboard") # Redirect after POST
     if request.method == 'POST': # If the form has been submitted...
         #must handle .csv
         csv=request.FILES.get("file","")
@@ -633,13 +693,20 @@ def download_csv(request):
             writer.writerow([str(message["fields"]["doc.text_no_url"]).replace(",", " ").strip(), message["fields"]["doc.senti_tag"] ])
         except:
             continue
-
     return response
 
 def update_twitter_connector(username, project, twitter_properties):
     twitter_properties='storeKeywords?id=%s_%s&keywords=%s'%(urllib.quote(str(username)),urllib.quote(str(project)), urllib.quote(twitter_properties))
-    print twitter_properties
+    #print twitter_properties
     path="%s%s" %(configurations.twitter_connector,twitter_properties)
     response = urllib2.urlopen(path)
     #response = response.read()
     #print response
+    return 1
+
+def update_facebook_connector(username, project, facebook_properties):
+    facebook_properties='storeFBaccounts?id=%s_%s&keywords=%s'%(urllib.quote(str(username)),urllib.quote(str(project)), urllib.quote(facebook_properties))
+    #print facebook_properties
+    path="%s%s" %(configurations.facebook_connector,facebook_properties)
+    response = urllib2.urlopen(path)
+    return 1

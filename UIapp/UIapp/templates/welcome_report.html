@@ -1,117 +1,184 @@
 {% extends "base.html" %}
 
-{% block title %}New query{% endblock %}
+{% block title %}First report{% endblock %}
 
 {% block menu %}
     <!-- no menu -->
 {%  endblock%}
 
 {% block extra_header %}
-    <!--link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
     <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
     <script>
         $(function() {
             $( "#datepicker_from").datepicker();
             $( "#datepicker_to" ).datepicker();
         });
-    </script-->
+    </script>
+
+    <script type="text/javascript" charset="utf-8">
+        $( document ).ready(function() {
+            console.log( "ready!" );
+            count=0;
+
+            $('#add').on('click', function() {
+                console.log ( this.name + " : "+this.value ); // or $(this).val()
+                $('#more-prop').append( '<div class="row">'+
+                        '<div class="span1"> <span class="label-important">' +
+                        '<input type="text" name="prop-name-'+count+'" placeholder="category name" >' +
+                        '</span></div>' +
+                        '<div class="span7"> <span class="text-left">' +
+                        '<textarea name="prop-value-'+count+'" class="cform-textarea" cols="40" rows="3" placeholder="properties"></textarea>' +
+                        '</span></div>' +
+                        '</div>'
+                )
+                count++;
+            });
+        });
+    </script>
+
 {% endblock %}
 
 {% block body %}
+
+    <!--******************** Contact Section ********************-->
     <section id="portfolio" class="single-page scrollblock" xmlns="http://www.w3.org/1999/html">
         <div class="container aligncenter">
-            <img src="/s/img/step3.png" height="400px" width="400px"/>
+            <img src="/s/img/step3.png" height="500px" width="500px"/>
+            <div class="row">
+                <div class="span4"></div>
+                <div class="span4">
+                    <label><b>See what people say!</b><br/>
+                        Once everything is set up, you may create reports and organise the data collected by the Anlzer into intelligent reports and meaningful graphs.<br><br>
+                    <i>Forgot to include something on previous steps? You can still make changes later through project settings or training.</i></label>
+                </div>
+            </div>
         </div>
-        <!--******************** Contact Section ********************-->
 
         <div class="container">
-            <h2>Setup your account</h2>
             <hr width="100%">
             <div class="row">
                 <div class="span12">
                     <div class="cform" id="theme-form">
-                        <form action="" method="post" class="cform-form">
+                        <form action="#" method="post" class="cform-form">
                             {% csrf_token %}
-                            {% if message %}
-                                <div class="row">
-                                    <div class="padded aligncenter bordered" style="color: red;"><i class="fa fa-warning"></i> {{ message }}</div>
-                                </div>
-                            {% endif %}
-                            <!-- project-->
+                            <!-- query name-->
                             <div class="row">
-                                <div class="span4"></div>
                                 <div class="span1"> <span class="label-important">
-                                    <label>Project name*: </label>
+                                    <label>Name*: </label>
                                 </span></div>
-                                <div class="span3"> <span class="text-left">
-                                    <input name="project" type="text"
-                                           placeholder="e.g. myProjectName"
-                                           title="Choose a name for your project">
+                                <div class="span7"> <span class="text-left">
+                                    <textarea id="query_name" name="query_name" class="cform-textarea" cols="40" rows="1"
+                                              placeholder="e.g. My new query for products"
+                                              title="Give a name to the querr" required="true"></textarea>
                                 </span></div>
-                                <div class="span4"></div>
                             </div>
-                            <!-- twitter-->
+                            <!-- keywords-->
                             <div class="row">
-                                <div class="span4"></div>
                                 <div class="span1"> <span class="label-important">
-                                    <label>Twitter Accounts: </label>
+                                    <label>Keywords*: </label>
                                 </span></div>
-                                <div class="span3"> <span class="text-left">
-                                    <textarea name="twitter" type="text"
-                                              placeholder="e.g. ikea, nikerunning"
-                                              title="Fill in the username"></textarea>
+                                <div class="span7"> <span class="text-left">
+                                    <textarea id="keywords" name="keywords" class="cform-textarea" cols="40" rows="3"
+                                              placeholder="e.g. shoes, furniture, smartphones"
+                                              title="Fill in the keywords" required="true"></textarea>
                                 </span></div>
-                                <div class="span4"></div>
                             </div>
-                            <!-- password-->
+                            <!-- Brands-->
                             <div class="row">
-                                <div class="span4"></div>
                                 <div class="span1"> <span class="label-important">
-                                    <label>Facebook: </label>
+                                    <label>Brands: </label>
                                 </span></div>
-                                <div class="span3"> <span class="text-left">
-                                    <textarea name="facebook" type="text"
-                                              placeholder="e.g. ikea-official, nikerunning-greece"
-                                              title="Fill in the facebook pages" ></textarea>
+                                <div class="span7"> <span class="text-left">
+                                    <textarea id="brands" name="brands" class="cform-textarea" cols="40" rows="3"
+                                              placeholder="e.g. IKEA, Nike"
+                                              title="Choose the brands to search for"></textarea>
                                 </span></div>
-                                <div class="span4"></div>
+                                <div class="span4"> <span class="label-info">
+                                    <label>Choose the brands for the report</label>
+                                </span></div>
                             </div>
-                            <!-- hashtags-->
+                            <!-- End: Brands-->
+                            <!-- Twitter Accounts-->
                             <div class="row">
-                                <div class="span4"></div>
                                 <div class="span1"> <span class="label-important">
-                                    <label>Hashtags: </label>
+                                    <label>Twitter accounts: </label>
                                 </span></div>
-                                <div class="span3"> <span class="text-left">
-                                    <textarea name="hashtags" type="text"
-                                              placeholder="e.g. furniture, shoes, clothes, holidays"
-                                              title="Fill in the hashtags" required></textarea>
+                                <div class="span7"> <span class="text-left">
+                                    <textarea id="twitter" name="twitter" class="cform-textarea" cols="40" rows="3"
+                                              placeholder="@username"
+                                              title="Focus on specific Twitter accounts"></textarea>
                                 </span></div>
-                                <div class="span4"></div>
+                                <div class="span4"> <span class="label-info">
+                                    <label>Focus on specific Twitter accounts</label>
+                                </span></div>
                             </div>
+                            <!-- End: Twitter Accounts-->
 
-                            <!-- RSS-->
+                            <!-- Facebook Accounts-->
                             <div class="row">
-                                <div class="span4"></div>
                                 <div class="span1"> <span class="label-important">
-                                    <label>RSS: </label>
+                                    <label>Facebook accounts: </label>
+                                </span></div>
+                                <div class="span7"> <span class="text-left">
+                                    <textarea id="facebook" name="facebook" class="cform-textarea" cols="40" rows="3"
+                                              placeholder="page username"
+                                              title="Focus on specific Facebook accounts"></textarea>
+                                </span></div>
+                                <div class="span4"> <span class="label-info">
+                                    <label>Focus on specific Facebok accounts</label>
+                                </span></div>
+                            </div>
+                            <!-- End: Twitter Accounts-->
+
+                            <!-- Datapicker-->
+                            <div class="row">
+                                <div class="span2"> <span class="text-right">
+                                    <label>Search from: </label>
                                 </span></div>
                                 <div class="span3"> <span class="text-left">
-                                    <textarea name="rss" type="text"
-                                              placeholder="e.g. www.mywebsite.com/rss"
-                                              title="Fill in the RSS urls" required></textarea>
+                                    <input id="datepicker_from" type="text" name="datepicker_from" placeholder="Date from" required>
                                 </span></div>
-                                <div class="span4"></div>
+
+                                <div class="span1"> <span class="text-right">
+                                    <label>To: </label>
+                                </span></div>
+
+                                <div class="span2"> <span class="text-center">
+                                    <input id="datepicker_to" type="text" name="datepicker_to" placeholder="Date to" required>
+                                </span></div>
+
                             </div>
+                            <!-- End: Datapicker-->
+
+                            <div class="row"><br></div>
+
+                            <div id="more-prop"></div>
+
+                            <!-- Add new row-->
+                            <div id="new-rows"></div>
+
+                            <div class="row">
+                                <div class="span1"></div>
+                                <div class="span7">
+                                    <a id="add" class="bar-info">Add properties</a>
+                                </div>
+
+                            </div>
+                            <!-- End add new row -->
+
+
+                            <div class="row"><br></div>
+
                             <div>
                                 <div class="span3"></div>
                                 <div class="span6">
-                                    <input type="button" value="< Back" class="cform-button pull-left" onClick="history.go(-1);return true;">
-
-                                    <input type="submit" value="Finish" class="cform-submit pull-right">
+                                    <input type="button" value="Skip" class="cform-button pull-left" onClick='window.location="/dashboard";'>
+                                    <input type="submit" value="Start>" class="cform-submit pull-right">
                                 </div>
                                 <div class="span3"></div>
                             </div>
+                            <div class="cform-response-output"></div>
                         </form>
                     </div>
                 </div>
@@ -120,6 +187,7 @@
             <!-- /.row -->
         </div>
         <!-- /.container -->
+        </div>
     </section>
 
 
