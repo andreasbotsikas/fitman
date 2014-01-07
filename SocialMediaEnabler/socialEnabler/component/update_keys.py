@@ -1,91 +1,99 @@
-__author__ = 'mpetyx'
-
 import os
 import errno
 import json
 import time
 import urllib2
+import sys
 
 from CBConnector import connector
 
 
 def silentremove(filename):
+#    print "removing file:"+filename
     try:
         os.remove(filename)
+#        print "file removed"
     except OSError as e: # this would be "except OSError, e:" before Python 2.6
-#        print e
         if e.errno != errno.ENOENT: # errno.ENOENT = no such file or directory
             raise # re-raise exception if a different error occured
 
 
 def update(key, value, conpos, conneg):
+#    print "in update"
     cb = connector().cbucket
+#    print "connected"
+    if needs_update(conpos,conneg): 
+        try:
+#            print "entry needs update"
+            document = cb.get(key)
+            document.value["senti_tag"] = value
+            cb.set(document.key, document.value)
+#            print "entry was updated"
+        except:
+            return False
+#    print "now exiting update"
+    return True
 
-    key = key.replace('"', '')
-    value = value.replace('"', '')
-    if abs(conpos-conneg)<0.1:
-        return 1 
-    try:
-        document = cb.get(key)
-
-        document.value["senti_tag"] = value
-
-        cb.set(document.key, document.value)
-#        print "done for: " + str(key) + "\n"
-    except:
-        return false
-    return 1
+# define when neutral sentiment should change to positive/negative based on confidence from rapidminer	
+def needs_update(x,y):
+    if abs(x-y)<0.1:
+        return False
+    return True		
 
 # parse file
 def parse(data):
+#    print "entered parse"
     file_name = data['"metadata_file"']
+#    print "1"
+    file_name = file_name.replace('"', '')
+#    print "2"
     file_path = data['"metadata_path"']
+#    print "3"
+    file_path = file_path.replace('"','')
+#    print "4"
     result = data['"prediction(att2)"']
+#    print "5"
+    result = result.replace('"', '')
+#    print "6"
     confidence_pos = data['"confidence(positive)"']
+#    print "7"
     confidence_neg = data['"confidence(negative)"']
-#    print confidence_neg
-#    print confidence_pos
-#    print "-----"
+#    print "8"
     if update(file_name, result, confidence_pos, confidence_neg):
-        file_path = file_path.replace('"','')
+#        print "will call silentremove"
         silentremove(file_path)
-
-# "label":"unlabeled","metadata_file":"6.txt","metadata_path":"/home/user/Downloads/rapidst/
-# SentiTrainData/unlabeledTweets/6.txt","metadata_date":"7/10/2013 5:20 ","confidence(positive)":0.7437240118385439,"confidence(negative)":0.25627598816145614,"prediction(att2)":"positive"
-
-# file_name = "./results/UseLearntModel.json"
-#
-# json_file = open(file_name,"r")
-#
-# data = json.load(json_file)
-#
+#        print "silentremove returned"
 
 
-# response = urllib2.urlopen('http://83.212.114.237:8081/RA/public_process/readUpdates')
-# data = json.load(response)
-# # print data
-#
-# for result in data:
-# parse(result)
-
-#t0 = time.time()
-#repeat_num=0
 while True:
-    #t1 = time.time()
-    #if ((t1 - t0) >= 900.0) or (repeat_num==0):
     try:
+#        print "will call readUpdates"
         response = urllib2.urlopen('http://83.212.114.237:8081/RA/public_process/readUpdates')
-        data = json.load(response)
-        # print data
-        count=0
-        for result in data:
-            parse(result)
-            #count+=1
-            #print count
-        #print "good night"
+#        print "readUpdates done"
+#        print response    #careful cannot print empty
+        content = response.read()
+#        print "read ok"
+#        print content
+        if not content:
+            pass
+#            print "empty string"
+        else:
+#            print "okk"
+            data = json.loads(content)
+#            print data        #careful cannot print empty
+#            print "will now parse"
+            if '"metadata_path"' in data:
+                parse(data) #careful!!!when there is only one result in data parse(result) fails
+            else:
+                for result in data:
+#                    print result
+#                    print "parsing next"
+                    parse(result)
+#        print "gonna sleep"
         time.sleep(900)
-        #print "awake"
-        #t0 = t1
-        #repeat_num = 1
+#        print "awake!!!"
     except:
-        pass
+#        print "oups!"
+#        print "Unexpected error:", sys.exc_info()[0]
+        time.sleep(900)
+#        pass
