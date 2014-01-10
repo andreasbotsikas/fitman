@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<process version="5.3.013">
+  <context>
+    <input/>
+    <output/>
+    <macros/>
+  </context>
+  <operator activated="true" class="process" compatibility="5.3.013" expanded="true" name="Process">
+    <parameter key="logverbosity" value="init"/>
+    <parameter key="random_seed" value="2001"/>
+    <parameter key="send_mail" value="never"/>
+    <parameter key="notification_email" value=""/>
+    <parameter key="process_duration_for_mail" value="30"/>
+    <parameter key="encoding" value="SYSTEM"/>
+    <process expanded="true">
+      <operator activated="true" class="read_database" compatibility="5.3.013" expanded="true" height="60" name="Read Database" width="90" x="246" y="75">
+        <parameter key="define_connection" value="predefined"/>
+        <parameter key="connection" value="socialdb"/>
+        <parameter key="database_system" value="MySQL"/>
+        <parameter key="define_query" value="query"/>
+        <parameter key="query" value="SELECT keywords FROM  twitter_keywords where project_id=&quot;jmartin_FITMAN&quot;;"/>
+        <parameter key="use_default_schema" value="true"/>
+        <parameter key="prepare_statement" value="false"/>
+        <enumeration key="parameters"/>
+        <parameter key="datamanagement" value="double_array"/>
+      </operator>
+      <operator activated="true" class="write_csv" compatibility="5.3.013" expanded="true" height="76" name="Write CSV" width="90" x="380" y="165">
+        <parameter key="csv_file" value="/home/user/Downloads/AidimaKeywordsTwitter.csv"/>
+        <parameter key="column_separator" value=","/>
+        <parameter key="write_attribute_names" value="false"/>
+        <parameter key="quote_nominal_values" value="false"/>
+        <parameter key="format_date_attributes" value="false"/>
+        <parameter key="append_to_file" value="false"/>
+        <parameter key="encoding" value="UTF-8"/>
+      </operator>
+      <connect from_op="Read Database" from_port="output" to_op="Write CSV" to_port="input"/>
+      <connect from_op="Write CSV" from_port="through" to_port="result 1"/>
+      <portSpacing port="source_input 1" spacing="0"/>
+      <portSpacing port="sink_result 1" spacing="0"/>
+      <portSpacing port="sink_result 2" spacing="0"/>
+    </process>
+  </operator>
+</process>
