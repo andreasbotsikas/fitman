@@ -297,7 +297,7 @@ ul#menu-main > li > a:hover {
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
-    background-size: cover;;
+    background-size: cover;
     min-height: 600px;
     margin-top: -60px;
     padding-top: 160px;
@@ -1214,7 +1214,7 @@ footer p {
         text-align: center
     }
 
-    .job-position: {
+    .job-position {
         margin-bottom: 1.5em;
     }
 
