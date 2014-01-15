@@ -83,13 +83,22 @@ def replace_multichars(text):
     return text
 
 def fix_json(json_tweet,text_no_url):
+    json_to_keep = fix_json_allLanguages(json_tweet,text_no_url)
+    json_to_keep["text_no_url"]=text_no_url
+    return json_to_keep
+
+def fix_json_es(json_tweet,text_no_url):
+    json_to_keep = fix_json_allLanguages(json_tweet,text_no_url)
+    json_to_keep["text_no_url_es"]=text_no_url
+    return json_to_keep
+
+def fix_json_allLanguages(json_tweet,text_no_url):
     fields_wanted = {"created_at","text","lang","retweet_count","id","retweeted","entities"}
     json_to_keep={}
     for k in fields_wanted:
         if json_tweet[k]:
             json_to_keep[k]=json_tweet[k]
     text_no_url = replace_username(text_no_url)
-    json_to_keep["text_no_url"]=text_no_url
     user_name = json_tweet["user"]["name"]
     user_name = 'twitter:' + user_name
     json_to_keep["user_name"]= user_name
@@ -178,7 +187,7 @@ class StreamListener(tweepy.StreamListener):
                             result_file.write(str(text_no_url.encode('utf-8')) )
                             result_file.close()
                     elif language == 'es':
-                        json_to_keep = fix_json(json_tweet,text_no_url)
+                        json_to_keep = fix_json_es(json_tweet,text_no_url)
                         cbucket.set(data_md5,json_to_keep)    
                         result_file = open("./files_spanish/%s"%data_md5,"w")
                         result_file.write(str(text_no_url.encode('utf-8')) )
