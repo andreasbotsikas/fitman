@@ -1,3 +1,8 @@
+'''
+Created on Jan 15, 2014
+
+@author: Evmorfia
+'''
 import tweepy
 import json
 import hashlib
@@ -77,6 +82,38 @@ def replace_multichars(text):
     text = re.sub('zz+','zz',text)
     return text
 
+def fix_json(json_tweet,text_no_url):
+    fields_wanted = {"created_at","text","lang","retweet_count","id","retweeted","entities"}
+    json_to_keep={}
+    for k in fields_wanted:
+        if json_tweet[k]:
+            json_to_keep[k]=json_tweet[k]
+    text_no_url = replace_username(text_no_url)
+    json_to_keep["text_no_url"]=text_no_url
+    user_name = json_tweet["user"]["name"]
+    user_name = 'twitter:' + user_name
+    json_to_keep["user_name"]= user_name
+    user_screen_name = json_tweet["user"]["screen_name"]
+    user_screen_name = 'twitter:'+user_screen_name
+    json_to_keep["user_screen_name"]=user_screen_name
+    json_to_keep["senti_tag"] = "neutral"
+    return json_to_keep
+
+def is_swearing(text):
+    swear=False
+    for w in swear_words:
+        if w in text:
+            swear=True
+            break
+    return swear
+
+def fix_text_format(text):
+    text_no_url = replace_url(text)
+    text_no_url = text_no_url.lower()
+    text_no_url = replace_multichars(text_no_url)
+    text_no_url = text_no_url.replace('#','')
+    return text_no_url
+
 #Define Database connection creds
 server = "localhost"
 port = 8091
@@ -95,10 +132,7 @@ swear_words=["ahole","anus","ash0le","ash0les","asholes","ass","assmonkey","assf
 #Define filter terms
 #filterTerms = [ "ikea","infurma", "othabitat", "koointernationa", "designmilk","light fixture","recycle silk chair","suryasocial", "Furniture_Spain", "@aidima","aidima","mueble","#mueble","@collection"]
 
-#try to read filter_terms from file
-#with open("/home/user/Downloads/AidimaKeywordsTwitter.csv",'rb') as csvfile:
-#    csv_reader = csv.reader(csvfile, delimiter=',')
-#    filterTerms = csv_reader.next()
+
 
 json = import_simplejson()
 
@@ -116,54 +150,47 @@ class StreamListener(tweepy.StreamListener):
             myfile.write(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
             myfile.write("***timeout:sleeping for a minute***"+"\n")
         time.sleep(60)
-        return True   #don't kill the stream
+        return True #don't kill the stream
     def on_error(self, status_code):
         with open("twitterLog.txt", "a") as myfile:
             myfile.write(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
             myfile.write("-----error----"+status_code+"\n")
-        return True   #don't kill the stream
+        return True #don't kill the stream
     def on_data(self, data):
         if data[0].isdigit():
             pass
         else:
             #print 'Ran on_data'
             data_md5 = hashlib.md5(json.dumps(data, sort_keys=True)).hexdigest()
-            #cbucket.set(data_md5,json.loads(data))
             json_tweet=json.loads(data)
-            fields_wanted = {"created_at","text","lang","retweet_count","id","retweeted","entities"}
+            
             try:
                 text = json_tweet["text"]
-                json_to_keep={k:json_tweet[k] for k in fields_wanted}
-                text_no_url = replace_url(json_tweet["text"])
-                text_no_url = replace_multichars(text_no_url)
-                text_no_url = text_no_url.replace('#','')
-                textlow = text_no_url.lower()
-                swear=False
-                for w in swear_words:
-                    if w in textlow:
-                        swear=True
-                        break
-                if swear==False:
-                    text_no_url = replace_username(text_no_url)
-                    json_to_keep["text_no_url"]=text_no_url
-                    user_name = json_tweet["user"]["name"]
-                    user_name = 'twitter:' + user_name
-                    json_to_keep["user_name"]= user_name
-                    user_screen_name = json_tweet["user"]["screen_name"]
-                    user_screen_name = 'twitter:'+user_screen_name
-                    json_to_keep["user_screen_name"]=user_screen_name
-                    json_to_keep["senti_tag"] = "neutral"
-                    cbucket.set(data_md5,json_to_keep)
-
-                    if json_tweet["lang"]:
-                        language = json_tweet["lang"]
-                        if language == 'en':
+                text_no_url = fix_text_format(text)
+                
+                if json_tweet["lang"]:
+                    language = json_tweet["lang"]
+                    if language == 'en':
+                        if is_swearing(text_no_url)==False:
+                            json_to_keep = fix_json(json_tweet,text_no_url)
+                            cbucket.set(data_md5,json_to_keep)    
                             result_file = open("./files/%s"%data_md5,"w")
-                            # result_file.write(data_md5)
-                            # result_file.write("\n")
-                            # print text_no_url
                             result_file.write(str(text_no_url.encode('utf-8')) )
                             result_file.close()
+                    elif language == 'es':
+                        json_to_keep = fix_json(json_tweet,text_no_url)
+                        cbucket.set(data_md5,json_to_keep)    
+                        result_file = open("./files_spanish/%s"%data_md5,"w")
+                        result_file.write(str(text_no_url.encode('utf-8')) )
+                        result_file.close()       
+                            
+                else:
+                    json_to_keep = fix_json(json_tweet)
+                    cbucket.set(data_md5,json_to_keep)
+                
+                
+
+                    
             except:
                 #e = sys.exc_info()[0]
                 #print e
@@ -172,7 +199,7 @@ class StreamListener(tweepy.StreamListener):
 with open("/home/user/Downloads/AidimaKeywordsTwitter.csv",'rb') as csvfile:
     csv_reader = csv.reader(csvfile, delimiter=',')
     filterTerms = csv_reader.next()
-#    print filterTerms
+# print filterTerms
 #print filterTerms
 l = StreamListener()
 streamer = tweepy.Stream(auth=auth1, listener=l, timeout=3000)
