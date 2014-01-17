@@ -194,7 +194,7 @@ class StreamListener(tweepy.StreamListener):
                         result_file.close()       
                             
                 else:
-                    json_to_keep = fix_json(json_tweet)
+                    json_to_keep = fix_json(json_tweet,text_no_url)
                     cbucket.set(data_md5,json_to_keep)
                 
                 
