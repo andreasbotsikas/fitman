@@ -42,7 +42,7 @@ def logout_view(request):
 def welcome(request):
     if request.user.is_authenticated():
         # Do something for authenticated users.
-        print ('is autenticated')
+        #print ('is autenticated')
         return HttpResponseRedirect("/dashboard") # Redirect after POST
     else:
         # Do something for anonymous users.
@@ -634,7 +634,6 @@ def train(request):
     if request.method == 'POST': # If the form has been submitted...
         #must handle .csv
         lan=request.POST.get("lan","")
-        print lan
         csv=request.FILES.get("file","")
         file = request.FILES['file']
         if lan=="es":
