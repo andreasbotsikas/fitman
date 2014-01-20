@@ -70,12 +70,12 @@
         var data = google.visualization.arrayToDataTable([
             ['Keyword', 'Parent', 'Number of appearance (size)', 'Sentiment(color)'],
             ['All', null, 0, 0],
-    {% for category in categories %}
-            ['{{ category.category }}', 'All', 0, 0],
-        {% for property in category.properties %}
-            ['{{ category.category }}:{{ property.name }}', '{{ category.category }}', {{ property.times }}, {{ property.sentiment}}],
-        {% endfor %}
-    {% endfor %}
+            {% for category in categories %}
+                    ['{{ category.category }}', 'All', 0, 0],
+                {% for property in category.properties %}
+                    ['{{ category.category }}:{{ property.name }}', '{{ category.category }}', {{ property.times }}, {{ property.sentiment}}],
+                {% endfor %}
+            {% endfor %}
             //['Materials', 'All', 0, 0],
             //['leather', 'Materials', 5, -5],
         ]);
@@ -88,7 +88,8 @@
             maxColor: '#0d0',
             headerHeight: 15,
             fontColor: 'black',
-            showScale: true});
+            showScale: true,
+            showTooltips:true});
     }
 </script>
 <!-- piechart-->
@@ -196,13 +197,15 @@
             <div class="tab-responsive">
                 <!-- row: pie for sentiments and blocks for terms-->
                     <!-- row: treemap for sentiments and blocks for terms-->
-                    <div class="span12">
-                        <div id="chart_div" style="width: auto; height:500px;">Google Charts loading...</div>
+                <div class="row">
+                    <div class="span5">
+                        <div id="chart_div" style="width: auto; height:300px;">Google Charts loading...</div>
                         <div>*left-click on a category to see keywords, right-click to navigate back</div>
                     </div>
-                    <div class="span12">
-                        <div id="piechart" style="width: auto; height: 500px;"></div>
+                    <div class="span4">
+                        <div id="piechart" style="width: auto; height: 300px;"></div>
                     </div>
+                </div>
             </div>
         </div>
         <div class="tab-pane" id="categories">

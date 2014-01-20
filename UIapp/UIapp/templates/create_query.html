@@ -24,10 +24,10 @@
             $('#add').on('click', function() {
                 console.log ( this.name + " : "+this.value ); // or $(this).val()
                 $('#more-prop').append( '<div class="row">'+
-                        '<div class="span1"> <span class="label-important">' +
+                        '<div class="span3 alignright"> <span class="label-important">' +
                             '<input type="text" name="prop-name-'+count+'" placeholder="category name" >' +
                         '</span></div>' +
-                    '<div class="span7"> <span class="text-left">' +
+                    '<div class="span5"> <span class="text-left">' +
                         '<textarea name="prop-value-'+count+'" class="cform-textarea" cols="40" rows="3" placeholder="properties"></textarea>' +
                         '</span></div>' +
                     '</div>'
@@ -53,10 +53,10 @@
                         {% csrf_token %}
                         <!-- query name-->
                         <div class="row">
-                            <div class="span1"> <span class="label-important">
+                            <div class="span2 alignright"> <span class="label-important">
                                     <label>Name*: </label>
                                 </span></div>
-                            <div class="span7"> <span class="text-left">
+                            <div class="span6"> <span class="text-left">
                                     <textarea id="query_name" name="query_name" class="cform-textarea" cols="40" rows="1"
                                               placeholder="e.g. My new query for products"
                                               title="Give a name to the querr" required="true"></textarea>
@@ -64,10 +64,10 @@
                         </div>
                         <!-- keywords-->
                         <div class="row">
-                            <div class="span1"> <span class="label-important">
+                            <div class="span2 alignright"> <span class="label-important">
                                     <label>Keywords*: </label>
                                 </span></div>
-                            <div class="span7"> <span class="text-left">
+                            <div class="span6"> <span class="text-left">
                                     <textarea id="keywords" name="keywords" class="cform-textarea" cols="40" rows="3"
                                               placeholder="e.g. shoes, furniture, smartphones"
                                               title="Fill in the keywords" required="true"></textarea>
@@ -75,10 +75,10 @@
                         </div>
                         <!-- Brands-->
                         <div class="row">
-                            <div class="span1"> <span class="label-important">
+                            <div class="span2 alignright"> <span class="label-important">
                                     <label>Brands: </label>
                                 </span></div>
-                            <div class="span7"> <span class="text-left">
+                            <div class="span6"> <span class="text-left">
                                     <textarea id="brands" name="brands" class="cform-textarea" cols="40" rows="3"
                                               placeholder="e.g. IKEA, Nike"
                                               title="Choose the brands to search for"></textarea>
@@ -90,10 +90,10 @@
                         <!-- End: Brands-->
                         <!-- Twitter Accounts-->
                         <div class="row">
-                            <div class="span1"> <span class="label-important">
+                            <div class="span2 alignright"> <span class="label-important">
                                     <label>Twitter accounts: </label>
                                 </span></div>
-                            <div class="span7"> <span class="text-left">
+                            <div class="span6"> <span class="text-left">
                                     <textarea id="twitter" name="twitter" class="cform-textarea" cols="40" rows="3"
                                               placeholder="@username"
                                               title="Focus on specific Twitter accounts"></textarea>
@@ -106,10 +106,10 @@
 
                         <!-- Facebook Accounts-->
                         <div class="row">
-                            <div class="span1"> <span class="label-important">
+                            <div class="span2 alignright"> <span class="label-important">
                                     <label>Facebook accounts: </label>
                                 </span></div>
-                            <div class="span7"> <span class="text-left">
+                            <div class="span6"> <span class="text-left">
                                     <textarea id="facebook" name="facebook" class="cform-textarea" cols="40" rows="3"
                                               placeholder="page username"
                                               title="Focus on specific Facebook accounts"></textarea>
@@ -122,24 +122,38 @@
 
                         <!-- Datapicker-->
                         <div class="row">
-                            <div class="span2"> <span class="text-right">
-                                    <label>Search from: </label>
+                            <div class="span2 alignright"> <span class="text-right">
+                                    <label>Date from*: </label>
                                 </span></div>
-                            <div class="span3"> <span class="text-left">
+                            <div class="span2"> <span class="text-left">
                                     <input id="datepicker_from" type="text" name="datepicker_from" placeholder="Date from" required>
                                 </span></div>
 
-                            <div class="span1"> <span class="text-right">
-                                    <label>To: </label>
+                            <div class="span2 alignright"> <span class="text-right">
+                                    <label>Date to*: </label>
                                 </span></div>
 
-                            <div class="span3"> <span class="text-center">
+                            <div class="span2"> <span class="text-center">
                                     <input id="datepicker_to" type="text" name="datepicker_to" placeholder="Date to" required>
                                 </span></div>
+                            <div class="span4">
+                            </div>
 
                         </div>
                         <!-- End: Datapicker-->
 
+                        <div class="row">
+                            <div class="span2 alignright"> <span class="text-right">
+                                    <label>Select language*: </label>
+                                </span></div>
+                            <div class="span6"> <span class="text-left">
+                                <select name ="lan">
+                                   <option value = "en" selected>en</option>
+                                   <option value = "es">es</option>
+                                   <option value = "all">all</option>
+                                </select>
+                            </span></div>
+                        </div>
                         <div class="row"><br></div>
 
                         <div id="more-prop"></div>
@@ -161,8 +175,8 @@
                         <div id="new-rows"></div>
 
                         <div class="row">
-                            <div class="span1"></div>
-                            <div class="span7">
+                            <div class="span2 alignright"></div>
+                            <div class="span6">
                                 <a id="add" class="bar-info">Add properties</a>
                             </div>
 

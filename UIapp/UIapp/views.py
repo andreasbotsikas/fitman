@@ -17,7 +17,7 @@ from dateutil import parser
 from django.contrib.auth import authenticate, logout, login
 from django.contrib.auth.models import User
 from initialiaze_repo import initialize
-from models import Category, Team, Project, Category_value, Query, Query_properties, Results
+from models import Category, Team, Project, Category_value, Query, Query_properties, Results,Query_languages
 from updateSentimentKeys import multiple_values_update
 import csv
 import configurations
@@ -409,6 +409,7 @@ def run_query (request):
     query_name = request.POST.get("query_name", "")
     from_date = request.POST.get("datepicker_from", "")
     to_date = request.POST.get("datepicker_to", "")
+    language = request.POST.get("lan", "")
     query = Query(name=query_name, venn="", from_date=parser.parse(from_date), to_date=parser.parse(to_date),
                   created=timezone.now(), created_by=user, owned_by=project)
     query.save()
@@ -434,6 +435,8 @@ def run_query (request):
         category.save()
     query_property = Query_properties(query=query, category=category, properties=twitter)
     query_property.save()
+    query_lan=Query_languages(query=query,language=language)
+    query_lan.save()
 
     ##handle dynamic properties
     i = 0;
@@ -503,9 +506,36 @@ def results(request, query_id):
                 response = results.__getitem__(0).results
                 response = json.loads(response)
             else: #make a new query
-                query_all = '{"query":{"bool":{"must":[{"query_string":{"query":"%s"}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":100000, "sort":["_score"]}' % (
-                    all_properties, int(time.mktime(query.from_date.timetuple()) * 1000),
-                    int(time.mktime(query.to_date.timetuple()) * 1000))
+                lang=Query_languages.objects.get(query=query_id)
+                language=''
+                if lang:
+                    if lang.language=="es":
+                        query_all = '{"query":{"bool":{"must":[{"query_string":{"query":"%s","fields":["%s"]}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":100000, "sort":["_score"]}' % (
+                            all_properties,
+                            "text_no_url_es",
+                            int(time.mktime(query.from_date.timetuple()) * 1000),
+                            int(time.mktime(query.to_date.timetuple()) * 1000))
+                    elif lang.language=="en":
+                        query_all = '{"query":{"bool":{"must":[{"query_string":{"query":"%s","fields":["%s"]}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":100000, "sort":["_score"]}' % (
+                            all_properties,
+                            "text_no_url",
+                            int(time.mktime(query.from_date.timetuple()) * 1000),
+                            int(time.mktime(query.to_date.timetuple()) * 1000))
+                    elif lang.language=="all":
+                        query_all = '{"query":{"bool":{"must":[{"query_string":{"query":"%s","fields":["%s","%s"]}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":100000, "sort":["_score"]}' % (
+                            all_properties,
+                            "text_no_url",
+                            "text_no_url_es",
+                            int(time.mktime(query.from_date.timetuple()) * 1000),
+                            int(time.mktime(query.to_date.timetuple()) * 1000))
+                else:
+                    language="text_no_url"
+                    query_all = '{"query":{"bool":{"must":[{"query_string":{"query":"%s","fields":["%s"]}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":100000, "sort":["_score"]}' % (
+                        all_properties,
+                        language,
+                        int(time.mktime(query.from_date.timetuple()) * 1000),
+                        int(time.mktime(query.to_date.timetuple()) * 1000))
+
                 response = parse_query_for_sentiments(query_all)
                 newResponse = Results(query=query, results=json.dumps(response), updated=datetime.datetime.now())
                 newResponse.save()

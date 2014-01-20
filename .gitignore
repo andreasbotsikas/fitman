@@ -49,3 +49,5 @@ nosetests.xml
 .idea/modules.xml
 
 UIapp/uiTest.db
+
+UIapp/uiTest.db

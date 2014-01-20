@@ -74,6 +74,12 @@ class Query_properties(models.Model):
     def __unicode__(self):
         return "%s : %s" % (self.query, self.category)
 
+class Query_languages(models.Model):
+    query = models.ForeignKey(Query, blank=False)
+    language = models.TextField(max_length=10, null=False, blank=False)
+    def __unicode__(self):
+        return "%s : %s" % (self.query, self.language)
+
 # cash results to improve system performance and require refresh for update
 class Results(models.Model):
     query = models.ForeignKey(Query, blank=False)
