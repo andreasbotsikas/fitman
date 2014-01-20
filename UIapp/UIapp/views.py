@@ -633,10 +633,16 @@ def train(request):
         return HttpResponseRedirect("/dashboard") # Redirect after POST
     if request.method == 'POST': # If the form has been submitted...
         #must handle .csv
+        lan=request.POST.get("lan","")
+        print lan
         csv=request.FILES.get("file","")
         file = request.FILES['file']
+        if lan=="es":
+            train_path=configurations.sentiment_training_path+"_es"
+        else:
+            train_path=configurations.sentiment_training_path
         if file.content_type == 'text/csv':
-            req = urllib2.Request(configurations.sentiment_training_path)
+            req = urllib2.Request(train_path)
             req.add_header('-T',file)
             resp = urllib2.urlopen(req)
             response = resp.read()
@@ -711,16 +717,23 @@ def user_based_sentiment(request):
 
 def download_csv(request):
     # Create the HttpResponse object with the appropriate CSV header.
+    lan = request.GET.get("lan", "")
+    print lan
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="train-sentiment.csv"'
     writer = csv.writer(response)
-
-    training_query = '{"query" : {"filtered" : {"query" : {"bool" : {"should" : [{"query_string" : {"query" : "*"}}]}},"filter" : {"bool" : {"must" : [{"match_all" : {}},{"terms" : {"_type" : ["couchbaseDocument"]}},{"terms" : {"doc.lang" : ["en"]}},{"bool" : {"must" : [{"match_all" : {}}]}}]}}}},"size" : 1000,"sort": [{"doc.created_at": {"order": "desc"}}],"fields" : ["doc.text_no_url","doc.senti_tag"]}'
+    if lan=="en":
+        training_query = '{"query" : {"filtered" : {"query" : {"bool" : {"should" : [{"query_string" : {"query" : "*"}}]}},"filter" : {"bool" : {"must" : [{"match_all" : {}},{"terms" : {"_type" : ["couchbaseDocument"]}},{"terms" : {"doc.lang" : ["en"]}},{"bool" : {"must" : [{"match_all" : {}}]}}]}}}},"size" : 1000,"sort": [{"doc.created_at": {"order": "desc"}}],"fields" : ["doc.text_no_url","doc.senti_tag"]}'
+    else:
+        training_query = '{"query" : {"filtered" : {"query" : {"bool" : {"should" : [{"query_string" : {"query" : "*"}}]}},"filter" : {"bool" : {"must" : [{"match_all" : {}},{"terms" : {"_type" : ["couchbaseDocument"]}},{"terms" : {"doc.lang" : ["es"]}},{"bool" : {"must" : [{"match_all" : {}}]}}]}}}},"size" : 1000,"sort": [{"doc.created_at": {"order": "desc"}}],"fields" : ["doc.text_no_url_es","doc.senti_tag"]}'
     parsed = parse_query_for_sentiments(training_query)
     #print parsed
     for message in parsed:
         try:
-            writer.writerow([str(message["fields"]["doc.text_no_url"]).replace(",", " ").strip(), message["fields"]["doc.senti_tag"] ])
+            if lan=="en":
+                writer.writerow([str(message["fields"]["doc.text_no_url"]).replace(",", " ").strip(), message["fields"]["doc.senti_tag"] ])
+            else:
+                writer.writerow([str(message["fields"]["doc.text_no_url_es"]).replace(",", " ").strip(), message["fields"]["doc.senti_tag"] ])
         except:
             continue
     return response

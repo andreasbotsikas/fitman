@@ -8,13 +8,18 @@
 
 {% block extra_header %}
     <!--link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
-    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script-->
     <script>
-        $(function() {
-            $( "#datepicker_from").datepicker();
-            $( "#datepicker_to" ).datepicker();
+        $( document ).ready(function() {
+            $('select').on('change', function() {
+                path_to_download="/download-csv?lan="+this.value;
+                $("#download_csv").attr("href", path_to_download);
+            });
+             $("#upload").change(function() {
+                $('input[type="submit"]').removeAttr('disabled');
+            });
         });
-    </script-->
+    </script>
 {% endblock %}
 
 {% block body %}
@@ -32,12 +37,24 @@
             </div>
         </div>
 
-                <div class="container">
+        <div class="container">
                     <hr width="100%">
                     <div class="row">
                         <div class="cform" id="theme-form">
                             <form action="" method="post" class="cform-form" enctype="multipart/form-data">
                                 {% csrf_token %}
+                                <div class="row"><br></div>
+                            <div class="row">
+                                <div class="span4 alignright"> <span class="text-right">
+                                        <label>Select language: </label>
+                                    </span></div>
+                                <div class="span6"> <span class="text-left">
+                                    <select name ="lan">
+                                       <option value = "en" selected>English</option>
+                                       <option value = "es">Spanish</option>
+                                    </select>
+                                </span></div>
+                            </div>
                                 <div class="row"><br></div>
                                 <!-- File Upload-->
                                 <div class="row">
@@ -45,13 +62,13 @@
                                         <label>File Upload: </label>
                                     </span></div>
                                     <div class="span4 aligncenter"> <span class="text-left">
-                                        <input type="file" required name="file">
+                                        <input type="file" id="upload" required name="file">
                                     </span></div>
                                     <div class="span4"> <span class="label-info">
                                         <label>Upload a .csv file to train the system</label>
                                     </span></div>
                                 </div>
-
+                                <div class="row"><br></div>
                                 <!-- Info-->
                                 <div class="row">
                                     <div class="span4"> <span class="label-important alignright">
@@ -72,7 +89,7 @@ Yahoo!! This is Disneyland!!, positive
                                     <div class="span4"> <span class="label-important alignright">
                                     </span></div>
                                     <div class="span4 aligncenter"> <span class="text-left">
-                                    <a href="/download-csv"><i class="fa fa-download"></i> Download .csv</a>
+                                    <a id="download_csv" href="/download-csv?lan=en"><i class="fa fa-download"></i> Download .csv</a>
                                     </span></div>
                                     <div class="span4"> <span class="label-info">
                                         <label>Download an example .csv</label>
@@ -86,7 +103,7 @@ Yahoo!! This is Disneyland!!, positive
                                     <div class="span3"></div>
                                     <div class="span6">
                                         <input type="button" value="Skip" class="cform-button pull-left" onClick='window.location="/welcome-report";'>
-                                        <input type="submit" value="Upload>" class="cform-submit pull-right">
+                                        <input type="submit" value="Upload>" class="cform-submit pull-right" disabled>
                                     </div>
                                     <div class="span3"></div>
                                 </div>
@@ -94,8 +111,8 @@ Yahoo!! This is Disneyland!!, positive
                         </div>
                     </div>
                 </div>
-                <!-- /.container -->
+        <!-- /.container -->
 
-            </section>
+    </section>
 
-        {% endblock %}
+{% endblock %}
