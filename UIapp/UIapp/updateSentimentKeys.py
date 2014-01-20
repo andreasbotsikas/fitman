@@ -1,6 +1,6 @@
 __author__ = 'mpetyx'
 
-# from couchbase import Couchbase
+from couchbase import Couchbase
 #
 # #Define Database connection creds
 # # server = "localhost"
@@ -12,8 +12,8 @@ bucket = "default"
 
 data = []
 
-# cb = Couchbase.connect(host=server,port=port,bucket=bucket)
-cb = None
+cb = Couchbase.connect(host=server,port=port,bucket=bucket)
+# cb = None
 
 def update(key, value):
 
