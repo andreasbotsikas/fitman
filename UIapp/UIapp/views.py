@@ -375,7 +375,8 @@ def home(request):
 
             #query_response= "{'id':'%s','Name': '%s'" %(query.id, query.name)
             dynamic_properties = get_query_properties(query)
-            query_response['Keywords'] = dynamic_properties["Keywords"]
+            if (dynamic_properties.get("Keywords")or dynamic_properties.get("keywords")):
+                query_response['Keywords'] = dynamic_properties["Keywords"]
             if (dynamic_properties.get("Twitter")or dynamic_properties.get("twitter")):
                 query_response['Usernames'] = dynamic_properties["Twitter"]
             if (dynamic_properties.get("Facebook") or dynamic_properties.get("facebook")):
@@ -433,7 +434,7 @@ def run_query (request):
         #print "is empty"
         category = Category(name="brands")
         category.save()
-    query_property = Query_properties(query=query, category=category, properties=twitter)
+    query_property = Query_properties(query=query, category=category, properties=brands)
     query_property.save()
     query_lan=Query_languages(query=query,language=language)
     query_lan.save()
@@ -465,6 +466,7 @@ def run_query (request):
         i += 1
         prop_value = "prop-value-%s" % i
         prop_name = "prop-name-%s" % i
+
     return query.id
 
 
@@ -502,6 +504,9 @@ def results(request, query_id):
                 else:
                     all_properties += '+(%s) ' % properties[property]
 
+            if len(properties)==0:
+                    all_properties= '*'
+            print all_properties
             if results: #bring it from the database
                 response = results.__getitem__(0).results
                 response = json.loads(response)
