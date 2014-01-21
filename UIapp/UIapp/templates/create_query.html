@@ -20,7 +20,7 @@
             $('#add').on('click', function() {
                 console.log ( this.name + " : "+this.value ); // or $(this).val()
                 $('#more-prop').append( '<div class="row">'+
-                        '<div class="span3 alignright"> <span class="label-important">' +
+                        '<div class="span3 alignright"> <span class="label">' +
                             '<input type="text" name="prop-name-'+count+'" placeholder="category name" >' +
                         '</span></div>' +
                     '<div class="span5"> <span class="text-left">' +
@@ -153,19 +153,6 @@
                         <div class="row"><br></div>
 
                         <div id="more-prop"></div>
-                        <!-- Radiobuttons-->
-                        <!--div class="row">
-                            <div class="span2"><span class="text-right">
-                                    <label>Type of the query: </label>
-                                </span></div>
-                            <div class="span1"><span class="text-left">
-                                    <input type="radio" name="Query_type" id="and"> AND
-                                </span></div>
-                            <div class="span1"><span class="text-left">
-                                    <input type="radio" name="Query_type" id="or" checked="checked"> OR
-                                </span></div>
-                        </div-->
-                        <!-- End:Radiobuttons-->
 
                         <!-- Add new row-->
                         <div id="new-rows"></div>
