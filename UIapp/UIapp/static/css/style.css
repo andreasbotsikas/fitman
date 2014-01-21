@@ -1095,7 +1095,7 @@ footer p {
     }
 
     .container {
-        1px solid yellow;
+        border: 1px solid yellow;
     }
 
     #team .team-thumb {

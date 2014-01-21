@@ -28,6 +28,8 @@ urlpatterns = patterns('',
                        url(r'^search', views.search, name='search'),
                        url(r'^settings', views.settings, name='search'),
                        url(r'^train', views.train, name='train'),
+                       url(r'^about', views.about, name='about'),
+                       url(r'^contact', views.contact, name='contact'),
                        # Password Reset
                        #url(r'^password_reset', include('password_reset.urls')),
                        url(r'user_based_sentiment',views.user_based_sentiment,name='user_based_sentiment'),

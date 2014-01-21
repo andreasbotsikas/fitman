@@ -2,15 +2,8 @@
 
 {% block title %}{{ query_name }}{% endblock %}
 
-
-{% block menu %}
-<li xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"><a
-        title="settings" href="/settings">settings</a></li>
-<li><a title="logout" href="/logout">logout</a></li>
-{%  endblock%}
-
 {% block extra_header %}
-<style>
+    <style>
     .crop{
         float:left;
         margin:.5em 10px .5em 0;
@@ -24,7 +17,7 @@
         margin:-20px -15px -40px -55px;
     }
 </style>
-<script type="text/javascript" charset="utf-8">
+    <script type="text/javascript" charset="utf-8">
     $(document).ready(function () {
         $('#table').dataTable({
             "bJQueryUI": true,
@@ -60,9 +53,9 @@
         });
     });
 </script>
-<!-- Google Charts-->
-<script type="text/javascript" src="https://www.google.com/jsapi"></script>
-<script type="text/javascript">
+    <!-- Google Charts-->
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
     google.load("visualization", "1", {packages: ["treemap"]});
     google.setOnLoadCallback(drawChart);
     function drawChart() {
@@ -92,7 +85,7 @@
             showTooltips:true});
     }
 </script>
-<!-- piechart-->
+    <!-- piechart-->
     <script type="text/javascript">
         google.load("visualization", "1", {packages: ["corechart"]});
         google.setOnLoadCallback(drawChart);
@@ -127,12 +120,7 @@
         });
     </script>
     <!--link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"-->
-    <link rel="stylesheet" href="/s/css/bootstrap.min.css">
-    <link rel="stylesheet" href="http://blueimp.github.io/Gallery/css/blueimp-gallery.min.css">
-    <link rel="stylesheet" href="/s/css/bootstrap-image-gallery.min.css">
-
 {% endblock %}
-
 {% block body %}
 
     <div class="container">
@@ -140,7 +128,7 @@
          <a data-toggle="modal" href="/query/delete/{{ query_id }}" class="btn btn-primary pull-right"><i class="fa fa-trash-o"></i> Delete</a>
     </div>
 
-<div class="container">
+    <div class="container">
     <!-- Nav tabs -->
     <ul class="nav nav-tabs">
         <li><a href="#query" data-toggle="tab">Parameters</a></li>
@@ -198,7 +186,7 @@
                 <!-- row: pie for sentiments and blocks for terms-->
                     <!-- row: treemap for sentiments and blocks for terms-->
                 <div class="row">
-                    <div class="span5">
+                    <div class="span6">
                         <div id="chart_div" style="width: auto; height:300px;">Google Charts loading...</div>
                         <div>*left-click on a category to see keywords, right-click to navigate back</div>
                     </div>
@@ -318,11 +306,10 @@
 
 
 {% endblock %}
-
-
 {% block end_of_body %}
     <script src="http://blueimp.github.io/Gallery/js/jquery.blueimp-gallery.min.js"></script>
     <script src="/s/js/bootstrap-image-gallery.min.js"></script>
-
-
+    <link rel="stylesheet" href="http://blueimp.github.io/Gallery/css/blueimp-gallery.min.css">
+    <link rel="stylesheet" href="/s/css/bootstrap-image-gallery.min.css">
 {% endblock %}
+

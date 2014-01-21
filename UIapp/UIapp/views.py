@@ -38,15 +38,17 @@ def logout_view(request):
     # Redirect to a success page.
     return HttpResponseRedirect("/welcome")
 
+def contact(request):
+    return render_to_response("contact.html")
+
+def about(request):
+    return render_to_response("about.html")
 
 def welcome(request):
     if request.user.is_authenticated():
         # Do something for authenticated users.
         #print ('is autenticated')
         return HttpResponseRedirect("/dashboard") # Redirect after POST
-    else:
-        # Do something for anonymous users.
-        print ('not autenticated')
 
     if request.method == 'POST': # If the form has been submitted...
         email = request.POST.get("email", "")
@@ -164,7 +166,7 @@ def welcome_categories(request):
             user = User(username=username, email=email)
             user.set_password(password)
             user.save()
-            print user
+            #print user
             team = Team(name=username, created_by=user)
             team.save()
             project = Project(name=project, created_by=user, owned_by=team)
@@ -226,13 +228,9 @@ def welcome_categories(request):
 ## step 2
 def welcome_train(request):
     #we have now user, thus we must authenticate them before train the system to avoid attacks
-    if request.user.is_authenticated():
-        # Do something for authenticated users.
-        print ('is autenticated')
-    else:
-        # Do something for anonymous users.
-        print ('not autenticated')
+    if not request.user.is_authenticated():
         return HttpResponseRedirect("/") # Redirect to initial screen
+
     if request.method == 'POST': # If the form has been submitted...
         #must handle .csv
         csv=request.FILES.get("file","")
@@ -253,12 +251,7 @@ def welcome_train(request):
 ## step 3
 def welcome_report(request):
     #we have now user, thus we must authenticate them before train the system to avoid attacks
-    if request.user.is_authenticated():
-        # Do something for authenticated users.
-        print ('is autenticated')
-    else:
-        # Do something for anonymous users.
-        print ('not autenticated')
+    if not request.user.is_authenticated():
         return HttpResponseRedirect("/") # Redirect to initial screen
     if request.method == 'POST':
         run_query (request)
@@ -336,13 +329,10 @@ def settings(request):
         return HttpResponseRedirect("/")
 
 def create_query(request):
-    if request.user.is_authenticated():
-        # Do something for authenticated users.
-        print ('is autenticated')
-    else:
+    if not request.user.is_authenticated():
         # Do something for anonymous users.
-        print ('not autenticated')
         return HttpResponseRedirect("/dashboard") # Redirect after POST
+
     if request.method == 'POST': # If the form has been submitted...
         ##Do not allow users to vote before a timeperiod has passed.
         run_query (request)
@@ -506,7 +496,7 @@ def results(request, query_id):
 
             if len(properties)==0:
                     all_properties= '*'
-            print all_properties
+            #print all_properties
             if results: #bring it from the database
                 response = results.__getitem__(0).results
                 response = json.loads(response)
@@ -557,7 +547,7 @@ def results(request, query_id):
                 text["properties"] = word_counter
                 categories_counter.append(text)
             for message in response:
-                if message["_score"] > 0.05:
+                #if message["_score"] > 0.05:
                     test.append(message["_source"])
                     data.append(message["_source"]["doc"])
                     ##print "Just Added: %s" %message["_source"]["doc"]
@@ -606,7 +596,7 @@ def results_update(request):
     req = urllib2.Request("http://localhost:8000/user_based_sentiment?sentiment_values=%s" % str(update_bulk))
     resp = urllib2.urlopen(req)
     response = resp.read()
-    print "stored: %s" %response
+    #print "stored: %s" %response
     ## delete cashing from results, to get the updated ones from "results" methods
     results_id = request.POST.get("results-id", "")
     query = Query.objects.get(id=results_id)
@@ -629,12 +619,7 @@ def search(request):
 
 
 def train(request):
-    if request.user.is_authenticated():
-        # Do something for authenticated users.
-        print ('is autenticated')
-    else:
-        # Do something for anonymous users.
-        print ('not autenticated')
+    if not request.user.is_authenticated():
         return HttpResponseRedirect("/dashboard") # Redirect after POST
     if request.method == 'POST': # If the form has been submitted...
         #must handle .csv
@@ -710,7 +695,7 @@ def user_based_sentiment(request):
                 if found is False:
                     lista.append({'key': res[0], 'value': res[1]})
 
-            print lista
+            #print lista
             result = multiple_values_update(lista)
 
             return HttpResponse(status=200, mimetype='application/json')
@@ -723,7 +708,7 @@ def user_based_sentiment(request):
 def download_csv(request):
     # Create the HttpResponse object with the appropriate CSV header.
     lan = request.GET.get("lan", "")
-    print lan
+    #print lan
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="train-sentiment.csv"'
     writer = csv.writer(response)
@@ -758,3 +743,5 @@ def update_facebook_connector(username, project, facebook_properties):
     path="%s%s" %(configurations.facebook_connector,facebook_properties)
     response = urllib2.urlopen(path)
     return 1
+
+
