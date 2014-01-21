@@ -662,6 +662,7 @@ def get_query_properties(query):
             if str(query_property.properties) is "":
                 continue
             else:
+
                 results[str(query_property.category.name)] = str(query_property.properties)
     return results
 

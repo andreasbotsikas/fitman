@@ -1041,7 +1041,7 @@
         var d = "on" + b;
         a.detachEvent && (typeof a[d] == "undefined" && (a[d] = null), a.detachEvent(d, c))
     }, p.Event = function (a, b) {
-        if (this instanceof p.Event)a && a.type ? (this.originalEvent = a, this.type = a.type, this.isDefaultPrevented = a.defaultPrevented || a.returnValue === !1 || a.getPreventDefault && a.getPreventDefault() ? bb : ba) : this.type = a, b && p.extend(this, b), this.timeStamp = a && a.timeStamp || p.now(), this[p.expando] = !0; else return new p.Event(a, b)
+        if (this instanceof p.Event)a && a.type ? (this.originalEvent = a, this.type = a.type, this.isDefaultPrevented = a.defaultPrevented || a.getPreventDefault && a.getPreventDefault() ? bb : ba) : this.type = a, b && p.extend(this, b), this.timeStamp = a && a.timeStamp || p.now(), this[p.expando] = !0; else return new p.Event(a, b)
     }, p.Event.prototype = {preventDefault: function () {
         this.isDefaultPrevented = bb;
         var a = this.originalEvent;
