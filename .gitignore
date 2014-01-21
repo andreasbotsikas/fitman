@@ -51,3 +51,5 @@ nosetests.xml
 UIapp/uiTest.db
 
 UIapp/uiTest.db
+
+.idea/dataSources.ids
