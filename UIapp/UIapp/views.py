@@ -478,7 +478,7 @@ def results(request, query_id):
         neutral_counter = 0
         try:
             #query_id = str(query_id)
-            ## Must store the response, if there is no reponse, otherwise return the stored one.
+            ## Must store the response, if there is no response, otherwise return the stored one.
             ## IF NOT STORED
             query = Query.objects.get(id=query_id,created_by=request.user)
             query_params=Query_properties.objects.filter(query=query)
@@ -486,36 +486,13 @@ def results(request, query_id):
             #run for all categories
             list_properties = get_query_properties(query)
             properties=list_properties["Properties"]
-            print properties
+            #print properties
             phrases=list_properties["Phrases"]
-            print phrases
+            #print phrases
             keywords=list_properties["Keywords"]
-            print keywords
-            all_properties = ''
+            #print keywords
             query_properties = '+' # This is the string that forms the properties query (query_string)
-            phrase_properties = '' # This is the string that forms the phrase query (match_phrase)
-            # Get all properties
-
-#             {
-#       "query": {
-#         "filtered":{"query":{"bool":{"should":[
-# {"match_phrase":{
-#         "doc.text_no_url" :  "saved enough"
-#     }},
-# {"match_phrase":{
-#         "doc.text_no_url_es" :  "queremos presentaros"
-#     }},
-# {"query_string":{"query":"+(furniture,sofa)(aidima,ikea)","fields":["text_no_url"]}}
-# ],"minimum_should_match" : 1}
-# },"filter":{"bool":{"must":[{"range":{"doc.created_at":{"from":"1385629202000","to":"1390380314778"}}}],"_cache":true}}}
-# },"from":0,"size":100000, "sort":["_score"]}
-
-            for kwrd in keywords.keys():
-                for keyword_prop in keywords[kwrd]:
-                    query_properties += keyword_prop
-                query_properties += '(%s)' % query_properties
-            if len(properties)==0: #empty list, no properties, query all
-                query_properties= '*'
+            phrase_properties = '' # This is the string that forms the phrase query (match_phrase)'
 
             ## Run the query or bring the results from the Database
             if results: #bring it from the database
@@ -523,47 +500,52 @@ def results(request, query_id):
                 response = json.loads(response)
             else: #make a new query
                 lang=Query_languages.objects.get(query=query_id)
+
+                for kwrd in keywords.keys():
+                    temp=''
+                    for keyword_prop in keywords[kwrd]:
+                        temp += "%s," %keyword_prop
+                    query_properties += '(%s)' % temp
+
+                if len(properties)==0: #empty list, no properties, query all
+                    query_properties= '*'
+
+                if query_properties=="+()": #if all properties are phrases, remove this field
+                    query_properties=''
+                else:
+                    if lang:
+                            if lang.language=="es":
+                                query_properties={"query_string":{"query":"%s","fields":["%s"]}} %(query_properties,"text_no_url_es")
+                            elif lang.language=="en":
+                                query_properties={"query_string":{"query":"%s","fields":["%s"]}} %(query_properties,"text_no_url")
+                            else:
+                                query_properties={"query_string":{"query":"%s","fields":["%s","%s"]}} %(query_properties,"text_no_url","text_no_url_es")
+                    else:
+                        query_properties={"query_string":{"query":"%s","fields":["%s"]}} %(query_properties,"text_no_url")
                 # Create the phrase query
                 for phrase_list in phrases.keys():
                     for phrase in phrases[phrase_list]:
                         if lang:
                             if lang.language=="es":
                                 phrase_properties+='{"match_phrase":{"doc.text_no_url_es":"%s"}},'%phrase
+
                             elif lang.language=="en":
                                 phrase_properties+='{"match_phrase":{"doc.text_no_url":"%s"}},'%phrase
                             else:
                                 phrase_properties+='{"match_phrase":{"doc.text_no_url":"%s"}},{"match_phrase":{"doc.text_no_url_es":"%s"}},'%(phrase,phrase)
+                        else:
+                            phrase_properties+='{"match_phrase":{"doc.text_no_url":"%s"}},'%phrase
 
-                if lang:
-                    if lang.language=="es":
-                        query_all = '{"query":{"filtered":{"query":{"bool":{"should":[%s {"query_string":{"query":"%s","fields":["%s"]}}],"minimum_should_match" : 1}},"filter":{"bool":{"must":[{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}],"_cache":true}}}},"from":0,"size":100000, "sort":["_score"]}' % (
+                if len(phrase_properties) > 0:
+                    if phrase_properties[-1:] == ",":
+                        phrase_properties = phrase_properties[:-1]
+
+                query_all = '{"query":{"filtered":{"query":{"bool":{"should":[%s %s],"minimum_should_match" : 1}},"filter":{"bool":{"must":[{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}],"_cache":true}}}},"from":0,"size":100000, "sort":["_score"]}' % (
                             phrase_properties,
                             query_properties,
-                            "text_no_url_es",
                             int(time.mktime(query.from_date.timetuple()) * 1000),
                             int(time.mktime(query.to_date.timetuple()) * 1000))
-                    elif lang.language=="en":
-                        query_all = '{"query":{"filtered":{"query":{"bool":{"should":[%s {"query_string":{"query":"%s","fields":["%s"]}}],"minimum_should_match" : 1}},"filter":{"bool":{"must":[{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}],"_cache":true}}}},"from":0,"size":100000, "sort":["_score"]}' % (
-                            phrase_properties,
-                            query_properties,
-                            "text_no_url",
-                            int(time.mktime(query.from_date.timetuple()) * 1000),
-                            int(time.mktime(query.to_date.timetuple()) * 1000))
-                    elif lang.language=="all":
-                        query_all = '{"query":{"filtered":{"query":{"bool":{"should":[%s {"query_string":{"query":"%s","fields":["%s","%s"]}}],"minimum_should_match" : 1}},"filter":{"bool":{"must":[{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}],"_cache":true}}}},"from":0,"size":100000, "sort":["_score"]}' % (
-                            phrase_properties,
-                            query_properties,
-                            "text_no_url",
-                            "text_no_url_es",
-                            int(time.mktime(query.from_date.timetuple()) * 1000),
-                            int(time.mktime(query.to_date.timetuple()) * 1000))
-                else:
-                    query_all = '{"query":{"filtered":{"query":{"bool":{"should":[%s {"query_string":{"query":"%s","fields":["%s"]}}],"minimum_should_match" : 1}},"filter":{"bool":{"must":[{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}],"_cache":true}}}},"from":0,"size":100000, "sort":["_score"]}' % (
-                            phrase_properties,
-                            query_properties,
-                            "text_no_url",
-                            int(time.mktime(query.from_date.timetuple()) * 1000),
-                            int(time.mktime(query.to_date.timetuple()) * 1000))
+
 
                 print query_all
                 response = parse_query_for_sentiments(query_all)
@@ -695,11 +677,16 @@ def get_query_properties(query):
                 phrases[str(query_property.category.name)]=[]
                 properties[str(query_property.category.name)] = str(query_property.properties)
                 param_list=str(query_property.properties).split(',')
+                temp=[]
                 for param in param_list:
+                    temp.append(param)
+
+                for param in temp:
                     words=param.split()
                     if words.__len__()>1:
                         phrases[str(query_property.category.name)].append(param)
                         param_list.remove(param)
+
                 keywords[str(query_property.category.name)]=param_list
     result["Properties"]=properties
     #have keywords per properties category, without phrases
