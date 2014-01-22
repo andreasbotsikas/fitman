@@ -364,7 +364,7 @@ def home(request):
             query_response['Created'] = query.created.date()
 
             #query_response= "{'id':'%s','Name': '%s'" %(query.id, query.name)
-            dynamic_properties = get_query_properties(query)
+            dynamic_properties = get_query_properties(query)["Properties"]
             if (dynamic_properties.get("Keywords")or dynamic_properties.get("keywords")):
                 query_response['Keywords'] = dynamic_properties["Keywords"]
             if (dynamic_properties.get("Twitter")or dynamic_properties.get("twitter")):
@@ -484,56 +484,93 @@ def results(request, query_id):
             query_params=Query_properties.objects.filter(query=query)
             results = Results.objects.filter(query=query)
             #run for all categories
-            properties = get_query_properties(query)
+            list_properties = get_query_properties(query)
+            properties=list_properties["Properties"]
+            print properties
+            phrases=list_properties["Phrases"]
+            print phrases
+            keywords=list_properties["Keywords"]
+            print keywords
             all_properties = ''
+            query_properties = '+' # This is the string that forms the properties query (query_string)
+            phrase_properties = '' # This is the string that forms the phrase query (match_phrase)
             # Get all properties
-            for property in properties.keys():
-                # list = properties[property].split(",")
-                if len(properties)==1:
-                    all_properties += '%s' % properties[property]
-                else:
-                    all_properties += '+(%s) ' % properties[property]
 
-            if len(properties)==0:
-                    all_properties= '*'
-            #print all_properties
+#             {
+#       "query": {
+#         "filtered":{"query":{"bool":{"should":[
+# {"match_phrase":{
+#         "doc.text_no_url" :  "saved enough"
+#     }},
+# {"match_phrase":{
+#         "doc.text_no_url_es" :  "queremos presentaros"
+#     }},
+# {"query_string":{"query":"+(furniture,sofa)(aidima,ikea)","fields":["text_no_url"]}}
+# ],"minimum_should_match" : 1}
+# },"filter":{"bool":{"must":[{"range":{"doc.created_at":{"from":"1385629202000","to":"1390380314778"}}}],"_cache":true}}}
+# },"from":0,"size":100000, "sort":["_score"]}
+
+            for kwrd in keywords.keys():
+                for keyword_prop in keywords[kwrd]:
+                    query_properties += keyword_prop
+                query_properties += '(%s)' % query_properties
+            if len(properties)==0: #empty list, no properties, query all
+                query_properties= '*'
+
+            ## Run the query or bring the results from the Database
             if results: #bring it from the database
                 response = results.__getitem__(0).results
                 response = json.loads(response)
             else: #make a new query
                 lang=Query_languages.objects.get(query=query_id)
-                language=''
+                # Create the phrase query
+                for phrase_list in phrases.keys():
+                    for phrase in phrases[phrase_list]:
+                        if lang:
+                            if lang.language=="es":
+                                phrase_properties+='{"match_phrase":{"doc.text_no_url_es":"%s"}},'%phrase
+                            elif lang.language=="en":
+                                phrase_properties+='{"match_phrase":{"doc.text_no_url":"%s"}},'%phrase
+                            else:
+                                phrase_properties+='{"match_phrase":{"doc.text_no_url":"%s"}},{"match_phrase":{"doc.text_no_url_es":"%s"}},'%(phrase,phrase)
+
                 if lang:
                     if lang.language=="es":
-                        query_all = '{"query":{"bool":{"must":[{"query_string":{"query":"%s","fields":["%s"]}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":100000, "sort":["_score"]}' % (
-                            all_properties,
+                        query_all = '{"query":{"filtered":{"query":{"bool":{"should":[%s {"query_string":{"query":"%s","fields":["%s"]}}],"minimum_should_match" : 1}},"filter":{"bool":{"must":[{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}],"_cache":true}}}},"from":0,"size":100000, "sort":["_score"]}' % (
+                            phrase_properties,
+                            query_properties,
                             "text_no_url_es",
                             int(time.mktime(query.from_date.timetuple()) * 1000),
                             int(time.mktime(query.to_date.timetuple()) * 1000))
                     elif lang.language=="en":
-                        query_all = '{"query":{"bool":{"must":[{"query_string":{"query":"%s","fields":["%s"]}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":100000, "sort":["_score"]}' % (
-                            all_properties,
+                        query_all = '{"query":{"filtered":{"query":{"bool":{"should":[%s {"query_string":{"query":"%s","fields":["%s"]}}],"minimum_should_match" : 1}},"filter":{"bool":{"must":[{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}],"_cache":true}}}},"from":0,"size":100000, "sort":["_score"]}' % (
+                            phrase_properties,
+                            query_properties,
                             "text_no_url",
                             int(time.mktime(query.from_date.timetuple()) * 1000),
                             int(time.mktime(query.to_date.timetuple()) * 1000))
                     elif lang.language=="all":
-                        query_all = '{"query":{"bool":{"must":[{"query_string":{"query":"%s","fields":["%s","%s"]}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":100000, "sort":["_score"]}' % (
-                            all_properties,
+                        query_all = '{"query":{"filtered":{"query":{"bool":{"should":[%s {"query_string":{"query":"%s","fields":["%s","%s"]}}],"minimum_should_match" : 1}},"filter":{"bool":{"must":[{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}],"_cache":true}}}},"from":0,"size":100000, "sort":["_score"]}' % (
+                            phrase_properties,
+                            query_properties,
                             "text_no_url",
                             "text_no_url_es",
                             int(time.mktime(query.from_date.timetuple()) * 1000),
                             int(time.mktime(query.to_date.timetuple()) * 1000))
                 else:
-                    language="text_no_url"
-                    query_all = '{"query":{"bool":{"must":[{"query_string":{"query":"%s","fields":["%s"]}},{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}]}},"from":0,"size":100000, "sort":["_score"]}' % (
-                        all_properties,
-                        language,
-                        int(time.mktime(query.from_date.timetuple()) * 1000),
-                        int(time.mktime(query.to_date.timetuple()) * 1000))
+                    query_all = '{"query":{"filtered":{"query":{"bool":{"should":[%s {"query_string":{"query":"%s","fields":["%s"]}}],"minimum_should_match" : 1}},"filter":{"bool":{"must":[{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}],"_cache":true}}}},"from":0,"size":100000, "sort":["_score"]}' % (
+                            phrase_properties,
+                            query_properties,
+                            "text_no_url",
+                            int(time.mktime(query.from_date.timetuple()) * 1000),
+                            int(time.mktime(query.to_date.timetuple()) * 1000))
 
+                print query_all
                 response = parse_query_for_sentiments(query_all)
                 newResponse = Results(query=query, results=json.dumps(response), updated=datetime.datetime.now())
                 newResponse.save()
+
+
             ## count the occurrences in response
             for property in properties.keys():
                 list = properties[property].split(",")
@@ -646,15 +683,30 @@ def train(request):
 # Get all the properties for a query
 def get_query_properties(query):
     query_properties = Query_properties.objects.filter(query=query)
-    results = {}
+    keywords={}
+    phrases={}
+    properties = {}
+    result={}
     #usernames = ' '
     for query_property in query_properties:
             if str(query_property.properties) is "":
                 continue
             else:
-
-                results[str(query_property.category.name)] = str(query_property.properties)
-    return results
+                phrases[str(query_property.category.name)]=[]
+                properties[str(query_property.category.name)] = str(query_property.properties)
+                param_list=str(query_property.properties).split(',')
+                for param in param_list:
+                    words=param.split()
+                    if words.__len__()>1:
+                        phrases[str(query_property.category.name)].append(param)
+                        param_list.remove(param)
+                keywords[str(query_property.category.name)]=param_list
+    result["Properties"]=properties
+    #have keywords per properties category, without phrases
+    result["Keywords"]=keywords
+    #have phrases per properties category
+    result["Phrases"]=phrases
+    return result
 
 
 def parse_query_for_sentiments(query):
@@ -672,9 +724,7 @@ def user_based_sentiment(request):
         sentiment_values = request.GET.get("sentiment_values", "")
 
         if sentiment_values:
-
             sentiment_values = sentiment_values.replace(" ", "")
-
             sentiment_values = sentiment_values.split(",")
 
             if '' in sentiment_values:
