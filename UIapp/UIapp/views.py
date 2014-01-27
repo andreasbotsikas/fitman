@@ -515,13 +515,13 @@ def results(request, query_id):
                 else:
                     if lang:
                             if lang.language=="es":
-                                query_properties={"query_string":{"query":"%s","fields":["%s"]}} %(query_properties,"text_no_url_es")
+                                query_properties='{"query_string":{"query":"%s","fields":["%s"]}}' %(query_properties,"text_no_url_es")
                             elif lang.language=="en":
-                                query_properties={"query_string":{"query":"%s","fields":["%s"]}} %(query_properties,"text_no_url")
+                                query_properties='{"query_string":{"query":"%s","fields":["%s"]}}' %(query_properties,"text_no_url")
                             else:
-                                query_properties={"query_string":{"query":"%s","fields":["%s","%s"]}} %(query_properties,"text_no_url","text_no_url_es")
+                                query_properties='{"query_string":{"query":"%s","fields":["%s","%s"]}}' %(query_properties,"text_no_url","text_no_url_es")
                     else:
-                        query_properties={"query_string":{"query":"%s","fields":["%s"]}} %(query_properties,"text_no_url")
+                        query_properties='{"query_string":{"query":"%s","fields":["%s"]}}' %(query_properties,"text_no_url")
                 # Create the phrase query
                 for phrase_list in phrases.keys():
                     for phrase in phrases[phrase_list]:
