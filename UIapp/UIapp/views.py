@@ -614,14 +614,14 @@ def results_update(request):
     ## send the bulk to the db service
     req = urllib2.Request("http://83.212.114.237:8000/user_based_sentiment?sentiment_values=%s" % str(update_bulk))
     resp = urllib2.urlopen(req)
-    response = resp.read()
+    # response = resp.read()
     #print "stored: %s" %response
     ## delete cashing from results, to get the updated ones from "results" methods
     results_id = request.POST.get("results-id", "")
-    query = Query.objects.get(id=results_id)
-    results = Results.objects.get(query=query)
-    if results:
-        results.delete()
+    # query = Query.objects.get(id=results_id)
+    # results = Results.objects.get(query=query)
+    # if results:
+    #     results.delete()
     ## redirect to the proper page again
     path = "/queries/%s" % results_id
     return HttpResponseRedirect(path) # Redirect after update to the page
