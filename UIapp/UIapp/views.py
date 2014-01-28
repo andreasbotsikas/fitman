@@ -612,7 +612,7 @@ def results_update(request):
         raise Http404('Only POST methods allowed')
     update_bulk = request.POST.get("retrain", "")
     ## send the bulk to the db service
-    req = urllib2.Request("http://localhost:8000/user_based_sentiment?sentiment_values=%s" % str(update_bulk))
+    req = urllib2.Request("http://83.212.114.237:8000/user_based_sentiment?sentiment_values=%s" % str(update_bulk))
     resp = urllib2.urlopen(req)
     response = resp.read()
     #print "stored: %s" %response
