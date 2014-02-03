@@ -540,7 +540,7 @@ def results(request, query_id):
                     if phrase_properties[-1:] == ",":
                         phrase_properties = phrase_properties[:-1]
 
-                query_all = '{"query":{"filtered":{"query":{"bool":{"should":[%s, %s],"minimum_should_match" : 1}},"filter":{"bool":{"must":[{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}],"_cache":true}}}},"from":0,"size":100000, "sort":["_score"]}' % (
+                query_all = '{"query":{"filtered":{"query":{"bool":{"should":[%s %s],"minimum_should_match" : 1}},"filter":{"bool":{"must":[{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}],"_cache":true}}}},"from":0,"size":100000, "sort":["_score"]}' % (
                             phrase_properties,
                             query_properties,
                             int(time.mktime(query.from_date.timetuple()) * 1000),
