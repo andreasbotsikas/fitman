@@ -486,12 +486,12 @@ def results(request, query_id):
             #run for all categories
             list_properties = get_query_properties(query)
             properties=list_properties["Properties"]
-            #print properties
+            #print "properties: %s" %properties
             phrases=list_properties["Phrases"]
-            #print phrases
+            #print "phrases: %s" %phrases
             keywords=list_properties["Keywords"]
-            #print keywords
-            query_properties = '+' # This is the string that forms the properties query (query_string)
+            #print "keywords: %s" %keywords
+            query_properties = '' # This is the string that forms the properties query (query_string)
             phrase_properties = '' # This is the string that forms the phrase query (match_phrase)'
 
             ## Run the query or bring the results from the Database
@@ -505,7 +505,8 @@ def results(request, query_id):
                     temp=''
                     for keyword_prop in keywords[kwrd]:
                         temp += "%s," %keyword_prop
-                    query_properties += '(%s)' % temp
+                    temp=remove_comma_at_the_end(temp)
+                    query_properties += '+(%s)' % temp
 
                 if len(properties)==0: #empty list, no properties, query all
                     query_properties= '*'
@@ -522,6 +523,7 @@ def results(request, query_id):
                                 query_properties='{"query_string":{"query":"%s","fields":["%s","%s"]}}' %(query_properties,"text_no_url","text_no_url_es")
                     else:
                         query_properties='{"query_string":{"query":"%s","fields":["%s"]}}' %(query_properties,"text_no_url")
+
                 # Create the phrase query
                 for phrase_list in phrases.keys():
                     for phrase in phrases[phrase_list]:
@@ -536,18 +538,22 @@ def results(request, query_id):
                         else:
                             phrase_properties+='{"match_phrase":{"doc.text_no_url":"%s"}},'%phrase
 
-                if len(phrase_properties) > 0:
-                    if phrase_properties[-1:] == ",":
-                        phrase_properties = phrase_properties[:-1]
+                phrase_properties=remove_comma_at_the_end(phrase_properties)
+                if (query_properties!='') and (phrase_properties!=''):
+                    query_all = '{"query":{"filtered":{"query":{"bool":{"should":[%s,%s],"minimum_should_match" : 1}},"filter":{"bool":{"must":[{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}],"_cache":true}}}},"from":0,"size":100000, "sort":["_score"]}' % (
+                                query_properties,
+                                phrase_properties,
+                                int(time.mktime(query.from_date.timetuple()) * 1000),
+                                int(time.mktime(query.to_date.timetuple()) * 1000))
+                else:
+                    query_all = '{"query":{"filtered":{"query":{"bool":{"should":[%s %s],"minimum_should_match" : 1}},"filter":{"bool":{"must":[{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}],"_cache":true}}}},"from":0,"size":100000, "sort":["_score"]}' % (
+                                query_properties,
+                                phrase_properties,
+                                int(time.mktime(query.from_date.timetuple()) * 1000),
+                                int(time.mktime(query.to_date.timetuple()) * 1000))
 
-                query_all = '{"query":{"filtered":{"query":{"bool":{"should":[%s %s],"minimum_should_match" : 1}},"filter":{"bool":{"must":[{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}],"_cache":true}}}},"from":0,"size":100000, "sort":["_score"]}' % (
-                            phrase_properties,
-                            query_properties,
-                            int(time.mktime(query.from_date.timetuple()) * 1000),
-                            int(time.mktime(query.to_date.timetuple()) * 1000))
 
-
-                print query_all
+                #print query_all
                 response = parse_query_for_sentiments(query_all)
                 newResponse = Results(query=query, results=json.dumps(response), updated=datetime.datetime.now())
                 newResponse.save()
@@ -781,4 +787,14 @@ def update_facebook_connector(username, project, facebook_properties):
     response = urllib2.urlopen(path)
     return 1
 
+def remove_comma_at_the_end (expression):
+    if len(expression) > 0:
+        if expression[-1:] == ",":
+            expression = expression[:-1]
+    return expression
 
+def remove_plus_in_the_beginning (expression):
+    if len(expression) > 0:
+        if expression[:1] == "+":
+            expression = expression[1:]
+    return expression

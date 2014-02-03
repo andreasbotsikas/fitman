@@ -12,7 +12,7 @@
             "aaSorting" : [[6, 'asc']],
             "aaData": [
                 {% for query in content %}
-                    ["<a href=\"queries/{{ query.id }}\">{{ query.Name }}</a>", "{{ query.Keywords }}", "{{ query.Usernames }}","{{ query.Created_by }}", "{{ query.From }}", "{{ query.To }}", "{{ query.Created }}"],
+                    ["<a href=\"queries/{{ query.id }}\">{% if query.Name %}{{ query.Name }}{% else %}--no name--{% endif %}</a>", "{{ query.Keywords }}", "{{ query.Usernames }}","{{ query.Created_by }}", "{{ query.From }}", "{{ query.To }}", "{{ query.Created }}"],
                 {% endfor %}
 
             ],
