@@ -408,7 +408,10 @@ def results(request, query_id):
                 for facebook_page in facebook_pages:
                     facebook_properties+='{"match_phrase_prefix" : { "doc.user_screen_name":"facebook:%s" }},'%facebook_page.replace(" ", "")
                 facebook_properties=remove_comma_at_the_end(facebook_properties)
+
+                ###
                 #query constructor
+                ###
                 query_all=''
                 if (query_properties!=''):
                     query_all+='%s,'%query_properties
@@ -420,12 +423,10 @@ def results(request, query_id):
                     query_all+='%s,'%facebook_properties
                 query_all=remove_comma_at_the_end(query_all)
 
-                # Build the query the query
-                if (query_properties!='') and (phrase_properties!=''): #if there are both phrases & keywords, a comma betweet the two parameters is needed
-                    query_all = '{"query":{"filtered":{"query":{"bool":{"should":[%s],"minimum_should_match" : 1}},"filter":{"bool":{"must":[{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}],"_cache":true}}}},"from":0,"size":100000, "sort":["_score"]}' % (
-                                query_all,
-                                int(time.mktime(query.from_date.timetuple()) * 1000),
-                                int(time.mktime(query.to_date.timetuple()) * 1000))
+                query_all = '{"query":{"filtered":{"query":{"bool":{"should":[%s],"minimum_should_match" : 1}},"filter":{"bool":{"must":[{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}],"_cache":true}}}},"from":0,"size":100000, "sort":["_score"]}' % (
+                            query_all,
+                            int(time.mktime(query.from_date.timetuple()) * 1000),
+                            int(time.mktime(query.to_date.timetuple()) * 1000))
 
                 print query_all
                 response = parse_query_for_sentiments(query_all)
