@@ -68,8 +68,8 @@ class Query(models.Model):
 
 class Query_properties(models.Model):
     query = models.ForeignKey(Query, blank=False)
-    category = models.ForeignKey(Category, blank=False)
-    properties = models.TextField(max_length=400, null=False, blank=False)
+    category = models.ForeignKey(Category, blank=False) #name of category
+    properties = models.TextField(max_length=400, null=False, blank=False) #properties of category
 
     def __unicode__(self):
         return "%s : %s" % (self.query, self.category)
