@@ -313,7 +313,6 @@ def create_query(request):
     if request.method == 'POST': # If the form has been submitted...
         ##Do not allow users to vote before a timeperiod has passed.
         run_query (request)
-
         return HttpResponseRedirect("/dashboard") # Redirect after POST
     else:
         return render(request, 'create_query.html')
@@ -365,9 +364,12 @@ def results(request, query_id):
                     temp=''
                     for keyword_prop in keywords[kwrd]:
                         temp += "%s," %keyword_prop
-                    query_properties += '+(%s)' %remove_comma_at_the_end(temp)
-
+                    if query.venn=='OR':
+                        query_properties += '%s,' %remove_comma_at_the_end(temp)
+                    else:
+                        query_properties += '+(%s)' %remove_comma_at_the_end(temp)
                 query_properties=query_properties.replace('+()','') #Remove any empty keyword
+                query_properties=remove_comma_at_the_end(query_properties)
 
                 if query_properties!='': #if empty list, no properties, no query string, go to phrases
                     if lang:

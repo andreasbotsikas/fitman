@@ -14,7 +14,7 @@ def run_query (request):
     from_date = request.POST.get("datepicker_from", "")
     to_date = request.POST.get("datepicker_to", "")
     language = request.POST.get("lan", "")
-    query = Query(name=query_name, venn="", from_date=parser.parse(from_date), to_date=parser.parse(to_date),
+    query = Query(name=query_name, venn=request.POST.get("query_logic", ""), from_date=parser.parse(from_date), to_date=parser.parse(to_date),
                   created=timezone.now(), created_by=user, owned_by=project)
     query.save()
     keywords = request.POST.get("keywords", "")
