@@ -124,9 +124,18 @@ def parse_query_for_sentiments(query):
     return response
 
 def update_twitter_connector(username, project, twitter_properties):
-    twitter_properties='storeKeywords?id=%s_%s&keywords=%s'%(urllib.quote(str(username)),urllib.quote(str(project)), urllib.quote(twitter_properties))
+    twitter_properties='storeTWaccounts?id=%s_%s&keywords=%s?id=%s_%s&keywords=%s'%(urllib.quote(str(username)),urllib.quote(str(project)), urllib.quote(twitter_properties))
     #print twitter_properties
     path="%s%s" %(configurations.twitter_connector,twitter_properties)
+    response = urllib2.urlopen(path)
+    #response = response.read()
+    #print response
+    return 1
+
+def update_project_connector(username, project, project_properties):
+    project_properties='storeKeywords?id=%s_%s&keywords=%s'%(urllib.quote(str(username)),urllib.quote(str(project)), urllib.quote(project_properties))
+    #print twitter_properties
+    path="%s%s" %(configurations.twitter_connector,project_properties)
     response = urllib2.urlopen(path)
     #response = response.read()
     #print response

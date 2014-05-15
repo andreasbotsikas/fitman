@@ -600,8 +600,10 @@ def settings(request):
             category_val.value=rss
             category_val.save()
 
-            twitter_properties=twitter+','+keywords
+            twitter_properties=twitter
+            keyword_properties=keywords
             #update twitter connector
+            update_project_connector(project.owned_by.name, project.name, keyword_properties)
             update_twitter_connector(project.owned_by.name, project.name, twitter_properties)
             #update facebook connector
             update_facebook_connector(project.owned_by.name, project.name, facebook)
