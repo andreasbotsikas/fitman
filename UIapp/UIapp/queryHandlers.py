@@ -124,7 +124,7 @@ def parse_query_for_sentiments(query):
     return response
 
 def update_twitter_connector(username, project, twitter_properties):
-    twitter_properties='storeTWaccounts?id=%s_%s&keywords=%s?id=%s_%s&keywords=%s'%(urllib.quote(str(username)),urllib.quote(str(project)), urllib.quote(twitter_properties))
+    twitter_properties='storeTWaccounts?id=%s_%s&keywords=%s'%(urllib.quote(str(username)),urllib.quote(str(project)), urllib.quote(twitter_properties))
     #print twitter_properties
     path="%s%s" %(configurations.twitter_connector,twitter_properties)
     response = urllib2.urlopen(path)
