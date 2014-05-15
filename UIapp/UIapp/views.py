@@ -325,8 +325,7 @@ def results(request, query_id):
     :return: :raise:
     """
     if request.user.is_authenticated():
-        data = []
-        test =[]
+        reponseToPresent =[]
         categories_counter = []
         positive_counter = 0
         negative_counter = 0
@@ -366,15 +365,11 @@ def results(request, query_id):
                     temp=''
                     for keyword_prop in keywords[kwrd]:
                         temp += "%s," %keyword_prop
-                    temp=remove_comma_at_the_end(temp)
-                    query_properties += '+(%s)' % temp
+                    query_properties += '+(%s)' %remove_comma_at_the_end(temp)
 
-                if len(properties)==0: #empty list, no properties, query all
-                    query_properties= '*'
+                query_properties=query_properties.replace('+()','') #Remove any empty keyword
 
-                if query_properties=="+()": #if all properties are phrases, remove this field
-                    query_properties=''
-                else:
+                if query_properties!='': #if empty list, no properties, no query string, go to phrases
                     if lang:
                             if lang.language=="es":
                                 query_properties='{"query_string":{"query":"%s","fields":["%s"]}}' %(query_properties,"text_no_url_es")
@@ -434,44 +429,42 @@ def results(request, query_id):
                 newResponse.save()
 
 
-            ## count the occurrences in response
+            ## count the occurrences of keywords in in response
             for property in properties.keys():
-                list = properties[property].split(",")
                 word_counter = []
-                for phrase in list:
+                for phrase in properties[property].split(","):
                     number = json.dumps(response).count(phrase)
-                    text = '{"name":"%s","times":"%s", "sentiment":0}' % (phrase, number)
+                    text = '{"name":"%s","times":"%s", "sentiment":%i}' % (phrase, number,0)
                     word_counter.append(json.loads(text))
                 text = {}
                 text["category"] = property
                 text["properties"] = word_counter
                 categories_counter.append(text)
+
             for message in response:
                 #if message["_score"] > 0.05:
-                    test.append(message["_source"])
-                    data.append(message["_source"]["doc"])
+                    reponseToPresent.append(message["_source"])
                     ##print "Just Added: %s" %message["_source"]["doc"]
                     try:
                         if message["_source"]["doc"]["senti_tag"] == "positive":
-                            # for global metrics
+                            # for pie diagram metrics
                             positive_counter += 1
                             # for mosaic diagram
                             for category in categories_counter:
                                 for property in category["properties"]:
                                     if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
                                         #print " Message with positive tag: %s : the found property is: %s"%(json.dumps(message["_source"]["doc"]), property["name"])
-                                        pos_number = int(property["sentiment"]) + 1
-                                        property["sentiment"] = pos_number
+                                        property["sentiment"] = int(property["sentiment"]) + 1
 
                         elif message["_source"]["doc"]["senti_tag"] == "negative":
+                            # for pie diagram metrics
                             negative_counter += 1
                             #print "Found a message with negative tag: %s " % json.dumps(message["_source"]["doc"])
                             # for mosaic diagram
                             for category in categories_counter:
                                 for property in category:
                                     if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
-                                        neg_number = int(property["sentiment"]) - 1
-                                        property["sentiment"] = neg_number
+                                        property["sentiment"] = int(property["sentiment"]) - 1
 
                         elif message["_source"]["doc"]["senti_tag"] == "neutral":
                             neutral_counter += 1
@@ -482,7 +475,7 @@ def results(request, query_id):
             raise Http404()
 
         return render(request, "results.html",
-                      {"query_id": query.id, "query_name": query.name, "query":query_params , "response": test, "positive": positive_counter,
+                      {"query_id": query.id, "query_name": query.name, "query":query_params , "response": reponseToPresent, "positive": positive_counter,
                        "negative": negative_counter, "neutral": neutral_counter,
                        "categories": categories_counter})
     else:

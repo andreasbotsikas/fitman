@@ -19,7 +19,7 @@
 </style>
     <script type="text/javascript" charset="utf-8">
     $(document).ready(function () {
-        $('#table').dataTable({
+        $('#datatable').dataTable({
             "bJQueryUI": true,
             "sPaginationType": "full_numbers",
             "aaSorting" : [[3, 'desc']],
@@ -51,41 +51,44 @@
                 { "sWidth": "auto", "aTargets": [ 2 ] }
             ]
         });
+        //Add here RSS data loading
     });
 </script>
     <!-- Google Charts-->
+    <!-- Mosaic Chart-->
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
-    google.load("visualization", "1", {packages: ["treemap"]});
-    google.setOnLoadCallback(drawChart);
-    function drawChart() {
-        // Create and populate the data table.
-        var data = google.visualization.arrayToDataTable([
-            ['Keyword', 'Parent', 'Number of appearance (size)', 'Sentiment(color)'],
-            ['All', null, 0, 0],
-            {% for category in categories %}
-                    ['{{ category.category }}', 'All', 0, 0],
-                {% for property in category.properties %}
-                    ['{{ category.category }}:{{ property.name }}', '{{ category.category }}', {{ property.times }}, {{ property.sentiment}}],
+        google.load("visualization", "1", {packages: ["treemap"]});
+        google.setOnLoadCallback(drawChart);
+        function drawChart() {
+            // Create and populate the data table.
+            var data = google.visualization.arrayToDataTable([
+                ['Keyword', 'Parent', 'Number of appearance (size)', 'Sentiment(color)'],
+                ['All', null, 0, 0],
+                {% for category in categories %}
+                        ['{{ category.category }}', 'All', 0, 0],
+                    {% for property in category.properties %}
+                        ['{{ category.category }}:{{ property.name }}', '{{ category.category }}', {{ property.sentiment }}, {{ property.sentiment}}],
+                    {% endfor %}
                 {% endfor %}
-            {% endfor %}
-            //['Materials', 'All', 0, 0],
-            //['leather', 'Materials', 5, -5],
-        ]);
+                //['Materials', 'All', 0, 0],
+                //['leather', 'Materials', 5, -5],
+            ]);
 
-        // Create and draw the visualization.
-        var tree = new google.visualization.TreeMap(document.getElementById('chart_div'));
-        tree.draw(data, {
-            minColor: '#f00',
-            midColor: '#ddd',
-            maxColor: '#0d0',
-            headerHeight: 15,
-            fontColor: 'black',
-            showScale: true,
-            showTooltips:true});
-    }
-</script>
-    <!-- piechart-->
+            // Create and draw the visualization.
+            var tree = new google.visualization.TreeMap(document.getElementById('chart_div'));
+            tree.draw(data, {
+                minColor: '#f00',
+                midColor: '#ddd',
+                maxColor: '#0d0',
+                headerHeight: 15,
+                fontColor: 'black',
+                showScale: true,
+                showTooltips:true});
+        }
+    </script>
+
+    <!-- Piechart-->
     <script type="text/javascript">
         google.load("visualization", "1", {packages: ["corechart"]});
         google.setOnLoadCallback(drawChart);
@@ -110,6 +113,7 @@
             chart.draw(data, options);
         }
     </script>
+
     <script type="text/javascript">
         jQuery(document).ready(function ($) {
             $('#tabs').tab();
@@ -136,6 +140,7 @@
         <li><a href="#graphs" data-toggle="tab">Graphs</a></li>
         <li><a href="#categories" data-toggle="tab">Categories</a></li>
         <li><a href="#gallery" data-toggle="tab">Photo Gallery</a></li>
+        <li><a href="#RSS" data-toggle="tab">RSS</a></li>
     </ul>
     <!-- Tab panes -->
     <div class="tab-content">
@@ -161,7 +166,7 @@
         <div class="tab-pane active" id="messages">
             <!-- Textual Results -->
             <div class="tab-responsive">
-                    <table id="table">
+                    <table id="datatable">
                         <thead class="nav"></thead>
                         <tbody></tbody>
                         <tfoot></tfoot>
@@ -266,41 +271,52 @@
             </div>
         </div>
     </div>
-
-    <!-- image view -->
-    <div id="blueimp-gallery" class="blueimp-gallery">
-        <!-- The container for the modal slides -->
-        <div class="slides"></div>
-        <!-- Controls for the borderless lightbox -->
-        <h3 class="title"></h3>
-        <a class="prev">‹</a>
-        <a class="next">›</a>
-        <a class="close">?</a>
-        <a class="play-pause"></a>
-        <ol class="indicator"></ol>
-        <!-- The modal dialog, which will be used to wrap the lightbox content -->
-        <div class="modal fade">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" aria-hidden="true">&times;</button>
-                        <h4 class="modal-title"></h4>
-                    </div>
-                    <div class="modal-body next"></div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn pull-left prev">
-                            <i class="fa fa-arrow-left"></i>
-                            Previous
-                        </button>
-                        <button type="button" class="btn next pull-right">
-                            Next
-                            <i class="fa fa-arrow-right"></i>
-                        </button>
+        <!-- image view -->
+        <div id="blueimp-gallery" class="blueimp-gallery">
+            <!-- The container for the modal slides -->
+            <div class="slides"></div>
+            <!-- Controls for the borderless lightbox -->
+            <h3 class="title"></h3>
+            <a class="prev">‹</a>
+            <a class="next">›</a>
+            <a class="close">?</a>
+            <a class="play-pause"></a>
+            <ol class="indicator"></ol>
+            <!-- The modal dialog, which will be used to wrap the lightbox content -->
+            <div class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title"></h4>
+                        </div>
+                        <div class="modal-body next"></div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn pull-left prev">
+                                <i class="fa fa-arrow-left"></i>
+                                Previous
+                            </button>
+                            <button type="button" class="btn next pull-right">
+                                Next
+                                <i class="fa fa-arrow-right"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+        <div class="tab-pane" id="RSS">
+            <!-- Textual Results -->
+            <div class="tab-responsive">
+                    <table id="RSStable">
+                        <thead class="nav"></thead>
+                        <tbody></tbody>
+                        <tfoot></tfoot>
+                    </table>
+
+            </div>
+            <!-- /.container -->
+        </div>
 
 </div>
 
