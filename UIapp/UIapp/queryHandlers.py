@@ -127,7 +127,12 @@ def update_twitter_connector(username, project, twitter_properties):
     twitter_properties='storeTWaccounts?id=%s_%s&keywords=%s'%(urllib.quote(str(username)),urllib.quote(str(project)), urllib.quote(twitter_properties))
     #print twitter_properties
     path="%s%s" %(configurations.twitter_connector,twitter_properties)
-    response = urllib2.urlopen(path)
+    try:
+        response = urllib2.urlopen(path) ## response = urllib2.urlopen('http://google.com',timeout = 0.001)
+    except urllib2.URLError as err:
+        print('error connecting on twitter settings')
+        return 0
+        # urllib2.URLError: <urlopen error timed out>
     #response = response.read()
     #print response
     return 1
@@ -136,7 +141,11 @@ def update_project_connector(username, project, project_properties):
     project_properties='storeKeywords?id=%s_%s&keywords=%s'%(urllib.quote(str(username)),urllib.quote(str(project)), urllib.quote(project_properties))
     #print twitter_properties
     path="%s%s" %(configurations.twitter_connector,project_properties)
-    response = urllib2.urlopen(path)
+    try:
+        response = urllib2.urlopen(path)
+    except urllib2.URLError as err:
+        print('error connecting on Keywords settings')
+        return 0
     #response = response.read()
     #print response
     return 1
@@ -145,7 +154,11 @@ def update_facebook_connector(username, project, facebook_properties):
     facebook_properties='storeFBaccounts?id=%s_%s&keywords=%s'%(urllib.quote(str(username)),urllib.quote(str(project)), urllib.quote(facebook_properties))
     #print facebook_properties
     path="%s%s" %(configurations.facebook_connector,facebook_properties)
-    response = urllib2.urlopen(path)
+    try:
+        response = urllib2.urlopen(path)
+    except urllib2.URLError as err:
+        print('error connecting on Facebook settings')
+        return 0
     return 1
 
 def remove_comma_at_the_end (expression):

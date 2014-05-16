@@ -420,7 +420,7 @@ def results(request, query_id):
                     query_all+='%s,'%facebook_properties
                 query_all=remove_comma_at_the_end(query_all)
 
-                query_all = '{"query":{"filtered":{"query":{"bool":{"should":[%s],"minimum_should_match" : 1}},"filter":{"bool":{"must":[{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}],"_cache":true}}}},"from":0,"size":100000, "sort":["_score"]}' % (
+                query_all = '{"query":{"filtered":{"query":{"bool":{"should":[%s],"minimum_should_match" : 1}},"filter":{"bool":{"must":[{"range":{"doc.created_at":{"from":"%s","to":"%s"}}}],"_cache":true}}}},"from":0,"size":10000, "sort":["_score"]}' % (
                             query_all,
                             int(time.mktime(query.from_date.timetuple()) * 1000),
                             int(time.mktime(query.to_date.timetuple()) * 1000))
