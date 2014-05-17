@@ -449,32 +449,28 @@ def results(request, query_id):
                     reponseToPresent.append(message["_source"])
                     ##print "Just Added: %s" %message["_source"]["doc"]
                     try:
-                        if message["_source"]["doc"]["senti_tag"] == "positive":
-                            # for pie diagram metrics
-                            positive_counter += 1
-                            # for mosaic diagram
-                            for category in categories_counter:
+                        for category in categories_counter:
                                 for property in category["properties"]:
-                                    if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
-                                        #print " Message with positive tag: %s : the found property is: %s"%(json.dumps(message["_source"]["doc"]), property["name"])
-                                        property["sentiment"] = property["sentiment"] + 1
-                                        property["positive"] = property["positive"] + 1
-                        elif message["_source"]["doc"]["senti_tag"] == "negative":
-                            # for pie diagram metrics
-                            negative_counter += 1
-                            #print "Found a message with negative tag: %s " % json.dumps(message["_source"]["doc"])
-                            # for mosaic diagram
-                            for category in categories_counter:
-                                for property in category:
-                                    if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
-                                        property["sentiment"] = int(property["sentiment"]) - 1
-                                        property["negative"] = property["negative"] + 1
-                        elif message["_source"]["doc"]["senti_tag"] == "neutral":
-                            neutral_counter += 1
-                            for category in categories_counter:
-                                for property in category:
-                                    if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
-                                        property["neutral"] = property["neutral"] + 1
+                                    if message["_source"]["doc"]["senti_tag"] == "positive":
+                                        # for pie diagram metrics
+                                        positive_counter += 1
+                                        # for mosaic diagram
+                                        if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
+                                            #print " Message with positive tag: %s : the found property is: %s"%(json.dumps(message["_source"]["doc"]), property["name"])
+                                            property["sentiment"] = property["sentiment"] + 1
+                                            property["positive"] = property["positive"] + 1
+                                    elif message["_source"]["doc"]["senti_tag"] == "negative":
+                                        # for pie diagram metrics
+                                        negative_counter += 1
+                                        #print "Found a message with negative tag: %s " % json.dumps(message["_source"]["doc"])
+                                        # for mosaic diagram
+                                        if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
+                                            property["sentiment"] = int(property["sentiment"]) - 1
+                                            property["negative"] = property["negative"] + 1
+                                    elif message["_source"]["doc"]["senti_tag"] == "neutral":
+                                        neutral_counter += 1
+                                        if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
+                                            property["neutral"] = property["neutral"] + 1
                     except:
                         continue
         except ValueError:

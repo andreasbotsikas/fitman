@@ -105,7 +105,7 @@
                 height: 500,
                 backgroundColor: 'none',
                 is3D: true,
-                title: ''
+                title: 'Sentiments of messages'
             };
 
             var chart = new google.visualization.PieChart(document.getElementById('piechart'));
@@ -129,7 +129,7 @@
           ]);
 
           var options = {
-            title: 'Positive & Negative messages',
+            title: 'Positive & Negative Occurrences of Terms',
             hAxis: {title: 'positive'},
             vAxis: {title: 'negative'},
             bubble: {textStyle: {fontSize: 11}}
