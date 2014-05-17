@@ -129,7 +129,7 @@
           ]);
 
           var options = {
-            title: 'Positive & Negative Correlation',
+            title: 'Positive & Negative messages',
             hAxis: {title: 'positive'},
             vAxis: {title: 'negative'},
             bubble: {textStyle: {fontSize: 11}}
@@ -169,7 +169,7 @@
     <ul class="nav nav-tabs">
         <li><a href="#query" data-toggle="tab">Parameters</a></li>
         <li class="active"><a href="#messages" data-toggle="tab">Messages</a></li>
-        <li><a href="#graphs" data-toggle="tab">Graphs</a></li>
+        <li><a href="#graphs" data-toggle="tab">Sentiments</a></li>
         <li><a href="#categories" data-toggle="tab">Categories</a></li>
         <li><a href="#gallery" data-toggle="tab">Photo Gallery</a></li>
         <li><a href="#RSS" data-toggle="tab">RSS</a></li>
@@ -228,13 +228,10 @@
                         <div>*left-click on a category to see keywords, right-click to navigate back</div>
                     </div>
                     <div class="span4">
-                        <div id="piechart" style="width: 50%; height: 150px;">Loading...</div>
+                        <div id="piechart" style="width: 100%; height: auto;">Loading...</div>
                     </div>
                 </div>
                 <div class="row">
-                    <br/>
-                    <br/>
-                    <br/>
                     <br/>
                     <br/>
                 </div>
@@ -270,10 +267,11 @@
                                         </div>
                                         <div class="row">
                                             <br/>
+                                            <br/>
+                                            <br/>
                                         </div>
                                         <div class="row">
-                                                <div id="chart_{{ category.category }}" style="width: 100%; height:300px;">Loading...</div>
-
+                                                <div id="chart_{{ category.category }}" style="width: 100%; height:400px;">Loading...</div>
                                         </div>
                                          <script type="text/javascript">
                                             google.load("visualization", "1", {packages: ["corechart"]});
