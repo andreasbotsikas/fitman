@@ -161,6 +161,33 @@ def update_facebook_connector(username, project, facebook_properties):
         return 0
     return 1
 
+def update_rss_connector(username, project, rss_properties):
+    #print twitter_properties
+    create_project_path="%s%s" %(configurations.rss_connector,urllib.quote(str(project)))
+    try:
+        data={}
+        response = urllib2.urlopen(create_project_path,data) #empty to enable POST
+    except urllib2.URLError as err:
+        print('error creating RSS project')
+        return 0
+
+    url_list=str(rss_properties).split(',')
+    url_counter=0
+    for url in url_list:
+        data = urllib.urlencode({'url': url})
+        create_resources_path='%s/sources/%s'%(urllib.quote(str(project)),urllib.quote(str('url%s'%url_counter)))
+        url_counter+=1
+        try:
+            response = urllib2.urlopen(create_project_path,data)
+        except urllib2.URLError as err:
+            print('error creating RSS project resource with url:%s' %url)
+            return 0
+
+    #response = response.read()
+    #print response
+    return 1
+
+
 def remove_comma_at_the_end (expression):
     if len(expression) > 0:
         if expression[-1:] == ",":

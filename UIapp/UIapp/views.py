@@ -109,6 +109,7 @@ def welcome_categories(request):
 
         twitter_properties=""
         facebook_properties=""
+        rss_properties=""
 
         if str(project).isspace() or not str(project): #not a project name
             return render(request, "welcome_categories.html", {"message": 'Project name is required' })
@@ -149,6 +150,7 @@ def welcome_categories(request):
                 Category_value.objects.create(value="", category=categoryK, owned_by=project).save()
             if rss:
                 Category_value.objects.create(value=rss, category=categoryR, owned_by=project).save()
+                rss_properties+=rss
             else:
                 Category_value.objects.create(value="", category=categoryR, owned_by=project).save()
             user2 = authenticate(username=username, password=password)
@@ -165,8 +167,6 @@ def welcome_categories(request):
                 # the authentication system was unable to verify the username and password
                 #print("The username or password were incorrect.")
                 return HttpResponseRedirect("/signup") # Redirect after POST
-
-
         request.session['signup-username']=""
         request.session['signup-email']=""
         request.session['signup-password']=""
@@ -176,6 +176,7 @@ def welcome_categories(request):
         # setup project on fb connector
         update_facebook_connector(username, project, facebook_properties)
         # setup project on RSS GE
+        #update_rss_connector (username, project, rss_properties)
 
         return HttpResponseRedirect("/welcome-train")
     else:
@@ -436,7 +437,7 @@ def results(request, query_id):
                 word_counter = []
                 for phrase in properties[property].split(","):
                     number = json.dumps(response).count(phrase)
-                    text = '{"name":"%s","times":"%s", "sentiment":%i}' % (phrase, number,0)
+                    text = '{"name":"%s","times":%i, "sentiment":%i, "positive":%i, "negative":%i, "neutral":%i}' % (phrase, number, 0 , 0,0,0)
                     word_counter.append(json.loads(text))
                 text = {}
                 text["category"] = property
@@ -456,8 +457,8 @@ def results(request, query_id):
                                 for property in category["properties"]:
                                     if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
                                         #print " Message with positive tag: %s : the found property is: %s"%(json.dumps(message["_source"]["doc"]), property["name"])
-                                        property["sentiment"] = int(property["sentiment"]) + 1
-
+                                        property["sentiment"] = property["sentiment"] + 1
+                                        property["positive"] = property["positive"] + 1
                         elif message["_source"]["doc"]["senti_tag"] == "negative":
                             # for pie diagram metrics
                             negative_counter += 1
@@ -467,14 +468,36 @@ def results(request, query_id):
                                 for property in category:
                                     if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
                                         property["sentiment"] = int(property["sentiment"]) - 1
-
+                                        property["negative"] = property["negative"] + 1
                         elif message["_source"]["doc"]["senti_tag"] == "neutral":
                             neutral_counter += 1
+                            for category in categories_counter:
+                                for property in category:
+                                    if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
+                                        property["neutral"] = property["neutral"] + 1
                     except:
                         continue
         except ValueError:
             #print ValueError.message
             raise Http404()
+
+        ###
+        # Read the RSS queries
+        ###
+        ###find the url properties from properties
+
+        # rss_resource='url0'
+        # data = urllib.urlencode({'query': rss_resource})
+        # search_resources_path='%s/search'%(urllib.quote(str(Project.objects.filter(created_by=request.user).latest("created"))))
+        # ###for loop for all urls??
+        # try:
+        #     response_UD = urllib2.urlopen(search_resources_path,data)
+        # except urllib2.URLError as err:
+        #     print('error searching RSS project resource with name:%s' %rss_resource)
+        #     return 0
+
+        #print "The RSS UD brought:%s"%response_UD
+
 
         return render(request, "results.html",
                       {"query_id": query.id, "query_name": query.name, "query":query_params , "response": reponseToPresent, "positive": positive_counter,

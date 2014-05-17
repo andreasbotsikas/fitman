@@ -54,7 +54,7 @@
         //Add here RSS data loading
     });
 </script>
-    <!-- Mosaic Chart-->
+    <!-- Treemap Chart-->
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
         google.load("visualization", "1", {packages: ["treemap"]});
@@ -67,31 +67,31 @@
                 {% for category in categories %}
                         ['{{ category.category }}', 'All', 0, 0],
                     {% for property in category.properties %}
-                        ['{{ category.category }}:{{ property.name }}', '{{ category.category }}', {{ property.sentiment }}, {{ property.sentiment}}],
+                        ['{{ category.category }}:{{ property.name }}', '{{ category.category }}', {{ property.times }}, {{ property.sentiment}}],
                     {% endfor %}
                 {% endfor %}
-                //['Materials', 'All', 0, 0],
-                //['leather', 'Materials', 5, -5],
             ]);
 
             // Create and draw the visualization.
             var tree = new google.visualization.TreeMap(document.getElementById('chart_div'));
             tree.draw(data, {
-                minColor: '#f00',
-                midColor: '#ddd',
-                maxColor: '#0d0',
-                headerHeight: 15,
+                minColor: '#C0C0C0',
+                midColor: '#B2D1B2',
+                maxColor: '#A5DF00',
+                headerHeight: 20,
                 fontColor: 'black',
                 showScale: true,
-                showTooltips:true});
+                showTooltips:true,
+                useWeightedAverageForAggregation:true,
+                title:'More positive effective categories'});
         }
     </script>
 
     <!-- Piechart-->
     <script type="text/javascript">
         google.load("visualization", "1", {packages: ["corechart"]});
-        google.setOnLoadCallback(drawChart);
-        function drawChart() {
+        google.setOnLoadCallback(drawPie);
+        function drawPie() {
             var data = google.visualization.arrayToDataTable([
                 ['Messages', 'Number'],
                 ['Positive', {{ positive }}],
@@ -112,6 +112,39 @@
             chart.draw(data, options);
         }
     </script>
+
+    <!-- Visualization-->
+    <script type="text/javascript">
+      google.load('visualization', '1', {packages: ['corechart']});
+      google.setOnLoadCallback(drawVisualization);
+      function drawVisualization() {
+          // Create and populate the data table.
+          var data = google.visualization.arrayToDataTable([
+            ['Keyword', 'positive', 'negative', 'Properties' ,'Number of appearance (size)'],
+            {% for category in categories %}
+                    {% for property in category.properties %}
+                        ['{{ property.name }}', {{ property.positive}}, {{ property.negative }}, '{{ category.category }}',{{ property.times}}],
+                    {% endfor %}
+            {% endfor %}
+          ]);
+
+          var options = {
+            title: 'Positive & Negative Correlation',
+            hAxis: {title: 'positive'},
+            vAxis: {title: 'negative'},
+            bubble: {textStyle: {fontSize: 11}}
+          };
+
+          // Create and draw the visualization.
+          var chart = new google.visualization.BubbleChart(
+              document.getElementById('visualization'));
+          chart.draw(data, options);
+      }
+
+
+      google.setOnLoadCallback(drawVisualization);
+    </script>
+
 
     <script type="text/javascript">
         jQuery(document).ready(function ($) {
@@ -191,12 +224,22 @@
                     <!-- row: treemap for sentiments and blocks for terms-->
                 <div class="row">
                     <div class="span6">
-                        <div id="chart_div" style="width: auto; height:300px;">Google Charts loading...</div>
+                        <div id="chart_div" style="width: 100%; height:300px;">Loading...</div>
                         <div>*left-click on a category to see keywords, right-click to navigate back</div>
                     </div>
                     <div class="span4">
-                        <div id="piechart" style="width: auto; height: 300px;"></div>
+                        <div id="piechart" style="width: 50%; height: 150px;">Loading...</div>
                     </div>
+                </div>
+                <div class="row">
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                </div>
+                <div class="row">
+                    <div id="visualization" style="width: 100%; height: 300px;">Loading....</div>
                 </div>
             </div>
         </div>
@@ -222,31 +265,59 @@
                                 {% else %}
                                     <div class="tab-pane" id="{{ category.category }}">
                                 {% endif %}
+                                        <div class="row">
+                                                <div id="pie_{{ category.category }}" style="width: 100%; height: auto;">Loading...</div>
+                                        </div>
+                                        <div class="row">
+                                            <br/>
+                                        </div>
+                                        <div class="row">
+                                                <div id="chart_{{ category.category }}" style="width: 100%; height:300px;">Loading...</div>
 
-                                        <div id="pie_{{ category.category }}" style="width: auto; height: auto;">Google Pie Chart for Category</div>
+                                        </div>
                                          <script type="text/javascript">
-                                google.load("visualization", "1", {packages: ["corechart"]});
-                                google.setOnLoadCallback(drawChart);
-                                function drawChart() {
-                                    var data = google.visualization.arrayToDataTable([
-                                        ['Messages', 'Number'],
-                                        {% for property in category.properties %}
-                                            ['{{ property.name }}' , {{ property.times }}],
-                                        {% endfor %}
-                                    ]);
+                                            google.load("visualization", "1", {packages: ["corechart"]});
+                                            google.setOnLoadCallback(drawChart);
+                                            google.setOnLoadCallback(drawChartWrap);
+                                            function drawChart() {
+                                                var data = google.visualization.arrayToDataTable([
+                                                ['Messages', 'Number'],
+                                                {% for property in category.properties %}
+                                                    ['{{ property.name }}' , {{ property.times }}],
+                                                {% endfor %}
+                                                ]);
+                                                var options = {
+                                                    width: 800,
+                                                    height: 500,
+                                                    backgroundColor: 'none',
+                                                    is3D: true
+                                                };
+                                            var chart = new google.visualization.PieChart(document.getElementById('pie_{{ category.category }}'));
+                                            chart.draw(data, options);
+                                            };
 
-                                    var options = {
-                                        width: 800,
-                                        height: 500,
-                                        backgroundColor: 'none',
-                                        is3D: true
-                                    };
+                                            function drawChartWrap() {
+                                                  // Create and populate the data table.
+                                                  var data = google.visualization.arrayToDataTable([
+                                                    ['Property', 'Positive', 'Negative', 'Neutral'],
+                                                    {% for property in category.properties %}
+                                                    ['{{ property.name }}' , {{ property.positive }},{{ property.negative }},{{ property.neutral }}],
+                                                    {% endfor %}
+                                                  ]);
 
-                                    var chart = new google.visualization.PieChart(document.getElementById('pie_{{ category.category }}'));
-                                    chart.draw(data, options);
-                                }
-                            </script>
-                                    </div>
+                                                  var options = {
+                                                      colors: [ '#A5DF00', '#FA8258', '#BDBDBD'],
+                                                      title: 'Sentiments per categories',
+                                                      backgroundColor: {fill:'transparent'},
+                                                      hAxis: {title: 'Categories', titleTextStyle: {color: 'black'}}
+                                                    };
+
+                                                    var chart = new google.visualization.ColumnChart(document.getElementById('chart_{{ category.category }}'));
+                                                    chart.draw(data, options);
+
+                                              }
+                                          </script>
+                                     </div>
                                 {% empty %}
                             {% endfor %}
 
