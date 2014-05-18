@@ -219,7 +219,7 @@
         </div>
         <div class="tab-pane" id="graphs">
             <!-- Graphs -->
-            <div class="tab-responsive" style="height: 600px;">
+            <div class="tab-responsive" style="height: 100%; width: 100%;overflow: hidden;">
                 <!-- row: pie for sentiments and blocks for terms-->
                     <!-- row: treemap for sentiments and blocks for terms-->
                 <div class="row">
@@ -271,7 +271,7 @@
                                             <br/>
                                         </div>
                                         <div class="row">
-                                                <div id="chart_{{ category.category }}" style="width: 100%; height:400px;">Loading...</div>
+                                                <div id="chart_{{ category.category }}" style="width: 90%; height:400px;">Loading...</div>
                                         </div>
                                          <script type="text/javascript">
                                             google.load("visualization", "1", {packages: ["corechart"]});
