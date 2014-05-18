@@ -51,9 +51,38 @@
                 { "sWidth": "auto", "aTargets": [ 2 ] }
             ]
         });
-        //Add here RSS data loading
     });
 </script>
+
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function () {
+             //Add here RSS data loading
+            $('#RSStable').dataTable({
+                "bJQueryUI": true,
+                "sPaginationType": "full_numbers",
+                "aaSorting" : [[0, 'desc']],
+                "aaData": [
+                    {% autoescape on %}
+                    {% for rss in rss_results %}
+                        ["{{ rss.title|linebreaksbr }}","{{ rss.text|linebreaksbr }}", "<a href=\"{{ rss.url }}\">Link</a>", "{{ rss.pubDate }}"],
+                    {% empty %}
+                        ["-","-", "-","-"]
+                    {% endfor %}
+                    {% endautoescape %}
+                ],
+                "aoColumns": [
+                    { "sTitle": "Title"},
+                    { "sTitle": "Text"},
+                    { "sTitle": "Url"},
+                    { "sTitle": "Datetime"}
+                ],
+                "aoColumnDefs": [
+                    { "sWidth": "auto", "aTargets": [ 0 ] },
+                    { "sWidth": "auto", "aTargets": [ 2 ] }
+                ]
+            });
+        });
+    </script>
     <!-- Treemap Chart-->
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
@@ -323,8 +352,7 @@
                         <!-- /. row-->
                     </div>
                 </div>
-            </div>
-            <!-- /.container -->
+            </div><!-- /.container -->
         </div>
         <div class="tab-pane" id="gallery">
             <!-- Image Gallery-->
@@ -337,10 +365,7 @@
                     {% endfor %}
                 {% endfor %}
             </div>
-        </div>
-    </div>
-        <!-- image view -->
-        <div id="blueimp-gallery" class="blueimp-gallery">
+            <div id="blueimp-gallery" class="blueimp-gallery">
             <!-- The container for the modal slides -->
             <div class="slides"></div>
             <!-- Controls for the borderless lightbox -->
@@ -373,6 +398,7 @@
                 </div>
             </div>
         </div>
+        </div>
         <div class="tab-pane" id="RSS">
             <!-- Textual Results -->
             <div class="tab-responsive">
@@ -383,11 +409,15 @@
                     </table>
 
             </div>
-            <!-- /.container -->
         </div>
+     </div>
+
+
+
 
 </div>
 
+    </div>
 
 {% endblock %}
 {% block end_of_body %}

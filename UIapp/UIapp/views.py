@@ -330,6 +330,7 @@ def results(request, query_id):
         positive_counter = 0
         negative_counter = 0
         neutral_counter = 0
+        RSS_results=[]
         try:
             ## Must store the response, if there is no response, otherwise return the stored one.
             ## IF NOT STORED
@@ -350,6 +351,7 @@ def results(request, query_id):
             phrase_properties = '' # This is the string that forms the phrase query (match_phrase)'
             twitter_properties=''
             facebook_properties=''
+            rss_properties=''
 
             ## Run the query or bring the results from the Database
             if results: #bring it from the database
@@ -439,6 +441,7 @@ def results(request, query_id):
                     number = json.dumps(response).count(phrase)
                     text = '{"name":"%s","times":%i, "sentiment":%i, "positive":%i, "negative":%i, "neutral":%i}' % (phrase, number, 0 , 0,0,0)
                     word_counter.append(json.loads(text))
+                    rss_properties += "%s " % phrase
                 text = {}
                 text["category"] = property
                 text["properties"] = word_counter
@@ -473,6 +476,11 @@ def results(request, query_id):
                                             property["neutral"] = property["neutral"] + 1
                     except:
                         continue
+
+            ### Call the Unstructured Data Generic Enabler
+            RSS_results= get_RSS_response(rss_properties)
+            print RSS_results
+
         except ValueError:
             #print ValueError.message
             raise Http404()
@@ -494,11 +502,10 @@ def results(request, query_id):
 
         #print "The RSS UD brought:%s"%response_UD
 
-
         return render(request, "results.html",
                       {"query_id": query.id, "query_name": query.name, "query":query_params , "response": reponseToPresent, "positive": positive_counter,
                        "negative": negative_counter, "neutral": neutral_counter,
-                       "categories": categories_counter})
+                       "categories": categories_counter, "rss_results" :RSS_results})
     else:
         return HttpResponseRedirect("/")
 

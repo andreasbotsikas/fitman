@@ -114,6 +114,34 @@ def get_query_properties(query):
     result["Phrases"]=phrases #have phrases per properties category
     return result
 
+
+###
+#This is the query to RSS Unstructured Data Generic Enabler
+###
+def get_RSS_response(terms):
+        url = "%sreview/search" %configurations.rss_connector
+        #print url
+        #print terms
+        #place POST data in a dictionary
+        post_data_dictionary = {'query': terms }
+
+        #encode the POST data to be sent in a URL
+        post_data_encoded = urllib.urlencode(post_data_dictionary)
+
+        try:
+            #make a request object to hold the POST data and the URL
+            request_object = urllib2.Request(url, post_data_encoded)
+
+            #make the request using the request object as an argument, store response in a variable
+            response = urllib2.urlopen(request_object)
+
+            #store request response in a string
+            RSS_response = response.read()
+            return json.loads(RSS_response)
+        except urllib2.URLError as err:
+            print('error connecting on twitter settings')
+            return []
+
 def parse_query_for_sentiments(query):
     response = urllib2.urlopen(
         configurations.elastic_search_path,
