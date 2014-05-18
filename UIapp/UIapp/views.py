@@ -479,7 +479,6 @@ def results(request, query_id):
 
             ### Call the Unstructured Data Generic Enabler
             RSS_results= get_RSS_response(rss_properties)
-            print RSS_results
 
         except ValueError:
             #print ValueError.message
