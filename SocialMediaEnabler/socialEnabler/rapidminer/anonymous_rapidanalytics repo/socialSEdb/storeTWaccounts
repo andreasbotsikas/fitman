@@ -5,8 +5,12 @@
     <output/>
     <macros>
       <macro>
-        <key>xsltid</key>
-        <value>jgkjkjgk-chjdg-dfvf</value>
+        <key>id</key>
+        <value>testp</value>
+      </macro>
+      <macro>
+        <key>keywords</key>
+        <value>sofa,ikea,aidima,@ikeadd</value>
       </macro>
     </macros>
   </context>
@@ -18,30 +22,21 @@
     <parameter key="process_duration_for_mail" value="30"/>
     <parameter key="encoding" value="SYSTEM"/>
     <process expanded="true">
-      <operator activated="true" class="text:read_document" compatibility="5.3.002" expanded="true" height="60" name="Read Document" width="90" x="246" y="30">
-        <parameter key="extract_text_only" value="true"/>
-        <parameter key="use_file_extension_as_type" value="true"/>
-        <parameter key="content_type" value="txt"/>
-        <parameter key="encoding" value="SYSTEM"/>
-      </operator>
-      <operator activated="true" class="execute_sql" compatibility="5.3.013" expanded="true" height="94" name="Execute SQL" width="90" x="380" y="210">
+      <operator activated="true" class="execute_sql" compatibility="5.3.013" expanded="true" height="76" name="Execute SQL" width="90" x="179" y="30">
         <parameter key="define_connection" value="predefined"/>
-        <parameter key="connection" value="xslt_store_retrive"/>
+        <parameter key="connection" value="socialdb"/>
         <parameter key="database_system" value="MySQL"/>
-        <parameter key="query" value="insert into xsltdata(uuid,data) values (?,?);"/>
+        <parameter key="query" value="insert into twitter_accounts(project_id,keywords) values (?,?)on duplicate key update keywords=values(keywords);"/>
         <parameter key="prepare_statement" value="true"/>
         <enumeration key="parameters">
-          <parameter key="parameter" value="VARCHAR.%{xsltid}"/>
-          <parameter key="parameter" value="VARCHAR.%{xsltcontent}"/>
+          <parameter key="parameter" value="VARCHAR.%{id}"/>
+          <parameter key="parameter" value="VARCHAR.%{keywords}"/>
         </enumeration>
       </operator>
-      <connect from_port="input 1" to_op="Read Document" to_port="file"/>
-      <connect from_port="input 2" to_op="Execute SQL" to_port="through 2"/>
-      <connect from_op="Read Document" from_port="output" to_op="Execute SQL" to_port="through 1"/>
+      <connect from_port="input 1" to_op="Execute SQL" to_port="through 1"/>
       <connect from_op="Execute SQL" from_port="through 1" to_port="result 1"/>
       <portSpacing port="source_input 1" spacing="0"/>
       <portSpacing port="source_input 2" spacing="0"/>
-      <portSpacing port="source_input 3" spacing="0"/>
       <portSpacing port="sink_result 1" spacing="0"/>
       <portSpacing port="sink_result 2" spacing="0"/>
     </process>
