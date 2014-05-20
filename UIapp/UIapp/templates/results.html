@@ -107,6 +107,7 @@
                 minColor: '#C0C0C0',
                 midColor: '#B2D1B2',
                 maxColor: '#A5DF00',
+                height: 400,
                 headerHeight: 20,
                 fontColor: 'black',
                 showScale: true,
@@ -131,7 +132,7 @@
             var options = {
                 colors: [ '#A5DF00', '#FA8258', '#BDBDBD'],
                 width: 700,
-                height: 500,
+                height: 400,
                 backgroundColor: 'none',
                 is3D: true,
                 title: 'Sentiments of messages'
@@ -161,6 +162,9 @@
             title: 'Positive & Negative Occurrences of Terms',
             hAxis: {title: 'positive'},
             vAxis: {title: 'negative'},
+            width: 1000,
+            height: 400,
+            backgroundColor: 'none',
             bubble: {textStyle: {fontSize: 11}}
           };
 
@@ -246,14 +250,14 @@
             </div>
             <!-- /.container -->
         </div>
-        <div class="tab-pane" id="graphs">
+        <div class="tab-pane" id="graphs" style="height: 1200px">
             <!-- Graphs -->
-            <div class="tab-responsive" style="height: 100%; width: 100%;overflow: hidden;">
+            <div class="tab-responsive" style="height: 100%; width: 100%;">
                 <!-- row: pie for sentiments and blocks for terms-->
                     <!-- row: treemap for sentiments and blocks for terms-->
                 <div class="row">
                     <div class="span6">
-                        <div id="chart_div" style="width: 100%; height:300px;">Loading...</div>
+                        <div id="chart_div" style="width: 100%; height:auto">Loading...</div>
                         <div>*left-click on a category to see keywords, right-click to navigate back</div>
                     </div>
                     <div class="span4">
@@ -261,7 +265,6 @@
                     </div>
                 </div>
                 <div class="row">
-                    <br/>
                     <br/>
                 </div>
                 <div class="row">
@@ -293,11 +296,6 @@
                                 {% endif %}
                                         <div class="row">
                                                 <div id="pie_{{ category.category }}" style="width: 100%; height: auto;">Loading...</div>
-                                        </div>
-                                        <div class="row">
-                                            <br/>
-                                            <br/>
-                                            <br/>
                                         </div>
                                         <div class="row">
                                                 <div id="chart_{{ category.category }}" style="width: 90%; height:400px;">Loading...</div>
@@ -336,6 +334,8 @@
                                                       colors: [ '#A5DF00', '#FA8258', '#BDBDBD'],
                                                       title: 'Sentiments per categories',
                                                       backgroundColor: {fill:'transparent'},
+                                                      width: 800,
+                                                      height: 500,
                                                       hAxis: {title: 'Categories', titleTextStyle: {color: 'black'}}
                                                     };
 
