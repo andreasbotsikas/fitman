@@ -34,51 +34,55 @@
                             {% csrf_token %}
                             <!-- twitter-->
                             <div class="row">
-                                <div class="span4"></div>
-                                <div class="span1"> <span class="label-important">
+                                <div class="span2"> <span class="label-important">
                                     <label>Twitter Accounts: </label>
                                 </span></div>
-                                <div class="span3"> <span class="text-left">
+                                <div class="span6"> <span class="text-left">
                                     <textarea name="twitter" type="text"
                                            title="Update the username">{{ twitter }}</textarea>
                                 </span></div>
-                                <div class="span4"></div>
+                                <div class="span4"><span class="label-info">
+                                    <label>Twitter accounts to be tracked</label>
+                                </span></div>
                             </div>
                             <!-- facebook-->
                             <div class="row">
-                                <div class="span4"></div>
-                                <div class="span1"> <span class="label-important">
+                                <div class="span2"> <span class="label-important">
                                     <label>Facebook: </label>
                                 </span></div>
-                                <div class="span3"> <span class="text-left">
+                                <div class="span6"> <span class="text-left">
                                     <textarea name="facebook" type="text"
                                            title="Update the facebook pages" >{{ facebook }}</textarea>
                                 </span></div>
-                                <div class="span4"></div>
+                                <div class="span4"><span class="label-info">
+                                    <label>Facebook Pages to collect comments</label>
+                                </span></div>
                             </div>
                             <!-- hashtags-->
                             <div class="row">
-                                <div class="span4"></div>
-                                <div class="span1"> <span class="label-important">
+                                <div class="span2"> <span class="label-important">
                                     <label>Hashtags: </label>
                                 </span></div>
-                                <div class="span3"> <span class="text-left">
+                                <div class="span6"> <span class="text-left">
                                     <textarea name="keywords" type="text"
                                            title="Update the hashtags">{{ keywords }}</textarea>
                                 </span></div>
-                                <div class="span4"></div>
+                                <div class="span4"><span class="label-info">
+                                    <label>Terms used to collect data</label>
+                                </span></div>
                             </div>
 
                             <!-- rss-->
                             <div class="row">
-                                <div class="span4"></div>
-                                <div class="span1"> <span class="label-important">
+                                <div class="span2"> <span class="label-important">
                                     <label>RSS: </label>
                                 </span></div>
-                                <div class="span3"> <span class="text-left">
+                                <div class="span6"> <span class="text-left">
                                     <textarea name="rss" type="text" title="Update the RSS URLs">{{ rss }}</textarea>
                                 </span></div>
-                                <div class="span4"></div>
+                                <div class="span4"><span class="label-info">
+                                    <label>RSS resources to collect data from</label>
+                                </span></div>
                             </div>
 
 
