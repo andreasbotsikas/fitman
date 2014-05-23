@@ -469,6 +469,7 @@ def results(request, query_id):
                 elif message["_source"]["doc"]["senti_tag"] == "neutral":
                     neutral_counter += 1    
                 #if message["_score"] > 0.05:
+                if True:
                     reponseToPresent.append(message["_source"])
                     ##print "Just Added: %s" %message["_source"]["doc"]
                     try:
