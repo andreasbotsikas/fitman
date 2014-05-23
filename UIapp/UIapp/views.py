@@ -450,7 +450,7 @@ def results(request, query_id):
                 for phrase in properties[property].split(","):
  #                   number = json.dumps(response).count(phrase)
                     
-                    text = '{"name":"%s","times":%i, "sentiment":%i, "positive":%i, "negative":%i, "neutral":%i}' % (phrase, number[phrase], 0 , 0,0,0)
+                    text = '{"name":"%s","times":%i, "sentiment":%i, "positive":%i, "negative":%i, "neutral":%i}' % (phrase.lower(), number[phrase.lower()], 0 , 0,0,0)
                     #print text
                     word_counter.append(json.loads(text))
                     rss_properties += "%s " % phrase
