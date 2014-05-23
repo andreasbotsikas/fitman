@@ -442,8 +442,8 @@ def results(request, query_id):
             ## count the occurrences of keywords in in response
             for property in properties.keys():
                 word_counter = []
-                r = re.compile("|".join(r"\b%s\b" % w for w in properties[property].split(",")))
-                number = Counter(re.findall(r, json.dumps(response),re.I))
+                r = re.compile("|".join(r"\b%s\b" % w for w in properties[property].split(",")),re.I)
+                number = Counter(re.findall(r, json.dumps(response)))
 #                for lala in properties[property].split(","):
 #                	print number[lala]
 #                	print lala
@@ -474,8 +474,8 @@ def results(request, query_id):
                     ##print "Just Added: %s" %message["_source"]["doc"]
                     try:
                         for category in categories_counter:
-			    r2 = re.compile("|".join(r"\b%s\b" % w["name"] for w in category["properties"]))
-		            number2 = Counter(re.findall(r2, json.dumps(message["_source"]["doc"]["text"]),re.I))
+			    r2 = re.compile("|".join(r"\b%s\b" % w["name"] for w in category["properties"]),re.I)
+		            number2 = Counter(re.findall(r2, json.dumps(message["_source"]["doc"]["text"])))
 		            if True:
                                 for property in category["properties"]:
                                     #print property	
