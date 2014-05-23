@@ -484,7 +484,7 @@ def results(request, query_id):
                                         # for mosaic diagram
                                         #print property["name"]
                                         #print number2[property["name"]]
-					if (number2[property["name"]]) > 0:
+					if (number2[property["name"].lower()]) > 0:
 #                                        if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
                                             #print " Message with positive tag: %s : the found property is: %s"%(json.dumps(message["_source"]["doc"]), property["name"])
                                             property["sentiment"] = property["sentiment"] + 1
@@ -493,11 +493,11 @@ def results(request, query_id):
                                         #print "Found a message with negative tag: %s " % json.dumps(message["_source"]["doc"])
                                         # for mosaic diagram
 #                                        if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
-					if (number2[property["name"]]) > 0:
+					if (number2[property["name"].lower()]) > 0:
                                             property["sentiment"] = int(property["sentiment"]) - 1
                                             property["negative"] = property["negative"] + 1
                                     elif message["_source"]["doc"]["senti_tag"] == "neutral":
-					if (number2[property["name"]]) > 0:
+					if (number2[property["name"].lower()]) > 0:
 #                                        if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
                                             property["neutral"] = property["neutral"] + 1
                     except:
