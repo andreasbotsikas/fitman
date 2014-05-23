@@ -451,7 +451,7 @@ def results(request, query_id):
  #                   number = json.dumps(response).count(phrase)
                     
                     text = '{"name":"%s","times":%i, "sentiment":%i, "positive":%i, "negative":%i, "neutral":%i}' % (phrase, number[phrase], 0 , 0,0,0)
-                    print text
+                    #print text
                     word_counter.append(json.loads(text))
                     rss_properties += "%s " % phrase
                 text = {}
@@ -460,6 +460,14 @@ def results(request, query_id):
                 categories_counter.append(text)
 
             for message in response:
+            	if message["_source"]["doc"]["senti_tag"] == "positive":
+                    #for pie diagram metrics
+                    positive_counter += 1
+                elif message["_source"]["doc"]["senti_tag"] == "negative":
+                    # for pie diagram metrics
+                    negative_counter += 1
+                elif message["_source"]["doc"]["senti_tag"] == "neutral":
+                    neutral_counter += 1    
                 #if message["_score"] > 0.05:
                     reponseToPresent.append(message["_source"])
                     ##print "Just Added: %s" %message["_source"]["doc"]
@@ -469,10 +477,9 @@ def results(request, query_id):
 		            number2 = Counter(re.findall(r2, json.dumps(message["_source"]["doc"]["text"])))
 		            if True:
                                 for property in category["properties"]:
-                                    print property	
+                                    #print property	
                                     if message["_source"]["doc"]["senti_tag"] == "positive":
-                                        # for pie diagram metrics
-                                        positive_counter += 1
+                                        
                                         # for mosaic diagram
                                         #print property["name"]
                                         #print number2[property["name"]]
@@ -482,8 +489,6 @@ def results(request, query_id):
                                             property["sentiment"] = property["sentiment"] + 1
                                             property["positive"] = property["positive"] + 1
                                     elif message["_source"]["doc"]["senti_tag"] == "negative":
-                                        # for pie diagram metrics
-                                        negative_counter += 1
                                         #print "Found a message with negative tag: %s " % json.dumps(message["_source"]["doc"])
                                         # for mosaic diagram
 #                                        if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
@@ -491,7 +496,6 @@ def results(request, query_id):
                                             property["sentiment"] = int(property["sentiment"]) - 1
                                             property["negative"] = property["negative"] + 1
                                     elif message["_source"]["doc"]["senti_tag"] == "neutral":
-                                        neutral_counter += 1
 					if (number2[property["name"]]) > 0:
 #                                        if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
                                             property["neutral"] = property["neutral"] + 1
