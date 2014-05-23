@@ -442,8 +442,8 @@ def results(request, query_id):
             ## count the occurrences of keywords in in response
             for property in properties.keys():
                 word_counter = []
-				r = re.compile("|".join(r"\b%s\b" % w for w in properties[property].split(",")))
-				number = Counter(re.findall(r, json.dumps(response)))
+                r = re.compile("|".join(r"\b%s\b" % w for w in properties[property].split(",")))
+                number = Counter(re.findall(r, json.dumps(response)))
                 for phrase in properties[property].split(","):
  #                   number = json.dumps(response).count(phrase)
                     
@@ -461,14 +461,15 @@ def results(request, query_id):
                     ##print "Just Added: %s" %message["_source"]["doc"]
                     try:
                         for category in categories_counter:
-						    r2 = re.compile("|".join(r"\b%s\b" % w for w in category["properties"]))
-				            number2 = Counter(re.findall(r2, json.dumps(message["_source"]["doc"]["text"])))
+			    r2 = re.compile("|".join(r"\b%s\b" % w for w in category["properties"]))
+		            number2 = Counter(re.findall(r2, json.dumps(message["_source"]["doc"]["text"])))
+		            if True:
                                 for property in category["properties"]:
                                     if message["_source"]["doc"]["senti_tag"] == "positive":
                                         # for pie diagram metrics
                                         positive_counter += 1
                                         # for mosaic diagram
-										if (number2[property["name"]]) > 0:
+					if (number2[property["name"]]) > 0:
 #                                        if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
                                             #print " Message with positive tag: %s : the found property is: %s"%(json.dumps(message["_source"]["doc"]), property["name"])
                                             property["sentiment"] = property["sentiment"] + 1
@@ -479,12 +480,12 @@ def results(request, query_id):
                                         #print "Found a message with negative tag: %s " % json.dumps(message["_source"]["doc"])
                                         # for mosaic diagram
 #                                        if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
-										if (number2[property["name"]]) > 0:
+					if (number2[property["name"]]) > 0:
                                             property["sentiment"] = int(property["sentiment"]) - 1
                                             property["negative"] = property["negative"] + 1
                                     elif message["_source"]["doc"]["senti_tag"] == "neutral":
                                         neutral_counter += 1
-										if (number2[property["name"]]) > 0:
+					if (number2[property["name"]]) > 0:
 #                                        if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
                                             property["neutral"] = property["neutral"] + 1
                     except:
