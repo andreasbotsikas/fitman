@@ -24,6 +24,11 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.urlresolvers import reverse, resolve
 from django.template.response import TemplateResponse
 from django.contrib.auth.views import password_reset
+import re
+from collections import Counter
+
+def findWholeWord(w):
+    return re.compile(r'\b({0})\b'.format(w), flags=re.IGNORECASE).search
 
 ###
 #initial screens
@@ -437,9 +442,12 @@ def results(request, query_id):
             ## count the occurrences of keywords in in response
             for property in properties.keys():
                 word_counter = []
+				r = re.compile("|".join(r"\b%s\b" % w for w in properties[property].split(",")))
+				number = Counter(re.findall(r, json.dumps(response)))
                 for phrase in properties[property].split(","):
-                    number = json.dumps(response).count(phrase)
-                    text = '{"name":"%s","times":%i, "sentiment":%i, "positive":%i, "negative":%i, "neutral":%i}' % (phrase, number, 0 , 0,0,0)
+ #                   number = json.dumps(response).count(phrase)
+                    
+                    text = '{"name":"%s","times":%i, "sentiment":%i, "positive":%i, "negative":%i, "neutral":%i}' % (phrase, number[phrase], 0 , 0,0,0)
                     word_counter.append(json.loads(text))
                     rss_properties += "%s " % phrase
                 text = {}
@@ -453,12 +461,15 @@ def results(request, query_id):
                     ##print "Just Added: %s" %message["_source"]["doc"]
                     try:
                         for category in categories_counter:
+						    r2 = re.compile("|".join(r"\b%s\b" % w for w in category["properties"]))
+				            number2 = Counter(re.findall(r2, json.dumps(message["_source"]["doc"]["text"])))
                                 for property in category["properties"]:
                                     if message["_source"]["doc"]["senti_tag"] == "positive":
                                         # for pie diagram metrics
                                         positive_counter += 1
                                         # for mosaic diagram
-                                        if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
+										if (number2[property["name"]]) > 0:
+#                                        if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
                                             #print " Message with positive tag: %s : the found property is: %s"%(json.dumps(message["_source"]["doc"]), property["name"])
                                             property["sentiment"] = property["sentiment"] + 1
                                             property["positive"] = property["positive"] + 1
@@ -467,12 +478,14 @@ def results(request, query_id):
                                         negative_counter += 1
                                         #print "Found a message with negative tag: %s " % json.dumps(message["_source"]["doc"])
                                         # for mosaic diagram
-                                        if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
+#                                        if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
+										if (number2[property["name"]]) > 0:
                                             property["sentiment"] = int(property["sentiment"]) - 1
                                             property["negative"] = property["negative"] + 1
                                     elif message["_source"]["doc"]["senti_tag"] == "neutral":
                                         neutral_counter += 1
-                                        if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
+										if (number2[property["name"]]) > 0:
+#                                        if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
                                             property["neutral"] = property["neutral"] + 1
                     except:
                         continue
