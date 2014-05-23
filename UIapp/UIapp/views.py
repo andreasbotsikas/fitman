@@ -444,6 +444,9 @@ def results(request, query_id):
                 word_counter = []
                 r = re.compile("|".join(r"\b%s\b" % w for w in properties[property].split(",")))
                 number = Counter(re.findall(r, json.dumps(response)))
+                for lala in properties[property].split(","):
+                	print number[lala]
+                	print lala
                 for phrase in properties[property].split(","):
  #                   number = json.dumps(response).count(phrase)
                     
@@ -469,6 +472,8 @@ def results(request, query_id):
                                         # for pie diagram metrics
                                         positive_counter += 1
                                         # for mosaic diagram
+                                        print property["name"]
+                                        print number2[property["name"]]
 					if (number2[property["name"]]) > 0:
 #                                        if (json.dumps(message["_source"]["doc"]["text"])).find(property["name"]) > 0:
                                             #print " Message with positive tag: %s : the found property is: %s"%(json.dumps(message["_source"]["doc"]), property["name"])
