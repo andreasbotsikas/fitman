@@ -475,7 +475,7 @@ def results(request, query_id):
                     try:
                         for category in categories_counter:
 			    r2 = re.compile("|".join(r"\b%s\b" % w["name"] for w in category["properties"]),re.I)
-		            number2 = Counter(re.findall(r2, (json.dumps(message["_source"]["doc"]["text"])).lower()replace("@"," ").replace("#"," ")))
+		            number2 = Counter(re.findall(r2, (json.dumps(message["_source"]["doc"]["text"])).lower().replace("@"," ").replace("#"," ")))
 		            if True:
                                 for property in category["properties"]:
                                     #print property	
