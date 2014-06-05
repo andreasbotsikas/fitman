@@ -452,7 +452,7 @@ def results(request, query_id):
                     int(time.mktime(query.from_date.timetuple()) * 1000),
                     int(time.mktime(query.to_date.timetuple()) * 1000))
 
-                print query_all
+                #print query_all
                 response = parse_query_for_sentiments(query_all)
                 newResponse = Results(query=query, results=json.dumps(response), updated=datetime.datetime.now())
                 newResponse.save()
