@@ -89,14 +89,11 @@ def parse_comment(page_name,comment):
 
 def parse_post(page_name,message):
     json_to_keep = fix_json_format(message['message'], message['created_time'], page_name+":"+message['from']['name'], message['id'])
-    print "heeeeere"
     if 'full_picture' in message:
-        print "yeeeeea"
-        print message['full_picture']
+        #print message['full_picture']
         json_to_keep["entities"]={"media":[{"media_url_https":message['full_picture']}]}
-        print json_to_keep
-    print message['full_picture']
-    print "axaaaaa"
+        #print json_to_keep
+    #print message['full_picture']
     return json_to_keep
 #     print message['message'].encode('utf-8')
 #     print message['from']['name'].encode('utf-8')
@@ -104,7 +101,6 @@ def parse_post(page_name,message):
 #     print message['id']
 
 def fix_json_format(text,date,username,pid):
-    print "hello"
     text_no_url = text.lower()
     text_no_url = replace_multichars(text_no_url)
     text_no_url = replace_url(text_no_url)
@@ -116,25 +112,20 @@ def connectToDb():
     #Define Database connection creds
     server = "localhost"
     port = 8091
-    admin_username = "dev"
-    admin_password = "123456dev"
+    admin_username = ""
+    admin_password = ""
     bucket = "default"
     cbucket = Couchbase.connect(host=server,port=port,bucket=bucket)
     return cbucket
 
 def save_in_db(cbucket,document):
 #    data_md5 = hashlib.md5(json.dumps(document, sort_keys=True)).hexdigest()
-    print "1"
 #    cbucket.set(data_md5,document)
     cbucket.set(document['fbid'],document)
-    print "2"
-    print document
-#    print data_md5
     return document['fbid']
-#    return data_md5
 
 def saveTextInFile(text,filename):
-    result_file = open("./files/%s"%filename,"w")
+    result_file = open("/home/user/Downloads/files/%s"%filename,"w")
     result_file.write(str(text.encode('utf-8')) )
     result_file.close()
     return True
@@ -142,45 +133,39 @@ def saveTextInFile(text,filename):
 
 
 
-access_token = "CAACEdEose0cBAJW00LDEHAJwWJuSuIuEm945Ej3fiA8VnJCJqS5wduc4iPI0RrdOYmp8rJRZBEDG2Q9SvzTMRjtoexKmHKxn1XI2bsPYJc6JQIjKcER3fKatZA5HlI3J5c8x6D9cZBtkuhuFmc0JwjLhphNsFfVmBW6BofMmxDxGZCxntSQccPZBGr2tYJZCBoiHePiSjf2QZDZD"
+access_token = ""
 graph = GraphAPI(access_token)
 
-feed = graph.get('/IKEAUK?fields=feed.limit(70).fields(message,from,created_time,comments.filter(toplevel).fields(message,parent,from,id,created_time),object_id,full_picture),name&locale="en_US"')
-#feed = graph.get('/AIDIMA.Instituto.Tecnologico?fields=feed.limit(70).fields(message,from,created_time,comments.filter(toplevel).fields(message,parent,from,id,created_time),object_id,full_picture),name&locale="en_US"')
-page_name = feed['name']
-
-feed = feed['feed']['data']
-cb_bucket = connectToDb()
-
-print(feed)
-
-for message in feed:
+fb_pages = {}
 
 
-    try:
-        print "hi"
-        doc_to_store=parse_post(page_name,message)
-        data_md5=save_in_db(cb_bucket,doc_to_store)
-        saveTextInFile(doc_to_store['text_no_url'],data_md5)
-        if "comments" in message:
-            comments = message['comments']['data']
-            for comment in comments:
-                doc_to_store = parse_comment(page_name,comment)
-                data_md5=save_in_db(cb_bucket,doc_to_store)
-                saveTextInFile(doc_to_store['text_no_url'],data_md5)
-                
-                
-            
+print "starting"
+for fb_page in fb_pages:
+    feed = graph.get('/'+fb_page+'?fields=feed.limit(30).fields(message,from,created_time,comments.filter(toplevel).fields(message,parent,from,id,created_time),object_id,full_picture),name&locale="en_US"')
 
-#         text = message['message']
-#         text_no_url = replace_url(text)
-#         created_at = message['created_time']
-#         user_name=message['from']['name']
-#         user_name = 'facebook:' + user_name
-#         fbid = message['id']
-#         json_to_keep={"text":text,"text_no_url":text_no_url,"user_name":user_name,"created_at":created_at,"fb_id":fbid}
-#         print json_to_keep
-    except KeyError,e:
-        continue
+    page_name = feed['name']
+
+    feed = feed['feed']['data']
+    cb_bucket = connectToDb()
+
+    #print(feed)
+
+    for message in feed:
+
+
+        try:
+            doc_to_store=parse_post(page_name,message)
+            data_md5=save_in_db(cb_bucket,doc_to_store)
+            saveTextInFile(doc_to_store['text_no_url'],data_md5)
+            if "comments" in message:
+                comments = message['comments']['data']
+                for comment in comments:
+                    doc_to_store = parse_comment(page_name,comment)
+                    data_md5=save_in_db(cb_bucket,doc_to_store)
+                    saveTextInFile(doc_to_store['text_no_url'],data_md5)
+
+        except KeyError,e:
+            print str(e)
+            continue
 
 
